@@ -23,7 +23,7 @@ A modern desktop banking product with authentication, checking/savings accounts,
 - Atomic SQLite banking transactions
 - Dedicated Transactions workspace with search, account/type/date filters, and pagination
 - Ownership-scoped transaction history and filters
-- CSV export from the Transactions screen (filtered results, batched fetch)
+- CSV export from the Transactions screen (all filtered results, batched fetch, up to 10,000 transactions per export)
 - Authenticated app shell with Dashboard, Accounts, and Transactions
 - Light/dark theme infrastructure
 - Neutral production-oriented UI foundation (final visual polish deferred)

@@ -124,8 +124,10 @@ Queries always join through the authenticated user's accounts.
 - Proper CSV escaping for commas/quotes/newlines
 - Masked account labels
 - No password hashes or credentials
-- Internally pages matching results in batches of 100 up to a safety maximum of 10,000 rows
+- Counts matching rows first; exports of more than 10,000 matching transactions are rejected with a validation message (no partial CSV is produced)
+- Fetches matching rows internally in batches of 100
 - Export respects the current filter criteria and is not limited to the visible UI page
+- Descriptions beginning with `=`, `+`, `-`, `@`, tab, or carriage return are prefixed with `'` so spreadsheets do not evaluate them as formulas
 
 Search text normalization for filters uses `Locale.ROOT` for technical lowercase comparisons.
 
