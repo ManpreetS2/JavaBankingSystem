@@ -37,7 +37,8 @@ public class DatabaseInitializer {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         user_id INTEGER NOT NULL,
                         account_number TEXT NOT NULL UNIQUE,
-                        account_type TEXT NOT NULL,
+                        account_type TEXT NOT NULL
+                            CHECK (account_type IN ('CHECKING', 'SAVINGS')),
                         balance TEXT NOT NULL,
                         created_at TEXT NOT NULL,
                         FOREIGN KEY (user_id) REFERENCES users(id)
@@ -49,12 +50,34 @@ public class DatabaseInitializer {
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         account_id INTEGER NOT NULL,
                         related_account_id INTEGER,
-                        transaction_type TEXT NOT NULL,
+                        transaction_type TEXT NOT NULL
+                            CHECK (transaction_type IN (
+                                'DEPOSIT',
+                                'WITHDRAWAL',
+                                'TRANSFER_IN',
+                                'TRANSFER_OUT'
+                            )),
                         amount TEXT NOT NULL,
                         description TEXT,
                         created_at TEXT NOT NULL,
-                        FOREIGN KEY (account_id) REFERENCES accounts(id)
+                        FOREIGN KEY (account_id) REFERENCES accounts(id),
+                        FOREIGN KEY (related_account_id) REFERENCES accounts(id)
                     )
+                    """);
+
+            statement.execute("""
+                    CREATE INDEX IF NOT EXISTS idx_accounts_user_id
+                    ON accounts(user_id)
+                    """);
+
+            statement.execute("""
+                    CREATE INDEX IF NOT EXISTS idx_transactions_account_id
+                    ON transactions(account_id)
+                    """);
+
+            statement.execute("""
+                    CREATE INDEX IF NOT EXISTS idx_transactions_created_at
+                    ON transactions(created_at)
                     """);
         } catch (SQLException e) {
             throw new IllegalStateException(
