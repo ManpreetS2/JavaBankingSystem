@@ -10,13 +10,18 @@ import java.util.Objects;
  * Creates the required SQLite schema if it does not already exist.
  * Monetary values are stored as TEXT to preserve exact decimal precision.
  *
- * <p>Schema versioning uses SQLite {@code PRAGMA user_version}. Clean databases
- * are initialized at {@link #CURRENT_SCHEMA_VERSION}. Future upgrades can add
- * step-wise migrations when {@code user_version} is lower than current.
+ * <p>Schema versioning uses SQLite {@code PRAGMA user_version}.
+ * Clean databases are initialized at {@link #CURRENT_SCHEMA_VERSION}.
+ * Unversioned legacy development databases are rejected with an actionable message
+ * rather than being silently relabeled. Newer unsupported versions are also rejected.
  */
 public class DatabaseInitializer {
 
     public static final int CURRENT_SCHEMA_VERSION = 2;
+
+    private static final String LEGACY_SCHEMA_MESSAGE =
+            "The local development database uses an older schema. "
+                    + "Delete ./data/banking.db and restart the application to recreate it.";
 
     private final DatabaseManager databaseManager;
 
@@ -25,13 +30,66 @@ public class DatabaseInitializer {
     }
 
     public void initialize() {
-        try (Connection connection = databaseManager.getConnection();
-             Statement statement = connection.createStatement()) {
-            int currentVersion = readUserVersion(statement);
-            createBaseSchema(statement);
-            if (currentVersion < CURRENT_SCHEMA_VERSION) {
-                // Placeholder for future incremental migrations (vN -> vN+1).
-                setUserVersion(statement, CURRENT_SCHEMA_VERSION);
+        try (Connection connection = databaseManager.getConnection()) {
+            boolean previousAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            try (Statement statement = connection.createStatement()) {
+                int currentVersion = readUserVersion(statement);
+
+                if (currentVersion > CURRENT_SCHEMA_VERSION) {
+                    throw new IllegalStateException(
+                            "Unsupported database schema version " + currentVersion
+                                    + "; this application supports version " + CURRENT_SCHEMA_VERSION + "."
+                    );
+                }
+
+                boolean tablesExist = bankingTablesExist(statement);
+
+                if (currentVersion == 0 && !tablesExist) {
+                    createBaseSchema(statement);
+                    ensureIndexes(statement);
+                    setUserVersion(statement, CURRENT_SCHEMA_VERSION);
+                    connection.commit();
+                    return;
+                }
+
+                if (currentVersion == 0 && tablesExist) {
+                    throw new IllegalStateException(LEGACY_SCHEMA_MESSAGE);
+                }
+
+                if (currentVersion == CURRENT_SCHEMA_VERSION) {
+                    ensureIndexes(statement);
+                    connection.commit();
+                    return;
+                }
+
+                // Known older versioned schema without an automated migration path yet.
+                throw new IllegalStateException(
+                        "The local development database uses schema version " + currentVersion
+                                + " but this application requires version " + CURRENT_SCHEMA_VERSION
+                                + ". Delete ./data/banking.db and restart the application to recreate it."
+                );
+            } catch (RuntimeException | SQLException exception) {
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackException) {
+                    exception.addSuppressed(rollbackException);
+                }
+                if (exception instanceof IllegalStateException illegalStateException) {
+                    throw illegalStateException;
+                }
+                throw new IllegalStateException(
+                        "Failed to initialize the banking database at "
+                                + databaseManager.getDatabasePath().toAbsolutePath()
+                                + ": " + exception.getMessage(),
+                        exception
+                );
+            } finally {
+                try {
+                    connection.setAutoCommit(previousAutoCommit);
+                } catch (SQLException ignored) {
+                    // Connection is closing; auto-commit restoration is best-effort.
+                }
             }
         } catch (SQLException e) {
             throw new IllegalStateException(
@@ -49,6 +107,19 @@ public class DatabaseInitializer {
             return readUserVersion(statement);
         } catch (SQLException e) {
             throw new IllegalStateException("Unable to read schema version", e);
+        }
+    }
+
+    private static boolean bankingTablesExist(Statement statement) throws SQLException {
+        try (ResultSet resultSet = statement.executeQuery(
+                """
+                SELECT COUNT(*) FROM sqlite_master
+                WHERE type = 'table'
+                  AND name IN ('users', 'accounts', 'transactions')
+                """
+        )) {
+            resultSet.next();
+            return resultSet.getInt(1) > 0;
         }
     }
 
@@ -97,7 +168,9 @@ public class DatabaseInitializer {
                     FOREIGN KEY (related_account_id) REFERENCES accounts(id)
                 )
                 """);
+    }
 
+    private void ensureIndexes(Statement statement) throws SQLException {
         statement.execute("""
                 CREATE INDEX IF NOT EXISTS idx_accounts_user_id
                 ON accounts(user_id)

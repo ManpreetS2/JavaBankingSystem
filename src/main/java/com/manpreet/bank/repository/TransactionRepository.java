@@ -246,16 +246,26 @@ public class TransactionRepository {
         if (filter.searchText() != null) {
             sql.append("""
                      AND (
-                        LOWER(COALESCE(t.description, '')) LIKE ?
-                        OR LOWER(a.account_number) LIKE ?
-                        OR LOWER(a.account_type) LIKE ?
+                        LOWER(COALESCE(t.description, '')) LIKE ? ESCAPE '\\'
+                        OR LOWER(a.account_number) LIKE ? ESCAPE '\\'
+                        OR LOWER(a.account_type) LIKE ? ESCAPE '\\'
                      )
                     """);
-            String pattern = "%" + filter.searchText().toLowerCase() + "%";
+            String pattern = "%" + escapeLikeLiteral(filter.searchText().toLowerCase()) + "%";
             params.add(pattern);
             params.add(pattern);
             params.add(pattern);
         }
+    }
+
+    /**
+     * Treats {@code %}, {@code _}, and {@code \} as literal characters in LIKE patterns.
+     */
+    public static String escapeLikeLiteral(String input) {
+        return input
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_");
     }
 
     private static void appendDateClauses(StringBuilder sql, List<Object> params, TransactionFilter filter) {
