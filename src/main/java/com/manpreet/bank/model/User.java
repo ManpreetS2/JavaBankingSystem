@@ -1,7 +1,6 @@
 package com.manpreet.bank.model;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 /**
  * Application user. Passwords are stored only as hashes, never plain text.
@@ -91,22 +90,9 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof User user)) {
-            return false;
-        }
-        return id == user.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
+    /**
+     * Intentionally omits {@code passwordHash} so credentials are never logged.
+     */
     @Override
     public String toString() {
         return "User{"

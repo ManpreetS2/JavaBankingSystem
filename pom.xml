@@ -13,8 +13,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
-        <javafx.version>21.0.6</javafx.version>
-        <sqlite.version>3.49.1.0</sqlite.version>
+        <javafx.version>21.0.8</javafx.version>
+        <sqlite.version>3.53.4.0</sqlite.version>
         <junit.version>5.11.4</junit.version>
     </properties>
 

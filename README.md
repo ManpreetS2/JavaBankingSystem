@@ -17,14 +17,16 @@ Build a modern banking system with authentication, checking/savings accounts, de
 
 ## Current Development Status
 
-**Day 1 — Foundation complete**
+**Day 1 — Foundation**
 
 - Maven project configured for Java 21
 - Domain models: `User`, `Account`, `Transaction`, `AccountType`, `TransactionType`
-- SQLite connection management and schema initialization
+- SQLite connection management with foreign keys enabled
+- Schema initialization with CHECK constraints and useful indexes
 - Minimal JavaFX launch window
 - Package layout for controllers, services, repositories, and UI resources
-- Unit tests for models and database initialization
+- Unit tests for models and database behavior
+- GitHub Actions CI for compilation and tests
 
 Not yet implemented: authentication, account operations, transfers, transaction history UI, or a full dashboard.
 
@@ -41,7 +43,7 @@ com.manpreet.bank
 └── util                # Shared helpers (Day 2+)
 ```
 
-Money is represented with `BigDecimal` in the domain and stored as exact text strings in SQLite so decimal precision is preserved.
+Money is represented with `BigDecimal` in the domain and stored as exact text strings in SQLite so decimal precision is preserved. Passwords are stored only as hashes.
 
 ## How to Run
 
@@ -63,3 +65,5 @@ mvn javafx:run
 ```
 
 On first launch the app creates `./data/banking.db` and initializes the `users`, `accounts`, and `transactions` tables. If database initialization fails, the application exits with a clear error instead of continuing.
+
+SQLite data is generated locally under `./data/` and is gitignored — database files are never committed.

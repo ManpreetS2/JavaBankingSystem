@@ -34,14 +34,25 @@ public class DatabaseManager {
     /**
      * Opens a new JDBC connection to the configured SQLite database.
      * Creates the parent data directory when it does not already exist.
+     * If connection configuration fails after the connection is opened, the connection is closed
+     * before the original {@link SQLException} is rethrown.
      */
     public Connection getConnection() throws SQLException {
         ensureDataDirectory();
 
         String url = "jdbc:sqlite:" + databasePath.toAbsolutePath();
         Connection connection = DriverManager.getConnection(url);
-        enableForeignKeys(connection);
-        return connection;
+        try {
+            enableForeignKeys(connection);
+            return connection;
+        } catch (SQLException configurationException) {
+            try {
+                connection.close();
+            } catch (SQLException closeException) {
+                configurationException.addSuppressed(closeException);
+            }
+            throw configurationException;
+        }
     }
 
     private void ensureDataDirectory() throws SQLException {
