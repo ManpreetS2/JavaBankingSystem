@@ -16,7 +16,7 @@
             <Label text="Banking System" styleClass="section-title"/>
             <Button fx:id="dashboardNavButton" text="Dashboard" onAction="#showDashboard" styleClass="sidebar-item"/>
             <Button fx:id="accountsNavButton" text="Accounts" onAction="#showAccounts" styleClass="sidebar-item"/>
-            <Button fx:id="transactionsNavButton" text="Transactions" onAction="#showTransactionsPlaceholder" styleClass="sidebar-item"/>
+            <Button fx:id="transactionsNavButton" text="Transactions" onAction="#showTransactions" styleClass="sidebar-item"/>
             <Button fx:id="settingsNavButton" text="Settings" onAction="#showSettingsPlaceholder" styleClass="sidebar-item"/>
             <VBox VBox.vgrow="ALWAYS"/>
             <Button text="Toggle theme" onAction="#toggleTheme" styleClass="sidebar-item"/>
