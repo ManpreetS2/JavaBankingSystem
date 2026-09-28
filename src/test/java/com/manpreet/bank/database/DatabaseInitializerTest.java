@@ -217,6 +217,13 @@ class DatabaseInitializerTest {
         }
     }
 
+    @Test
+    void initializeSetsCurrentSchemaVersionIdempotently() {
+        assertEquals(DatabaseInitializer.CURRENT_SCHEMA_VERSION, initializer.readSchemaVersion());
+        initializer.initialize();
+        assertEquals(DatabaseInitializer.CURRENT_SCHEMA_VERSION, initializer.readSchemaVersion());
+    }
+
     private long insertUser(String username, String email) throws SQLException {
         try (Connection connection = databaseManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(
