@@ -1,0 +1,38 @@
+# Maven
+target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.factorypath
+nbproject/
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# SQLite databases
+data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Local environment
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs and temp
+*.log
+*.tmp
+*.swp
+*~
