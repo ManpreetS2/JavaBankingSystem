@@ -1,0 +1,99 @@
+/* Reusable component classes. */
+
+.button-primary {
+    -fx-pref-height: 44px;
+    -fx-background-radius: 10px;
+    -fx-padding: 0 18 0 18;
+    -fx-cursor: hand;
+}
+
+.button-secondary {
+    -fx-pref-height: 44px;
+    -fx-background-radius: 10px;
+    -fx-padding: 0 18 0 18;
+    -fx-cursor: hand;
+}
+
+.button-danger {
+    -fx-pref-height: 44px;
+    -fx-background-radius: 10px;
+    -fx-padding: 0 18 0 18;
+    -fx-cursor: hand;
+}
+
+.card,
+.account-card,
+.metric-card {
+    -fx-background-radius: 14px;
+    -fx-padding: 16;
+}
+
+.sidebar {
+    -fx-pref-width: 236px;
+    -fx-min-width: 236px;
+    -fx-padding: 24 16 24 16;
+    -fx-spacing: 8;
+}
+
+.sidebar-item {
+    -fx-pref-height: 40px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 12 0 12;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+}
+
+.sidebar-item-active {
+    -fx-font-weight: bold;
+}
+
+.input {
+    -fx-pref-height: 44px;
+    -fx-background-radius: 10px;
+    -fx-padding: 0 12 0 12;
+}
+
+.error-text {
+    -fx-font-size: 13px;
+}
+
+.success-text {
+    -fx-font-size: 13px;
+}
+
+.transaction-row {
+    -fx-padding: 8 0 8 0;
+}
+
+.badge {
+    -fx-padding: 2 8 2 8;
+    -fx-background-radius: 999px;
+    -fx-font-size: 11px;
+}
+
+.empty-state {
+    -fx-padding: 24;
+    -fx-alignment: CENTER;
+}
+
+.dialog-container {
+    -fx-padding: 16;
+    -fx-spacing: 12;
+}
+
+.auth-root {
+    -fx-alignment: CENTER;
+    -fx-padding: 40;
+    -fx-spacing: 12;
+}
+
+.content-root {
+    -fx-padding: 24;
+    -fx-spacing: 16;
+}
+
+.shell-topbar {
+    -fx-padding: 16 24 16 24;
+    -fx-spacing: 12;
+    -fx-alignment: CENTER_LEFT;
+}

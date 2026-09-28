@@ -1,0 +1,105 @@
+/* Dark theme tokens */
+
+.root {
+    -fx-background-color: #0B0F17;
+    -fx-text-fill: #F8FAFC;
+}
+
+.page-title,
+.section-title,
+.balance-primary,
+.body,
+.metric-label {
+    -fx-text-fill: #F8FAFC;
+}
+
+.body-secondary,
+.caption,
+.metric-label-muted {
+    -fx-text-fill: #94A3B8;
+}
+
+.card,
+.account-card,
+.metric-card,
+.dialog-container {
+    -fx-background-color: #121824;
+}
+
+.sidebar {
+    -fx-background-color: #0B0F17;
+}
+
+.sidebar .label,
+.sidebar-item {
+    -fx-text-fill: #F8FAFC;
+}
+
+.sidebar-item:hover {
+    -fx-background-color: #1A2231;
+}
+
+.sidebar-item-active {
+    -fx-background-color: #4F46E5;
+}
+
+.button-primary {
+    -fx-background-color: #4F46E5;
+    -fx-text-fill: white;
+}
+
+.button-primary:hover {
+    -fx-background-color: #4338CA;
+}
+
+.button-secondary {
+    -fx-background-color: #1A2231;
+    -fx-text-fill: #F8FAFC;
+}
+
+.button-danger {
+    -fx-background-color: #DC2626;
+    -fx-text-fill: white;
+}
+
+.input {
+    -fx-background-color: #1A2231;
+    -fx-border-color: #334155;
+    -fx-border-radius: 10px;
+    -fx-text-fill: #F8FAFC;
+}
+
+.error-text {
+    -fx-text-fill: #F87171;
+}
+
+.success-text {
+    -fx-text-fill: #4ADE80;
+}
+
+.badge-positive {
+    -fx-background-color: #14532D;
+    -fx-text-fill: #4ADE80;
+}
+
+.badge-negative {
+    -fx-background-color: #7F1D1D;
+    -fx-text-fill: #FCA5A5;
+}
+
+.badge-neutral {
+    -fx-background-color: #1A2231;
+    -fx-text-fill: #CBD5E1;
+}
+
+.shell-topbar {
+    -fx-background-color: #121824;
+}
+
+.amount-credit {
+    -fx-text-fill: #4ADE80;
+}
+
+.amount-debit {
+    -fx-text-fill: #F87171;
+}
