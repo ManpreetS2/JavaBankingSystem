@@ -4,7 +4,7 @@ Portfolio-quality Java desktop banking application built with clean architecture
 
 ## Project Goal
 
-Build a modern banking system with authentication, checking/savings accounts, deposits, withdrawals, transfers, transaction history, SQLite persistence, and a polished JavaFX UI.
+A modern desktop banking product with authentication, checking/savings accounts, deposits, withdrawals, transfers, transaction history, SQLite persistence, and a JavaFX UI.
 
 ## Tech Stack
 
@@ -15,58 +15,71 @@ Build a modern banking system with authentication, checking/savings accounts, de
 - JUnit 5
 - FXML + CSS
 
-## Current Development Status
+## Current Features
 
-**Core banking engine implemented**
-
-Working today:
-
-- Secure registration and login (PBKDF2 password hashing)
-- Automatic checking + savings account creation
+- Secure registration and login (PBKDF2-HMAC-SHA256)
+- Checking and savings accounts created at registration
 - Deposits, withdrawals, and internal transfers
-- Atomic SQLite transactions for banking operations
-- Transaction history with account ownership checks
-- Persistence across application/service restarts
-- Neutral JavaFX login / register / dashboard shell (final Figma styling later)
-
-Still deferred:
-
-- Final visual design / polish from Figma
-- External transfers / beneficiaries
-- Budgets, charts, bill pay, admin tools
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for layering and banking guarantees.
+- Atomic SQLite banking transactions
+- Ownership-scoped transaction history and filters
+- CSV export service for filtered transactions
+- Authenticated app shell with Dashboard and Accounts
+- Light/dark theme infrastructure
+- Neutral production-oriented UI foundation (final visual polish deferred)
 
 ## Architecture
 
 ```
-UI (FXML Controllers)
-  → Services (Auth, Account, Transaction)
+UI (FXML Controllers + App Shell)
+  → Services (Auth, Account, Transaction, Export)
     → Repositories (JDBC)
       → SQLite
 ```
 
-Money uses `BigDecimal` and is stored as exact TEXT in SQLite.
+Composition root: `AppContext`
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for banking guarantees, filtering, themes, and schema versioning.
+
+## Security Model
+
+- Passwords hashed with PBKDF2 (600,000 iterations), unique salt per password
+- `UserSession` never carries password hashes
+- Controllers never contain SQL or balance mutation logic
+- Account operations enforce authenticated ownership
+
+## Banking Guarantees
+
+- Money uses `BigDecimal` (scale 2); stored as exact TEXT in SQLite
+- Transfers update both balances and insert paired ledger entries in one JDBC transaction
+- Failed operations roll back completely
 
 ## How to Run
 
 Requirements:
 
-- JDK 21 or newer
+- JDK 21+
 - Maven 3.9+
-
-Run tests:
 
 ```bash
 mvn clean test
-```
-
-Launch the application:
-
-```bash
 mvn javafx:run
 ```
 
-On first launch the app creates `./data/banking.db` and initializes schema. If an older local database was created before schema changes, delete `./data/banking.db` once so it can be regenerated. Database files are gitignored and never committed.
+On first launch the app creates `./data/banking.db`. Database files are gitignored.
 
-If database initialization fails, the application exits with a clear error instead of continuing.
+If an older local database predates schema changes, delete `./data/banking.db` once so it regenerates.
+
+Optional demo data (explicit only):
+
+Use `DemoDataSeeder` via application code/tests. It is not auto-run at startup.
+
+## Screenshots
+
+Screenshots will be added after final visual design work.
+
+## Roadmap
+
+- Final Figma visual polish
+- Dedicated transactions workspace integration
+- Settings/profile preferences persistence
+- External transfers / beneficiaries (future)
