@@ -13,37 +13,40 @@ Build a modern banking system with authentication, checking/savings accounts, de
 - Maven
 - SQLite (Xerial JDBC)
 - JUnit 5
-- FXML + CSS (prepared for upcoming UI work)
+- FXML + CSS
 
 ## Current Development Status
 
-**Day 1 — Foundation**
+**Core banking engine implemented**
 
-- Maven project configured for Java 21
-- Domain models: `User`, `Account`, `Transaction`, `AccountType`, `TransactionType`
-- SQLite connection management with foreign keys enabled
-- Schema initialization with CHECK constraints and useful indexes
-- Minimal JavaFX launch window
-- Package layout for controllers, services, repositories, and UI resources
-- Unit tests for models and database behavior
-- GitHub Actions CI for compilation and tests
+Working today:
 
-Not yet implemented: authentication, account operations, transfers, transaction history UI, or a full dashboard.
+- Secure registration and login (PBKDF2 password hashing)
+- Automatic checking + savings account creation
+- Deposits, withdrawals, and internal transfers
+- Atomic SQLite transactions for banking operations
+- Transaction history with account ownership checks
+- Persistence across application/service restarts
+- Neutral JavaFX login / register / dashboard shell (final Figma styling later)
+
+Still deferred:
+
+- Final visual design / polish from Figma
+- External transfers / beneficiaries
+- Budgets, charts, bill pay, admin tools
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for layering and banking guarantees.
 
 ## Architecture
 
 ```
-com.manpreet.bank
-├── App                 # JavaFX entry point + startup wiring
-├── model               # Domain entities and enums
-├── controller          # UI controllers (Day 2+)
-├── service             # Business logic (Day 2+)
-├── repository          # Data access (Day 2+)
-├── database            # JDBC connection + schema setup
-└── util                # Shared helpers (Day 2+)
+UI (FXML Controllers)
+  → Services (Auth, Account, Transaction)
+    → Repositories (JDBC)
+      → SQLite
 ```
 
-Money is represented with `BigDecimal` in the domain and stored as exact text strings in SQLite so decimal precision is preserved. Passwords are stored only as hashes.
+Money uses `BigDecimal` and is stored as exact TEXT in SQLite.
 
 ## How to Run
 
@@ -64,6 +67,6 @@ Launch the application:
 mvn javafx:run
 ```
 
-On first launch the app creates `./data/banking.db` and initializes the `users`, `accounts`, and `transactions` tables. If database initialization fails, the application exits with a clear error instead of continuing.
+On first launch the app creates `./data/banking.db` and initializes schema. If an older local database was created before schema changes, delete `./data/banking.db` once so it can be regenerated. Database files are gitignored and never committed.
 
-SQLite data is generated locally under `./data/` and is gitignored — database files are never committed.
+If database initialization fails, the application exits with a clear error instead of continuing.
