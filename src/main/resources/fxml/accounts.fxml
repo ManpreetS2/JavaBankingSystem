@@ -40,6 +40,7 @@
     </HBox>
 
     <Label text="Selected account activity" styleClass="section-title"/>
+    <Label fx:id="activityScopeLabel" text="Select an account to view recent activity." styleClass="body-secondary"/>
     <HBox spacing="8">
         <Button text="Show checking activity" onAction="#showCheckingActivity" styleClass="button-secondary"/>
         <Button text="Show savings activity" onAction="#showSavingsActivity" styleClass="button-secondary"/>

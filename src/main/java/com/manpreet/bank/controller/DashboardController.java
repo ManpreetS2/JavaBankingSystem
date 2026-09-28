@@ -1,25 +1,27 @@
 package com.manpreet.bank.controller;
 
 import com.manpreet.bank.model.Account;
-import com.manpreet.bank.model.Transaction;
 import com.manpreet.bank.session.UserSession;
 import com.manpreet.bank.ui.AppAwareController;
 import com.manpreet.bank.ui.BankingDialogs;
 import com.manpreet.bank.ui.DashboardDataLoader;
 import com.manpreet.bank.ui.DashboardViewModel;
 import com.manpreet.bank.ui.SceneManager;
+import com.manpreet.bank.ui.TransactionRowViewModel;
+import com.manpreet.bank.ui.TransactionViewMapper;
 import com.manpreet.bank.ui.UiErrorMapper;
 import com.manpreet.bank.util.AccountNumberFormatter;
 import com.manpreet.bank.util.CurrencyFormatter;
-import com.manpreet.bank.util.DateTimeDisplayFormatter;
-import com.manpreet.bank.util.TransactionPresentation;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 public class DashboardController implements AppAwareController, ShellAwareController {
 
@@ -40,17 +42,17 @@ public class DashboardController implements AppAwareController, ShellAwareContro
     @FXML
     private Label emptyStateLabel;
     @FXML
-    private TableView<TransactionRow> transactionsTable;
+    private TableView<TransactionRowViewModel> transactionsTable;
     @FXML
-    private TableColumn<TransactionRow, String> typeColumn;
+    private TableColumn<TransactionRowViewModel, String> typeColumn;
     @FXML
-    private TableColumn<TransactionRow, String> accountColumn;
+    private TableColumn<TransactionRowViewModel, String> accountColumn;
     @FXML
-    private TableColumn<TransactionRow, String> descriptionColumn;
+    private TableColumn<TransactionRowViewModel, String> descriptionColumn;
     @FXML
-    private TableColumn<TransactionRow, String> dateColumn;
+    private TableColumn<TransactionRowViewModel, String> dateColumn;
     @FXML
-    private TableColumn<TransactionRow, String> amountColumn;
+    private TableColumn<TransactionRowViewModel, String> amountColumn;
 
     private SceneManager sceneManager;
     private MainShellController shellController;
@@ -59,11 +61,12 @@ public class DashboardController implements AppAwareController, ShellAwareContro
     @Override
     public void setSceneManager(SceneManager sceneManager) {
         this.sceneManager = sceneManager;
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        accountColumn.setCellValueFactory(new PropertyValueFactory<>("account"));
-        descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
-        amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        typeColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().typeLabel()));
+        accountColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().accountLabel()));
+        descriptionColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().description()));
+        dateColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().dateLabel()));
+        amountColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().signedAmount()));
+        amountColumn.setCellFactory(column -> signedAmountCell());
         refreshDashboard();
     }
 
@@ -128,9 +131,15 @@ public class DashboardController implements AppAwareController, ShellAwareContro
             bindAccount(viewModel.checking(), checkingNumberLabel, checkingBalanceLabel);
             bindAccount(viewModel.savings(), savingsNumberLabel, savingsBalanceLabel);
 
-            List<TransactionRow> rows = viewModel.recentTransactions().stream()
-                    .map(tx -> toRow(tx, viewModel))
-                    .toList();
+            Map<Long, Account> accountsById = new HashMap<>();
+            if (viewModel.checking() != null) {
+                accountsById.put(viewModel.checking().getId(), viewModel.checking());
+            }
+            if (viewModel.savings() != null) {
+                accountsById.put(viewModel.savings().getId(), viewModel.savings());
+            }
+            List<TransactionRowViewModel> rows = TransactionViewMapper.toRows(
+                    viewModel.recentTransactions(), accountsById);
             transactionsTable.setItems(FXCollections.observableArrayList(rows));
             boolean empty = rows.isEmpty();
             emptyStateLabel.setVisible(empty);
@@ -154,20 +163,23 @@ public class DashboardController implements AppAwareController, ShellAwareContro
         balanceLabel.setText(CurrencyFormatter.format(account.getBalance()));
     }
 
-    private static TransactionRow toRow(Transaction transaction, DashboardViewModel model) {
-        String accountLabel = "Account";
-        if (model.checking() != null && model.checking().getId() == transaction.getAccountId()) {
-            accountLabel = "Checking";
-        } else if (model.savings() != null && model.savings().getId() == transaction.getAccountId()) {
-            accountLabel = "Savings";
-        }
-        return new TransactionRow(
-                TransactionPresentation.typeLabel(transaction.getTransactionType()),
-                accountLabel,
-                transaction.getDescription() == null ? "" : transaction.getDescription(),
-                DateTimeDisplayFormatter.format(transaction.getCreatedAt()),
-                TransactionPresentation.signedAmount(transaction)
-        );
+    private static TableCell<TransactionRowViewModel, String> signedAmountCell() {
+        return new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                getStyleClass().removeAll("amount-credit", "amount-debit");
+                if (empty || item == null) {
+                    setText(null);
+                    return;
+                }
+                setText(item);
+                TransactionRowViewModel row = getTableRow() == null ? null : getTableRow().getItem();
+                if (row != null) {
+                    getStyleClass().add(row.credit() ? "amount-credit" : "amount-debit");
+                }
+            }
+        };
     }
 
     private UserSession requireSession() {
@@ -176,41 +188,5 @@ public class DashboardController implements AppAwareController, ShellAwareContro
                     sceneManager.showLogin();
                     return null;
                 });
-    }
-
-    public static class TransactionRow {
-        private final String type;
-        private final String account;
-        private final String description;
-        private final String date;
-        private final String amount;
-
-        public TransactionRow(String type, String account, String description, String date, String amount) {
-            this.type = type;
-            this.account = account;
-            this.description = description;
-            this.date = date;
-            this.amount = amount;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public String getAccount() {
-            return account;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getDate() {
-            return date;
-        }
-
-        public String getAmount() {
-            return amount;
-        }
     }
 }
