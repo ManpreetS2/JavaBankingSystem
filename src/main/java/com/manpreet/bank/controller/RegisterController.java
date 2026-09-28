@@ -4,6 +4,7 @@ import com.manpreet.bank.exception.DuplicateUserException;
 import com.manpreet.bank.exception.ValidationException;
 import com.manpreet.bank.ui.AppAwareController;
 import com.manpreet.bank.ui.SceneManager;
+import com.manpreet.bank.ui.UiErrorMapper;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -63,7 +64,7 @@ public class RegisterController implements AppAwareController {
             errorLabel.setText(e.getMessage());
             clearPasswords();
         } catch (RuntimeException e) {
-            errorLabel.setText("Registration failed. Please try again.");
+            errorLabel.setText(UiErrorMapper.toUserMessage(e));
             clearPasswords();
         }
     }

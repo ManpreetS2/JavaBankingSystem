@@ -15,8 +15,8 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         SceneManager sceneManager = new SceneManager(primaryStage, appContext);
-        primaryStage.setMinWidth(960);
-        primaryStage.setMinHeight(640);
+        primaryStage.setMinWidth(1000);
+        primaryStage.setMinHeight(650);
         sceneManager.showLogin();
     }
 

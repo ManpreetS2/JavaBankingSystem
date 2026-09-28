@@ -19,6 +19,8 @@ public class SceneManager {
     public SceneManager(Stage stage, AppContext appContext) {
         this.stage = Objects.requireNonNull(stage);
         this.appContext = Objects.requireNonNull(appContext);
+        stage.setMinWidth(1000);
+        stage.setMinHeight(650);
     }
 
     public AppContext getAppContext() {
@@ -30,34 +32,45 @@ public class SceneManager {
     }
 
     public void showLogin() {
-        show("/fxml/login.fxml", "Banking System — Login");
+        showFullScreen("/fxml/login.fxml", "Banking System — Login");
     }
 
     public void showRegister() {
-        show("/fxml/register.fxml", "Banking System — Register");
+        showFullScreen("/fxml/register.fxml", "Banking System — Register");
     }
 
+    public void showAuthenticatedShell() {
+        if (appContext.getSessionManager().getCurrentSession().isEmpty()) {
+            showLogin();
+            return;
+        }
+        showFullScreen("/fxml/main-shell.fxml", "Banking System");
+    }
+
+    /**
+     * Compatibility alias for authenticated navigation.
+     */
+    @Deprecated
     public void showDashboard() {
-        show("/fxml/dashboard.fxml", "Banking System — Dashboard");
+        showAuthenticatedShell();
     }
 
-    private void show(String fxmlPath, String title) {
+    private void showFullScreen(String fxmlPath, String title) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
             Object controller = loader.getController();
-            if (controller instanceof AppAwareController aware) {
-                aware.setSceneManager(this);
-            }
             Scene scene = stage.getScene();
             if (scene == null) {
                 scene = new Scene(root, 1200, 760);
-                scene.getStylesheets().add(
-                        Objects.requireNonNull(getClass().getResource("/css/app.css")).toExternalForm()
-                );
                 stage.setScene(scene);
+                appContext.getThemeManager().registerScene(scene);
             } else {
                 scene.setRoot(root);
+                appContext.getThemeManager().registerScene(scene);
+            }
+            if (controller instanceof AppAwareController aware) {
+                aware.setSceneManager(this);
             }
             stage.setTitle(title);
             stage.show();

@@ -7,8 +7,11 @@ import com.manpreet.bank.repository.TransactionRepository;
 import com.manpreet.bank.repository.UserRepository;
 import com.manpreet.bank.service.AccountService;
 import com.manpreet.bank.service.AuthService;
+import com.manpreet.bank.service.DemoDataSeeder;
+import com.manpreet.bank.service.TransactionExportService;
 import com.manpreet.bank.service.TransactionService;
 import com.manpreet.bank.session.SessionManager;
+import com.manpreet.bank.ui.ThemeManager;
 import com.manpreet.bank.util.AccountNumberGenerator;
 import com.manpreet.bank.util.PasswordHasher;
 import java.nio.file.Path;
@@ -28,7 +31,10 @@ public class AppContext {
     private final AuthService authService;
     private final AccountService accountService;
     private final TransactionService transactionService;
+    private final TransactionExportService transactionExportService;
+    private final DemoDataSeeder demoDataSeeder;
     private final SessionManager sessionManager;
+    private final ThemeManager themeManager;
 
     public AppContext() {
         this(new DatabaseManager());
@@ -58,7 +64,10 @@ public class AppContext {
         );
         this.accountService = new AccountService(databaseManager, accountRepository, transactionRepository);
         this.transactionService = new TransactionService(accountRepository, transactionRepository);
+        this.transactionExportService = new TransactionExportService(transactionService, accountRepository);
+        this.demoDataSeeder = new DemoDataSeeder(authService, accountService);
         this.sessionManager = new SessionManager();
+        this.themeManager = new ThemeManager();
     }
 
     public void initializeDatabase() {
@@ -103,5 +112,17 @@ public class AppContext {
 
     public SessionManager getSessionManager() {
         return sessionManager;
+    }
+
+    public TransactionExportService getTransactionExportService() {
+        return transactionExportService;
+    }
+
+    public DemoDataSeeder getDemoDataSeeder() {
+        return demoDataSeeder;
+    }
+
+    public ThemeManager getThemeManager() {
+        return themeManager;
     }
 }

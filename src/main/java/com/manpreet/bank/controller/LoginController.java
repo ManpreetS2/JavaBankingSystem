@@ -5,6 +5,7 @@ import com.manpreet.bank.exception.ValidationException;
 import com.manpreet.bank.session.UserSession;
 import com.manpreet.bank.ui.AppAwareController;
 import com.manpreet.bank.ui.SceneManager;
+import com.manpreet.bank.ui.UiErrorMapper;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -41,12 +42,12 @@ public class LoginController implements AppAwareController {
                     .authenticate(usernameOrEmailField.getText(), passwordField.getText());
             sceneManager.getAppContext().getSessionManager().startSession(session);
             passwordField.clear();
-            sceneManager.showDashboard();
+            sceneManager.showAuthenticatedShell();
         } catch (AuthenticationException | ValidationException e) {
             errorLabel.setText(e.getMessage());
             passwordField.clear();
         } catch (RuntimeException e) {
-            errorLabel.setText("Unable to sign in. Please try again.");
+            errorLabel.setText(UiErrorMapper.toUserMessage(e));
             passwordField.clear();
         }
     }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -11,48 +10,46 @@
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.manpreet.bank.controller.DashboardController"
       spacing="16"
-      styleClass="screen-root dashboard-root">
-    <padding>
-        <Insets top="24" right="24" bottom="24" left="24"/>
-    </padding>
+      styleClass="content-root">
 
-    <HBox spacing="16" alignment="CENTER_LEFT">
-        <Label fx:id="welcomeLabel" text="Welcome" styleClass="brand-title"/>
-        <HBox HBox.hgrow="ALWAYS"/>
-        <Button text="Logout" onAction="#handleLogout" styleClass="link-button"/>
-    </HBox>
+    <Label text="Overview" styleClass="section-title"/>
+    <Label fx:id="subtitleLabel" text="Your balances and recent activity" styleClass="body-secondary"/>
+    <Label fx:id="statusLabel" styleClass="success-text"/>
 
-    <Label fx:id="statusLabel" styleClass="info-label"/>
+    <VBox spacing="8" styleClass="metric-card">
+        <Label text="Total balance" styleClass="metric-label"/>
+        <Label fx:id="totalBalanceLabel" text="$0.00" styleClass="balance-primary"/>
+        <Label text="Checking + Savings" styleClass="caption"/>
+    </VBox>
 
-    <HBox spacing="24" styleClass="balance-row">
-        <VBox spacing="4" styleClass="balance-block">
-            <Label text="Total balance" styleClass="field-label"/>
-            <Label fx:id="totalBalanceLabel" text="$0.00" styleClass="balance-value"/>
+    <HBox spacing="16">
+        <VBox spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
+            <Label text="Checking" styleClass="section-title"/>
+            <Label fx:id="checkingNumberLabel" styleClass="body-secondary"/>
+            <Label fx:id="checkingBalanceLabel" text="$0.00" styleClass="balance-primary"/>
         </VBox>
-        <VBox spacing="4" styleClass="balance-block">
-            <Label text="Checking" styleClass="field-label"/>
-            <Label fx:id="checkingBalanceLabel" text="$0.00" styleClass="balance-value"/>
-        </VBox>
-        <VBox spacing="4" styleClass="balance-block">
-            <Label text="Savings" styleClass="field-label"/>
-            <Label fx:id="savingsBalanceLabel" text="$0.00" styleClass="balance-value"/>
+        <VBox spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
+            <Label text="Savings" styleClass="section-title"/>
+            <Label fx:id="savingsNumberLabel" styleClass="body-secondary"/>
+            <Label fx:id="savingsBalanceLabel" text="$0.00" styleClass="balance-primary"/>
         </VBox>
     </HBox>
 
     <HBox spacing="12">
-        <Button text="Deposit" onAction="#handleDeposit" styleClass="primary-button"/>
-        <Button text="Withdraw" onAction="#handleWithdraw" styleClass="primary-button"/>
-        <Button text="Transfer" onAction="#handleTransfer" styleClass="primary-button"/>
-        <Button text="Refresh" onAction="#handleRefreshTransactions" styleClass="link-button"/>
+        <Button text="Deposit" onAction="#handleDeposit" styleClass="button-primary" defaultButton="true"/>
+        <Button text="Withdraw" onAction="#handleWithdraw" styleClass="button-secondary"/>
+        <Button text="Transfer" onAction="#handleTransfer" styleClass="button-secondary"/>
     </HBox>
 
-    <Label text="Recent transactions" styleClass="section-title"/>
+    <Label text="Recent activity" styleClass="section-title"/>
+    <Label fx:id="emptyStateLabel" text="No recent transactions yet." styleClass="empty-state body-secondary" managed="false" visible="false"/>
     <TableView fx:id="transactionsTable" styleClass="transactions-table" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="typeColumn" text="Type" prefWidth="140"/>
+            <TableColumn fx:id="accountColumn" text="Account" prefWidth="160"/>
+            <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="240"/>
+            <TableColumn fx:id="dateColumn" text="Date" prefWidth="160"/>
             <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120"/>
-            <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="280"/>
-            <TableColumn fx:id="createdAtColumn" text="Created" prefWidth="220"/>
         </columns>
     </TableView>
 </VBox>
