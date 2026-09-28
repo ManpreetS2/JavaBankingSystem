@@ -6,6 +6,7 @@ import com.manpreet.bank.repository.AccountRepository;
 import com.manpreet.bank.util.AccountNumberFormatter;
 import com.manpreet.bank.util.TransactionPresentation;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -14,8 +15,12 @@ import java.util.stream.Collectors;
 
 /**
  * Exports filtered transactions to CSV without exposing sensitive fields.
+ * Internally pages through matching results up to {@link #MAX_EXPORT_ROWS}.
  */
 public class TransactionExportService {
+
+    public static final int EXPORT_PAGE_SIZE = 100;
+    public static final int MAX_EXPORT_ROWS = 10_000;
 
     private final TransactionService transactionService;
     private final AccountRepository accountRepository;
@@ -27,7 +32,7 @@ public class TransactionExportService {
     }
 
     public String exportCsv(long userId, TransactionFilter filter) {
-        List<Transaction> transactions = transactionService.search(userId, filter);
+        List<Transaction> transactions = loadAllMatching(userId, filter);
         Map<Long, Account> accountsById = accountRepository.findByUserId(userId).stream()
                 .collect(Collectors.toMap(Account::getId, Function.identity()));
 
@@ -50,6 +55,36 @@ public class TransactionExportService {
 
     public byte[] exportCsvBytes(long userId, TransactionFilter filter) {
         return exportCsv(userId, filter).getBytes(StandardCharsets.UTF_8);
+    }
+
+    private List<Transaction> loadAllMatching(long userId, TransactionFilter filter) {
+        Objects.requireNonNull(filter, "filter must not be null");
+        List<Transaction> all = new ArrayList<>();
+        int offset = 0;
+        while (all.size() < MAX_EXPORT_ROWS) {
+            TransactionFilter page = new TransactionFilter(
+                    filter.accountId(),
+                    filter.transactionType(),
+                    filter.startDate(),
+                    filter.endDate(),
+                    filter.searchText(),
+                    EXPORT_PAGE_SIZE,
+                    offset
+            );
+            List<Transaction> batch = transactionService.search(userId, page);
+            if (batch.isEmpty()) {
+                break;
+            }
+            all.addAll(batch);
+            if (batch.size() < EXPORT_PAGE_SIZE) {
+                break;
+            }
+            offset += EXPORT_PAGE_SIZE;
+        }
+        if (all.size() > MAX_EXPORT_ROWS) {
+            return all.subList(0, MAX_EXPORT_ROWS);
+        }
+        return all;
     }
 
     private static String escape(String value) {

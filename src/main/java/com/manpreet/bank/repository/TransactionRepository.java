@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -251,7 +252,7 @@ public class TransactionRepository {
                         OR LOWER(a.account_type) LIKE ? ESCAPE '\\'
                      )
                     """);
-            String pattern = "%" + escapeLikeLiteral(filter.searchText().toLowerCase()) + "%";
+            String pattern = "%" + escapeLikeLiteral(filter.searchText().toLowerCase(Locale.ROOT)) + "%";
             params.add(pattern);
             params.add(pattern);
             params.add(pattern);
