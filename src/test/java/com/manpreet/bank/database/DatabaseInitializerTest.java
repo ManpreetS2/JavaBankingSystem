@@ -217,6 +217,81 @@ class DatabaseInitializerTest {
         }
     }
 
+    @Test
+    void initializeSetsCurrentSchemaVersionIdempotently() {
+        assertEquals(DatabaseInitializer.CURRENT_SCHEMA_VERSION, initializer.readSchemaVersion());
+        initializer.initialize();
+        assertEquals(DatabaseInitializer.CURRENT_SCHEMA_VERSION, initializer.readSchemaVersion());
+    }
+
+    @Test
+    void cleanDatabaseInitializesAtCurrentSchemaVersion() throws Exception {
+        Path cleanDb = tempDir.resolve("clean-schema.db");
+        DatabaseManager cleanManager = new DatabaseManager(cleanDb);
+        DatabaseInitializer cleanInitializer = new DatabaseInitializer(cleanManager);
+
+        assertEquals(0, cleanInitializer.readSchemaVersion());
+        cleanInitializer.initialize();
+        assertEquals(DatabaseInitializer.CURRENT_SCHEMA_VERSION, cleanInitializer.readSchemaVersion());
+
+        try (Connection connection = cleanManager.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(
+                     """
+                     SELECT name FROM sqlite_master
+                     WHERE type = 'table'
+                       AND name IN ('users', 'accounts', 'transactions')
+                     """
+             )) {
+            Set<String> names = new HashSet<>();
+            while (resultSet.next()) {
+                names.add(resultSet.getString(1));
+            }
+            assertTrue(names.containsAll(Set.of("users", "accounts", "transactions")));
+        }
+    }
+
+    @Test
+    void legacyUnversionedDatabaseIsRejectedWithoutAdvancingVersion() throws Exception {
+        Path legacyDb = tempDir.resolve("legacy-schema.db");
+        DatabaseManager legacyManager = new DatabaseManager(legacyDb);
+
+        try (Connection connection = legacyManager.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("""
+                    CREATE TABLE users (
+                        id INTEGER PRIMARY KEY,
+                        username TEXT
+                    )
+                    """);
+            statement.execute("PRAGMA user_version = 0");
+        }
+
+        DatabaseInitializer legacyInitializer = new DatabaseInitializer(legacyManager);
+        IllegalStateException error = assertThrows(IllegalStateException.class, legacyInitializer::initialize);
+        assertTrue(error.getMessage().contains("older schema"));
+        assertTrue(error.getMessage().contains("Delete ./data/banking.db"));
+        assertEquals(0, legacyInitializer.readSchemaVersion());
+    }
+
+    @Test
+    void futureSchemaVersionIsRejected() throws Exception {
+        Path futureDb = tempDir.resolve("future-schema.db");
+        DatabaseManager futureManager = new DatabaseManager(futureDb);
+        new DatabaseInitializer(futureManager).initialize();
+
+        int futureVersion = DatabaseInitializer.CURRENT_SCHEMA_VERSION + 1;
+        try (Connection connection = futureManager.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute("PRAGMA user_version = " + futureVersion);
+        }
+
+        DatabaseInitializer futureInitializer = new DatabaseInitializer(futureManager);
+        IllegalStateException error = assertThrows(IllegalStateException.class, futureInitializer::initialize);
+        assertTrue(error.getMessage().contains("Unsupported database schema version " + futureVersion));
+        assertEquals(futureVersion, futureInitializer.readSchemaVersion());
+    }
+
     private long insertUser(String username, String email) throws SQLException {
         try (Connection connection = databaseManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(

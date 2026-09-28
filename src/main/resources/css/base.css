@@ -1,0 +1,42 @@
+/* Spacing, typography, and shared layout primitives. */
+
+.root {
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 14px;
+}
+
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.balance-primary {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.body {
+    -fx-font-size: 14px;
+}
+
+.body-secondary {
+    -fx-font-size: 13px;
+}
+
+.caption {
+    -fx-font-size: 12px;
+}
+
+.metric-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.spacer-sm { -fx-padding: 4; }
+.spacer-md { -fx-padding: 8; }
+.spacer-lg { -fx-padding: 16; }

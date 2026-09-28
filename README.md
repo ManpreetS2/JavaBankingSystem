@@ -4,7 +4,7 @@ Portfolio-quality Java desktop banking application built with clean architecture
 
 ## Project Goal
 
-Build a modern banking system with authentication, checking/savings accounts, deposits, withdrawals, transfers, transaction history, SQLite persistence, and a polished JavaFX UI.
+A modern desktop banking product with authentication, checking/savings accounts, deposits, withdrawals, transfers, transaction history, SQLite persistence, and a JavaFX UI.
 
 ## Tech Stack
 
@@ -13,57 +13,73 @@ Build a modern banking system with authentication, checking/savings accounts, de
 - Maven
 - SQLite (Xerial JDBC)
 - JUnit 5
-- FXML + CSS (prepared for upcoming UI work)
+- FXML + CSS
 
-## Current Development Status
+## Current Features
 
-**Day 1 — Foundation**
-
-- Maven project configured for Java 21
-- Domain models: `User`, `Account`, `Transaction`, `AccountType`, `TransactionType`
-- SQLite connection management with foreign keys enabled
-- Schema initialization with CHECK constraints and useful indexes
-- Minimal JavaFX launch window
-- Package layout for controllers, services, repositories, and UI resources
-- Unit tests for models and database behavior
-- GitHub Actions CI for compilation and tests
-
-Not yet implemented: authentication, account operations, transfers, transaction history UI, or a full dashboard.
+- Secure registration and login (PBKDF2-HMAC-SHA256)
+- Checking and savings accounts created at registration
+- Deposits, withdrawals, and internal transfers
+- Atomic SQLite banking transactions
+- Ownership-scoped transaction history and filters
+- CSV export service for filtered transactions
+- Authenticated app shell with Dashboard and Accounts
+- Light/dark theme infrastructure
+- Neutral production-oriented UI foundation (final visual polish deferred)
 
 ## Architecture
 
 ```
-com.manpreet.bank
-├── App                 # JavaFX entry point + startup wiring
-├── model               # Domain entities and enums
-├── controller          # UI controllers (Day 2+)
-├── service             # Business logic (Day 2+)
-├── repository          # Data access (Day 2+)
-├── database            # JDBC connection + schema setup
-└── util                # Shared helpers (Day 2+)
+UI (FXML Controllers + App Shell)
+  → Services (Auth, Account, Transaction, Export)
+    → Repositories (JDBC)
+      → SQLite
 ```
 
-Money is represented with `BigDecimal` in the domain and stored as exact text strings in SQLite so decimal precision is preserved. Passwords are stored only as hashes.
+Composition root: `AppContext`
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for banking guarantees, filtering, themes, and schema versioning.
+
+## Security Model
+
+- Passwords hashed with PBKDF2 (600,000 iterations), unique salt per password
+- `UserSession` never carries password hashes
+- Controllers never contain SQL or balance mutation logic
+- Account operations enforce authenticated ownership
+
+## Banking Guarantees
+
+- Money uses `BigDecimal` (scale 2); stored as exact TEXT in SQLite
+- Transfers update both balances and insert paired ledger entries in one JDBC transaction
+- Failed operations roll back completely
 
 ## How to Run
 
 Requirements:
 
-- JDK 21 or newer
+- JDK 21+
 - Maven 3.9+
-
-Run tests:
 
 ```bash
 mvn clean test
-```
-
-Launch the application:
-
-```bash
 mvn javafx:run
 ```
 
-On first launch the app creates `./data/banking.db` and initializes the `users`, `accounts`, and `transactions` tables. If database initialization fails, the application exits with a clear error instead of continuing.
+On first launch the app creates `./data/banking.db`. Database files are gitignored.
 
-SQLite data is generated locally under `./data/` and is gitignored — database files are never committed.
+If an older local database predates schema changes, delete `./data/banking.db` once so it regenerates.
+
+Optional demo data (explicit only):
+
+Use `DemoDataSeeder` via application code/tests. It is not auto-run at startup.
+
+## Screenshots
+
+Screenshots will be added after final visual design work.
+
+## Roadmap
+
+- Final Figma visual polish
+- Dedicated transactions workspace integration
+- Settings/profile preferences persistence
+- External transfers / beneficiaries (future)

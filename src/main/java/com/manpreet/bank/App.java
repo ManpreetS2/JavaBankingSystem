@@ -1,12 +1,7 @@
 package com.manpreet.bank;
 
-import com.manpreet.bank.database.DatabaseInitializer;
-import com.manpreet.bank.database.DatabaseManager;
+import com.manpreet.bank.ui.SceneManager;
 import javafx.application.Application;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 /**
@@ -15,26 +10,24 @@ import javafx.stage.Stage;
  */
 public class App extends Application {
 
+    private static AppContext appContext;
+
     @Override
     public void start(Stage primaryStage) {
-        Label placeholder = new Label("Banking System — Foundation Ready");
-        placeholder.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
-
-        StackPane root = new StackPane(placeholder);
-        root.setAlignment(Pos.CENTER);
-
-        Scene scene = new Scene(root, 1200, 760);
-
-        primaryStage.setTitle("Banking System");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        SceneManager sceneManager = new SceneManager(primaryStage, appContext);
+        primaryStage.setMinWidth(1000);
+        primaryStage.setMinHeight(650);
+        sceneManager.showLogin();
     }
 
     public static void main(String[] args) {
         try {
-            DatabaseManager databaseManager = new DatabaseManager();
-            new DatabaseInitializer(databaseManager).initialize();
-            System.out.println("Database ready at: " + databaseManager.getDatabasePath().toAbsolutePath());
+            appContext = new AppContext();
+            appContext.initializeDatabase();
+            System.out.println(
+                    "Database ready at: "
+                            + appContext.getDatabaseManager().getDatabasePath().toAbsolutePath()
+            );
         } catch (Exception e) {
             System.err.println("FATAL: Database initialization failed.");
             System.err.println(e.getMessage());
