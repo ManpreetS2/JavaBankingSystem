@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.manpreet.bank.controller.DashboardController"
+      spacing="16"
+      styleClass="screen-root dashboard-root">
+    <padding>
+        <Insets top="24" right="24" bottom="24" left="24"/>
+    </padding>
+
+    <HBox spacing="16" alignment="CENTER_LEFT">
+        <Label fx:id="welcomeLabel" text="Welcome" styleClass="brand-title"/>
+        <HBox HBox.hgrow="ALWAYS"/>
+        <Button text="Logout" onAction="#handleLogout" styleClass="link-button"/>
+    </HBox>
+
+    <Label fx:id="statusLabel" styleClass="info-label"/>
+
+    <HBox spacing="24" styleClass="balance-row">
+        <VBox spacing="4" styleClass="balance-block">
+            <Label text="Total balance" styleClass="field-label"/>
+            <Label fx:id="totalBalanceLabel" text="$0.00" styleClass="balance-value"/>
+        </VBox>
+        <VBox spacing="4" styleClass="balance-block">
+            <Label text="Checking" styleClass="field-label"/>
+            <Label fx:id="checkingBalanceLabel" text="$0.00" styleClass="balance-value"/>
+        </VBox>
+        <VBox spacing="4" styleClass="balance-block">
+            <Label text="Savings" styleClass="field-label"/>
+            <Label fx:id="savingsBalanceLabel" text="$0.00" styleClass="balance-value"/>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="12">
+        <Button text="Deposit" onAction="#handleDeposit" styleClass="primary-button"/>
+        <Button text="Withdraw" onAction="#handleWithdraw" styleClass="primary-button"/>
+        <Button text="Transfer" onAction="#handleTransfer" styleClass="primary-button"/>
+        <Button text="Refresh" onAction="#handleRefreshTransactions" styleClass="link-button"/>
+    </HBox>
+
+    <Label text="Recent transactions" styleClass="section-title"/>
+    <TableView fx:id="transactionsTable" styleClass="transactions-table" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="typeColumn" text="Type" prefWidth="140"/>
+            <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120"/>
+            <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="280"/>
+            <TableColumn fx:id="createdAtColumn" text="Created" prefWidth="220"/>
+        </columns>
+    </TableView>
+</VBox>
