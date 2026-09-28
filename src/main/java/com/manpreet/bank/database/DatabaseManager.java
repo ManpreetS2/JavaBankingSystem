@@ -55,6 +55,37 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Executes work on a single connection with auto-commit disabled.
+     * Commits on success; rolls back on {@link SQLException} or {@link RuntimeException}.
+     */
+    public <T> T executeInTransaction(SqlTransactionWork<T> work) throws SQLException {
+        Objects.requireNonNull(work, "work must not be null");
+
+        try (Connection connection = getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                T result = work.execute(connection);
+                connection.commit();
+                return result;
+            } catch (SQLException exception) {
+                rollbackPreserving(connection, exception);
+                throw exception;
+            } catch (RuntimeException exception) {
+                rollbackPreserving(connection, exception);
+                throw exception;
+            }
+        }
+    }
+
+    private void rollbackPreserving(Connection connection, Exception original) {
+        try {
+            connection.rollback();
+        } catch (SQLException rollbackException) {
+            original.addSuppressed(rollbackException);
+        }
+    }
+
     private void ensureDataDirectory() throws SQLException {
         Path parent = databasePath.toAbsolutePath().getParent();
         if (parent == null) {

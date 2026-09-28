@@ -71,6 +71,21 @@ public class DatabaseInitializer {
                     """);
 
             statement.execute("""
+                    CREATE UNIQUE INDEX IF NOT EXISTS idx_accounts_user_id_account_type
+                    ON accounts(user_id, account_type)
+                    """);
+
+            statement.execute("""
+                    CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_nocase
+                    ON users(username COLLATE NOCASE)
+                    """);
+
+            statement.execute("""
+                    CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_nocase
+                    ON users(email COLLATE NOCASE)
+                    """);
+
+            statement.execute("""
                     CREATE INDEX IF NOT EXISTS idx_transactions_account_id
                     ON transactions(account_id)
                     """);
