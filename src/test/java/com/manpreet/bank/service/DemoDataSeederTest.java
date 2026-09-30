@@ -46,26 +46,80 @@ class DemoDataSeederTest {
         assertEquals(new BigDecimal("1740.00"), checking.getBalance());
         assertEquals(new BigDecimal("700.00"), savings.getBalance());
 
-        List<Transaction> rows = context.getTransactionService().search(
-                session.userId(),
-                new TransactionFilter(null, null, null, null, null, 100, 0)
-        );
+        List<Transaction> rows = searchAll(session.userId());
         Set<String> descriptions = rows.stream()
                 .map(Transaction::getDescription)
                 .collect(Collectors.toSet());
-        assertTrue(descriptions.contains("Paycheck deposit"));
-        assertTrue(descriptions.contains("ATM withdrawal"));
-        assertTrue(descriptions.contains("Emergency fund transfer"));
-        assertTrue(descriptions.contains("Transfer to savings"));
+        assertTrue(descriptions.containsAll(DemoDataSeeder.SEED_MARKER_DESCRIPTIONS));
 
         int count = rows.size();
         context.getDemoDataSeeder().seedIfAbsent();
-        assertEquals(
-                count,
-                context.getTransactionService().search(
-                        session.userId(),
-                        new TransactionFilter(null, null, null, null, null, 100, 0)
-                ).size()
+        assertEquals(count, searchAll(session.userId()).size());
+    }
+
+    @Test
+    void doesNotReseedAfterBalancesReturnToZero() {
+        UserSession session = context.getDemoDataSeeder().seedIfAbsent();
+        long paycheckMarkers = countDescription(session.userId(), DemoDataSeeder.DESC_PAYCHECK);
+        assertEquals(1, paycheckMarkers);
+
+        drainDemoBalancesToZero(session.userId());
+
+        List<Account> drained = context.getAccountService().getAccountsForUser(session.userId());
+        assertTrue(drained.stream().allMatch(a -> a.getBalance().compareTo(BigDecimal.ZERO) == 0));
+        assertTrue(context.getDemoDataSeeder().hasSeedActivity(session.userId()));
+
+        int countAfterDrain = searchAll(session.userId()).size();
+        context.getDemoDataSeeder().seedIfAbsent();
+        assertEquals(countAfterDrain, searchAll(session.userId()).size());
+        assertEquals(1, countDescription(session.userId(), DemoDataSeeder.DESC_PAYCHECK));
+    }
+
+    private void drainDemoBalancesToZero(long userId) {
+        List<Account> accounts = context.getAccountService().getAccountsForUser(userId);
+        Account checking = accounts.stream()
+                .filter(a -> a.getAccountType() == AccountType.CHECKING)
+                .findFirst()
+                .orElseThrow();
+        Account savings = accounts.stream()
+                .filter(a -> a.getAccountType() == AccountType.SAVINGS)
+                .findFirst()
+                .orElseThrow();
+
+        if (savings.getBalance().compareTo(BigDecimal.ZERO) > 0) {
+            context.getAccountService().transfer(
+                    userId,
+                    savings.getId(),
+                    checking.getId(),
+                    savings.getBalance(),
+                    "Demo cleanup transfer"
+            );
+        }
+        Account refreshedChecking = context.getAccountService().getAccountsForUser(userId).stream()
+                .filter(a -> a.getAccountType() == AccountType.CHECKING)
+                .findFirst()
+                .orElseThrow();
+        if (refreshedChecking.getBalance().compareTo(BigDecimal.ZERO) > 0) {
+            context.getAccountService().withdraw(
+                    userId,
+                    refreshedChecking.getId(),
+                    refreshedChecking.getBalance(),
+                    "Demo cleanup withdrawal"
+            );
+        }
+    }
+
+    private List<Transaction> searchAll(long userId) {
+        return context.getTransactionService().search(
+                userId,
+                new TransactionFilter(null, null, null, null, null, 100, 0)
         );
+    }
+
+    private long countDescription(long userId, String description) {
+        return searchAll(userId).stream()
+                .map(Transaction::getDescription)
+                .filter(description::equals)
+                .count();
     }
 }
