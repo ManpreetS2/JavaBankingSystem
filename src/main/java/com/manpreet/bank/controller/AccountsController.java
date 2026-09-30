@@ -10,6 +10,7 @@ import com.manpreet.bank.ui.SceneManager;
 import com.manpreet.bank.ui.TransactionRowViewModel;
 import com.manpreet.bank.ui.TransactionViewMapper;
 import com.manpreet.bank.ui.UiErrorMapper;
+import com.manpreet.bank.ui.UiFeedback;
 import com.manpreet.bank.util.AccountNumberFormatter;
 import com.manpreet.bank.util.CurrencyFormatter;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
 
 public class AccountsController implements AppAwareController, ShellAwareController {
 
@@ -29,6 +31,10 @@ public class AccountsController implements AppAwareController, ShellAwareControl
 
     @FXML
     private Label statusLabel;
+    @FXML
+    private VBox checkingCard;
+    @FXML
+    private VBox savingsCard;
     @FXML
     private Label checkingNumberLabel;
     @FXML
@@ -44,7 +50,11 @@ public class AccountsController implements AppAwareController, ShellAwareControl
     @FXML
     private Label activityScopeLabel;
     @FXML
+    private Label activityScopeChip;
+    @FXML
     private Label emptyStateLabel;
+    @FXML
+    private VBox emptyStateBox;
     @FXML
     private TableView<TransactionRowViewModel> transactionsTable;
     @FXML
@@ -81,22 +91,26 @@ public class AccountsController implements AppAwareController, ShellAwareControl
 
     @FXML
     private void depositChecking() {
-        mutate(() -> BankingDialogs.showDeposit(sceneManager.getAppContext(), requireSession(), checking));
+        mutate(() -> BankingDialogs.showDeposit(sceneManager.getAppContext(), requireSession(), checking),
+                "Deposit successful.");
     }
 
     @FXML
     private void withdrawChecking() {
-        mutate(() -> BankingDialogs.showWithdraw(sceneManager.getAppContext(), requireSession(), checking));
+        mutate(() -> BankingDialogs.showWithdraw(sceneManager.getAppContext(), requireSession(), checking),
+                "Withdrawal successful.");
     }
 
     @FXML
     private void depositSavings() {
-        mutate(() -> BankingDialogs.showDeposit(sceneManager.getAppContext(), requireSession(), savings));
+        mutate(() -> BankingDialogs.showDeposit(sceneManager.getAppContext(), requireSession(), savings),
+                "Deposit successful.");
     }
 
     @FXML
     private void transferBetweenAccounts() {
-        mutate(() -> BankingDialogs.showTransfer(sceneManager.getAppContext(), requireSession()));
+        mutate(() -> BankingDialogs.showTransfer(sceneManager.getAppContext(), requireSession()),
+                "Transfer successful.");
     }
 
     @FXML
@@ -113,14 +127,14 @@ public class AccountsController implements AppAwareController, ShellAwareControl
         }
     }
 
-    private void mutate(java.util.function.Supplier<java.util.Optional<Boolean>> action) {
+    private void mutate(java.util.function.Supplier<java.util.Optional<Boolean>> action, String successMessage) {
         UserSession session = requireSession();
         if (session == null) {
             return;
         }
         action.get().ifPresent(success -> {
             if (success) {
-                statusLabel.setText("Account updated.");
+                UiFeedback.success(statusLabel, successMessage);
                 refreshAccounts();
             }
         });
@@ -152,8 +166,12 @@ public class AccountsController implements AppAwareController, ShellAwareControl
                 loadActivity(target);
             }
         } catch (RuntimeException e) {
-            statusLabel.getStyleClass().setAll("error-text");
-            statusLabel.setText(UiErrorMapper.toUserMessage(e));
+            UiFeedback.error(statusLabel, UiErrorMapper.toUserMessage(e));
+            transactionsTable.getItems().clear();
+            emptyStateBox.setVisible(true);
+            emptyStateBox.setManaged(true);
+            transactionsTable.setVisible(false);
+            transactionsTable.setManaged(false);
         }
     }
 
@@ -163,18 +181,33 @@ public class AccountsController implements AppAwareController, ShellAwareControl
             return;
         }
         selectedAccount = account;
-        activityScopeLabel.setText("Showing activity for "
-                + AccountNumberFormatter.displayLabel(account.getAccountType(), account.getAccountNumber()));
+        String label = AccountNumberFormatter.displayLabel(account.getAccountType(), account.getAccountNumber());
+        activityScopeLabel.setText("Showing recent activity for " + label);
+        activityScopeChip.setText(account.getAccountType() == AccountType.CHECKING ? "Checking" : "Savings");
+        updateSelectedCardStyles();
+
         List<Transaction> history = sceneManager.getAppContext().getTransactionService()
                 .getAccountHistory(session.userId(), account.getId(), ACTIVITY_LIMIT);
         List<TransactionRowViewModel> rows = TransactionViewMapper.toRows(history, accountsById);
         transactionsTable.setItems(FXCollections.observableArrayList(rows));
         boolean empty = rows.isEmpty();
-        emptyStateLabel.setVisible(empty);
-        emptyStateLabel.setManaged(empty);
-        emptyStateLabel.setText(empty ? "No transactions for this account yet." : "");
+        emptyStateBox.setVisible(empty);
+        emptyStateBox.setManaged(empty);
         transactionsTable.setVisible(!empty);
         transactionsTable.setManaged(!empty);
+    }
+
+    private void updateSelectedCardStyles() {
+        checkingCard.getStyleClass().remove("account-card-selected");
+        savingsCard.getStyleClass().remove("account-card-selected");
+        if (selectedAccount == null) {
+            return;
+        }
+        if (checking != null && selectedAccount.getId() == checking.getId()) {
+            checkingCard.getStyleClass().add("account-card-selected");
+        } else if (savings != null && selectedAccount.getId() == savings.getId()) {
+            savingsCard.getStyleClass().add("account-card-selected");
+        }
     }
 
     private static void bind(Account account, Label number, Label balance, Label opened) {
