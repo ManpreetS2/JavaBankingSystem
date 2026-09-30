@@ -1,6 +1,7 @@
 package com.manpreet.bank.ui;
 
 import com.manpreet.bank.AppContext;
+import com.manpreet.bank.AppInfo;
 import java.io.IOException;
 import java.util.Objects;
 import javafx.fxml.FXMLLoader;
@@ -32,11 +33,11 @@ public class SceneManager {
     }
 
     public void showLogin() {
-        showFullScreen("/fxml/login.fxml", "Banking System — Login");
+        showFullScreen("/fxml/login.fxml", AppInfo.windowTitle("Login"));
     }
 
     public void showRegister() {
-        showFullScreen("/fxml/register.fxml", "Banking System — Register");
+        showFullScreen("/fxml/register.fxml", AppInfo.windowTitle("Register"));
     }
 
     public void showAuthenticatedShell() {
@@ -44,7 +45,7 @@ public class SceneManager {
             showLogin();
             return;
         }
-        showFullScreen("/fxml/main-shell.fxml", "Banking System");
+        showFullScreen("/fxml/main-shell.fxml", AppInfo.windowTitle());
     }
 
     private void showFullScreen(String fxmlPath, String title) {

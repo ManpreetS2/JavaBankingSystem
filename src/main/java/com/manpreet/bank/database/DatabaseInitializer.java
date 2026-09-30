@@ -20,8 +20,8 @@ public class DatabaseInitializer {
     public static final int CURRENT_SCHEMA_VERSION = 2;
 
     private static final String LEGACY_SCHEMA_MESSAGE =
-            "The local development database uses an older schema. "
-                    + "Delete ./data/banking.db and restart the application to recreate it.";
+            "The local database uses an older schema. "
+                    + "Delete the database file shown in the startup log and restart the application to recreate it.";
 
     private final DatabaseManager databaseManager;
 
@@ -65,9 +65,9 @@ public class DatabaseInitializer {
 
                 // Known older versioned schema without an automated migration path yet.
                 throw new IllegalStateException(
-                        "The local development database uses schema version " + currentVersion
+                        "The local database uses schema version " + currentVersion
                                 + " but this application requires version " + CURRENT_SCHEMA_VERSION
-                                + ". Delete ./data/banking.db and restart the application to recreate it."
+                                + ". Delete the database file shown in the startup log and restart the application."
                 );
             } catch (RuntimeException | SQLException exception) {
                 try {
