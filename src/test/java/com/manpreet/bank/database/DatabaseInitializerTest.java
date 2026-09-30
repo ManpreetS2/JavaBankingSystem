@@ -288,7 +288,8 @@ class DatabaseInitializerTest {
 
         DatabaseInitializer futureInitializer = new DatabaseInitializer(futureManager);
         IllegalStateException error = assertThrows(IllegalStateException.class, futureInitializer::initialize);
-        assertTrue(error.getMessage().contains("Unsupported database schema version " + futureVersion));
+        assertTrue(error.getMessage().contains("unsupported schema version " + futureVersion));
+        assertTrue(error.getMessage().contains("Delete the database file"));
         assertEquals(futureVersion, futureInitializer.readSchemaVersion());
     }
 
