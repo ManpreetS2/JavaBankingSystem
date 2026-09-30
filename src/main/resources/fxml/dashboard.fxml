@@ -18,7 +18,7 @@
         <VBox spacing="4" styleClass="page-header">
             <Label text="Dashboard" styleClass="page-title"/>
             <Label fx:id="subtitleLabel" text="Your balances and recent activity" styleClass="page-subtitle, body-secondary"/>
-            <Label fx:id="statusLabel" styleClass="success-text"/>
+            <Label fx:id="statusLabel" styleClass="success-text" managed="false" visible="false"/>
         </VBox>
 
         <VBox spacing="8" styleClass="hero-card">
@@ -53,7 +53,6 @@
         <VBox fx:id="emptyStateBox" spacing="8" styleClass="empty-state-card" managed="false" visible="false">
             <Label text="No recent activity" styleClass="card-title"/>
             <Label text="Deposits, withdrawals, and transfers will appear here." styleClass="body-secondary"/>
-            <Label fx:id="emptyStateLabel" managed="false" visible="false"/>
         </VBox>
         <TableView fx:id="transactionsTable" styleClass="transactions-table" prefHeight="280" VBox.vgrow="ALWAYS">
             <columns>

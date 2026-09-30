@@ -65,8 +65,6 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
     @FXML
     private DatePicker endDatePicker;
     @FXML
-    private Label emptyStateLabel;
-    @FXML
     private VBox emptyStateBox;
     @FXML
     private TableView<TransactionRowViewModel> transactionsTable;
@@ -115,6 +113,7 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         configureTable();
         configureFilters();
         clearDetails();
+        UiFeedback.clear(statusLabel);
         loadSummaries();
         applyFilters(true);
     }

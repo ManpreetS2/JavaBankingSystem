@@ -15,7 +15,7 @@
         <Label text="Create Account" styleClass="page-title"/>
         <Label text="Open checking and savings accounts" styleClass="page-subtitle, body-secondary"/>
 
-        <Label fx:id="errorLabel" styleClass="error-text"/>
+        <Label fx:id="errorLabel" styleClass="error-text" managed="false" visible="false"/>
 
         <HBox spacing="12">
             <VBox spacing="4" styleClass="field-group" HBox.hgrow="ALWAYS">

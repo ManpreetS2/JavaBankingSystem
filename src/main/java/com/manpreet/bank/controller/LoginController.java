@@ -6,6 +6,7 @@ import com.manpreet.bank.session.UserSession;
 import com.manpreet.bank.ui.AppAwareController;
 import com.manpreet.bank.ui.SceneManager;
 import com.manpreet.bank.ui.UiErrorMapper;
+import com.manpreet.bank.ui.UiFeedback;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -27,16 +28,20 @@ public class LoginController implements AppAwareController {
     @Override
     public void setSceneManager(SceneManager sceneManager) {
         this.sceneManager = sceneManager;
+        UiFeedback.clear(errorLabel);
         String message = (String) sceneManager.getStage().getProperties().get("flashMessage");
         if (message != null) {
-            infoLabel.setText(message);
+            UiFeedback.success(infoLabel, message);
             sceneManager.getStage().getProperties().remove("flashMessage");
+        } else {
+            UiFeedback.clear(infoLabel);
         }
     }
 
     @FXML
     private void handleLogin() {
-        clearMessages();
+        UiFeedback.clear(errorLabel);
+        UiFeedback.clear(infoLabel);
         try {
             UserSession session = sceneManager.getAppContext().getAuthService()
                     .authenticate(usernameOrEmailField.getText(), passwordField.getText());
@@ -44,10 +49,10 @@ public class LoginController implements AppAwareController {
             passwordField.clear();
             sceneManager.showAuthenticatedShell();
         } catch (AuthenticationException | ValidationException e) {
-            errorLabel.setText(e.getMessage());
+            UiFeedback.error(errorLabel, e.getMessage());
             passwordField.clear();
         } catch (RuntimeException e) {
-            errorLabel.setText(UiErrorMapper.toUserMessage(e));
+            UiFeedback.error(errorLabel, UiErrorMapper.toUserMessage(e));
             passwordField.clear();
         }
     }
@@ -55,10 +60,5 @@ public class LoginController implements AppAwareController {
     @FXML
     private void goToRegister() {
         sceneManager.showRegister();
-    }
-
-    private void clearMessages() {
-        errorLabel.setText("");
-        infoLabel.setText("");
     }
 }

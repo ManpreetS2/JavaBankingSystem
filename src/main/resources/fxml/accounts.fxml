@@ -18,7 +18,7 @@
         <VBox spacing="4" styleClass="page-header">
             <Label text="Accounts" styleClass="page-title"/>
             <Label text="Manage your checking and savings accounts" styleClass="page-subtitle, body-secondary"/>
-            <Label fx:id="statusLabel" styleClass="success-text"/>
+            <Label fx:id="statusLabel" styleClass="success-text" managed="false" visible="false"/>
         </VBox>
 
         <HBox spacing="16">
@@ -57,7 +57,6 @@
         <VBox fx:id="emptyStateBox" spacing="8" styleClass="empty-state-card" managed="false" visible="false">
             <Label text="No transactions yet" styleClass="card-title"/>
             <Label text="Activity for the selected account will appear here." styleClass="body-secondary"/>
-            <Label fx:id="emptyStateLabel" managed="false" visible="false"/>
         </VBox>
         <TableView fx:id="transactionsTable" styleClass="transactions-table" prefHeight="280" VBox.vgrow="ALWAYS">
             <columns>
