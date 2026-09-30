@@ -113,7 +113,8 @@ Parent directories are created before SQLite opens. Failures surface as concise 
 - Disabled by default
 - Enabled only with `-Dbank.demo.seed=true`
 - Uses normal auth/account/transaction services (no bypass login, no weakened hashing)
-- Idempotent: repeated launches do not duplicate the demo user or sample activity
+- Idempotent via durable seed-marker transaction descriptions (not current balances)
+- Spending demo balances to zero must not recreate sample activity on the next seed
 
 ## Packaging lifecycle
 

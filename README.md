@@ -1,10 +1,63 @@
 # Java Banking System
 
-Portfolio-quality Java desktop banking application built with clean architecture.
+Desktop banking application for portfolio and interview demonstration. Java 21 + JavaFX + SQLite with a layered architecture: authentication, checking/savings accounts, deposits, withdrawals, internal transfers, filtered transaction history, and CSV export.
 
-## Project Goal
+This is a local desktop product—not a production bank, PCI-compliant payment system, or cloud backend.
 
-A modern desktop banking product with authentication, checking/savings accounts, deposits, withdrawals, transfers, transaction history, SQLite persistence, and a JavaFX UI.
+## Highlights
+
+- Secure registration/login with PBKDF2-HMAC-SHA256 password hashing
+- Checking and savings accounts created at registration
+- Atomic internal transfers with paired ledger entries
+- Transactions workspace: search, filters, date range, pagination, CSV export
+- Shared light/dark theme across shell, workspaces, and dialogs
+- Stable OS application-data database paths for packaged desktop runs
+- Optional explicit demo mode for screenshots and walkthroughs
+
+## Screens / Product Areas
+
+| Area | Status |
+|------|--------|
+| Login / Register | Complete |
+| Dashboard | Complete |
+| Accounts | Complete |
+| Transactions workspace | Complete |
+| Deposit / Withdraw / Transfer dialogs | Complete |
+| Light / dark themes | Complete (runtime toggle infrastructure) |
+| Settings / Profile | Placeholder only — not implemented |
+| Screenshots | Folder prepared; captures pending manual QA |
+
+## Architecture
+
+```mermaid
+flowchart TD
+  UI[JavaFX UI / FXML Controllers] --> SM[SceneManager]
+  SM --> SVC[Services]
+  SVC --> REPO[Repositories / JDBC]
+  REPO --> DB[(SQLite)]
+  SVC --> SESS[SessionManager]
+  SM --> THEME[ThemeManager]
+  APP[App / AppStartup / AppContext] --> SM
+  APP --> SVC
+```
+
+Composition root: `AppContext`. Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Banking Guarantees
+
+- Money uses `BigDecimal` (scale 2); stored as exact TEXT in SQLite—not `double`/`float`
+- Transfers update both balances and insert paired ledger rows in one JDBC transaction
+- Failed operations roll back completely
+- Account and transaction access is ownership-scoped to the authenticated user
+
+## Security
+
+- Passwords hashed with PBKDF2 (600,000 iterations), unique salt per password
+- `UserSession` never carries password hashes
+- Controllers never contain SQL or mutate balances directly
+- Prepared statements for repository SQL
+- CSV export masks account numbers and formula-neutralizes risky description prefixes
+- Demo mode never bypasses authentication or weakens hashing
 
 ## Tech Stack
 
@@ -15,70 +68,43 @@ A modern desktop banking product with authentication, checking/savings accounts,
 - JUnit 5
 - FXML + CSS
 
-## Current Features
+## Run Locally
 
-- Secure registration and login (PBKDF2-HMAC-SHA256)
-- Checking and savings accounts created at registration
-- Deposits, withdrawals, and internal transfers
-- Atomic SQLite banking transactions
-- Dedicated Transactions workspace with search, account/type/date filters, and pagination
-- Ownership-scoped transaction history and filters
-- CSV export from the Transactions screen (all filtered results, batched fetch, up to 10,000 transactions per export)
-- Authenticated app shell with Dashboard, Accounts, and Transactions
-- Shared light/dark design system for shell, workspaces, and banking dialogs
-- Inline dialog validation with service-layer authoritative money rules
-- Stable application-data database location for desktop launches
-
-## Architecture
-
-```
-UI (FXML Controllers + App Shell)
-  → Services (Auth, Account, Transaction, Export)
-    → Repositories (JDBC)
-      → SQLite
-```
-
-Composition root: `AppContext`
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for banking guarantees, filtering, themes, schema versioning, startup paths, and packaging notes.
-
-## Security Model
-
-- Passwords hashed with PBKDF2 (600,000 iterations), unique salt per password
-- `UserSession` never carries password hashes
-- Controllers never contain SQL or balance mutation logic
-- Account operations enforce authenticated ownership
-
-## Banking Guarantees
-
-- Money uses `BigDecimal` (scale 2); stored as exact TEXT in SQLite
-- Transfers update both balances and insert paired ledger entries in one JDBC transaction
-- Failed operations roll back completely
-
-## Quick Start
-
-Requirements:
-
-- JDK 21+
-- Maven 3.9+
+Requirements: JDK 21+, Maven 3.9+
 
 ```bash
 mvn clean test
 mvn javafx:run
 ```
 
-## Development
-
-```bash
-mvn clean test
-mvn javafx:run
-```
-
-Optional database path override (development / debugging):
+Optional database path override:
 
 ```bash
 mvn javafx:run -Dbank.db.path=/tmp/banking-dev.db
 ```
+
+Normal launches store data under the OS application-data directory (see below)—not inside a packaged `.app` bundle and not under a fragile process working directory.
+
+## Demo Mode
+
+Demo seeding is **off by default**. Enable only when you want sample data:
+
+```bash
+mvn javafx:run -Dbank.demo.seed=true
+```
+
+### DEMO-ONLY CREDENTIALS
+
+Public test credentials for walkthroughs/screenshots—not production secrets:
+
+| Field | Value |
+|-------|--------|
+| Username | `demouser` |
+| Password | `DemoPassword12` |
+
+Seeding uses normal `AuthService` / `AccountService` rules and is idempotent (durable seed-marker transaction descriptions). Spending demo balances to zero does not recreate sample activity.
+
+Packaged apps use the same `-Dbank.demo.seed=true` JVM property when you add it to the app’s Java options; normal packaged launches remain demo-free.
 
 ## Tests
 
@@ -86,28 +112,36 @@ mvn javafx:run -Dbank.db.path=/tmp/banking-dev.db
 mvn clean test
 ```
 
-Integration tests use JUnit `@TempDir` databases and never write to the normal application-data location.
+80+ automated tests cover banking journeys, ownership, export limits, schema safeguards, path resolution, and demo seeding. Integration tests use JUnit `@TempDir` databases.
 
-## Demo Data
+## Desktop Packaging
 
-Demo seeding is **off by default** and never auto-logs anyone in.
-
-Enable explicitly:
+Unsigned local app-image (macOS: `.app`):
 
 ```bash
-mvn javafx:run -Dbank.demo.seed=true
+./scripts/package-app.sh
 ```
 
-Documented demo credentials (public test-only):
+Full local verification (tests + package):
 
-- Username: `demouser`
-- Password: `DemoPassword12`
+```bash
+./scripts/verify-release.sh
+```
 
-Seeding uses normal `AuthService` / `AccountService` rules and is idempotent.
+Output: `target/dist/` (for example `BankingSystem.app` on macOS).
+
+Version relationship:
+
+| Value | Source | Purpose |
+|-------|--------|---------|
+| `1.0-SNAPSHOT` | Maven `project.version` / `AppInfo.VERSION` | Development display version |
+| `1.0.0` | Maven `app.packageVersion` / `AppInfo.PACKAGE_VERSION` | Numeric jpackage version |
+
+Signing/notarization are out of scope. `mvn javafx:jlink` is not used (project is intentionally non-modular).
+
+Place final icons in `src/main/resources/icons/` as `app.png` / `app.icns` when ready; packaging succeeds without them.
 
 ## Data Location
-
-Normal desktop launches store SQLite under an OS application-data directory:
 
 | Platform | Location |
 |----------|----------|
@@ -115,36 +149,33 @@ Normal desktop launches store SQLite under an OS application-data directory:
 | Windows | `%APPDATA%/BankingSystem/banking.db` |
 | Linux | `$XDG_DATA_HOME/BankingSystem/banking.db` or `~/.local/share/BankingSystem/banking.db` |
 
-Override with `-Dbank.db.path=/path/to/file.db`.
+Legacy `./data/banking.db` from earlier development builds is not moved or deleted automatically.
 
-Legacy `./data/banking.db` from earlier development builds is **not** moved or deleted automatically. Point `-Dbank.db.path=./data/banking.db` at it if you still need that file.
+## Project Structure
 
-## Packaging
-
-This project is intentionally non-modular (no `module-info.java`). Prefer classpath packaging:
-
-```bash
-chmod +x scripts/package-app.sh
-./scripts/package-app.sh
+```
+src/main/java/com/manpreet/bank/
+  App.java, AppContext.java, AppStartup.java, ApplicationPaths.java, AppInfo.java
+  controller/   # JavaFX controllers
+  service/      # Auth, accounts, transactions, export, demo seeder
+  repository/   # JDBC repositories
+  database/     # SQLite manager + schema initializer
+  ui/           # SceneManager, ThemeManager, presentation helpers
+src/main/resources/
+  fxml/ css/ icons/
+scripts/
+  package-app.sh
+  verify-release.sh
+docs/
+  ARCHITECTURE.md
+  screenshots/
 ```
 
-That builds an unsigned local app-image under `target/dist/` (macOS: `BankingSystem.app`).
+## Known Scope / Future Work
 
-Verified locally: `./scripts/package-app.sh` produced `target/dist/BankingSystem.app`, and launching
-`BankingSystem.app/Contents/MacOS/BankingSystem` initialized the application-data database.
-
-Signing and notarization are out of scope for this stage.
-
-`mvn javafx:jlink` fails for this project (`jlink requires a module descriptor`); the project stays non-modular on purpose.
-
-Place final icons in `src/main/resources/icons/` (`app.png` / `app.icns` / `app.ico`) when branding assets are ready.
-
-## Screenshots
-
-Screenshots will be added after final visual design work.
-
-## Roadmap
-
-- Final Figma visual polish
-- Settings/profile preferences persistence
+- Settings / profile preferences persistence
+- Final visual QA screenshots under `docs/screenshots/`
+- Final application icon assets
 - External transfers / beneficiaries (future)
+
+Not in scope: cards, loans, bill pay, investments, crypto, cloud backends, Spring/Hibernate microservices.
