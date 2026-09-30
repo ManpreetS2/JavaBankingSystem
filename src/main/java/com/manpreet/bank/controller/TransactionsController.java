@@ -11,6 +11,7 @@ import com.manpreet.bank.ui.SceneManager;
 import com.manpreet.bank.ui.TransactionRowViewModel;
 import com.manpreet.bank.ui.TransactionViewMapper;
 import com.manpreet.bank.ui.UiErrorMapper;
+import com.manpreet.bank.ui.UiFeedback;
 import com.manpreet.bank.util.AccountNumberFormatter;
 import com.manpreet.bank.util.CurrencyFormatter;
 import java.io.IOException;
@@ -33,8 +34,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 
@@ -65,6 +67,8 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
     @FXML
     private Label emptyStateLabel;
     @FXML
+    private VBox emptyStateBox;
+    @FXML
     private TableView<TransactionRowViewModel> transactionsTable;
     @FXML
     private TableColumn<TransactionRowViewModel, String> dateColumn;
@@ -83,7 +87,21 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
     @FXML
     private Label pageLabel;
     @FXML
-    private TextArea detailArea;
+    private Label detailPlaceholderLabel;
+    @FXML
+    private GridPane detailGrid;
+    @FXML
+    private Label detailTypeLabel;
+    @FXML
+    private Label detailAmountLabel;
+    @FXML
+    private Label detailAccountLabel;
+    @FXML
+    private Label detailRelatedLabel;
+    @FXML
+    private Label detailDescriptionLabel;
+    @FXML
+    private Label detailDateLabel;
 
     private SceneManager sceneManager;
     private MainShellController shellController;
@@ -96,6 +114,7 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         this.sceneManager = sceneManager;
         configureTable();
         configureFilters();
+        clearDetails();
         loadSummaries();
         applyFilters(true);
     }
@@ -117,9 +136,8 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         typeFilter.getSelectionModel().selectFirst();
         startDatePicker.setValue(null);
         endDatePicker.setValue(null);
-        statusLabel.getStyleClass().setAll("success-text");
-        statusLabel.setText("");
-        detailArea.clear();
+        UiFeedback.clear(statusLabel);
+        clearDetails();
         applyFilters(true);
     }
 
@@ -167,14 +185,11 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
             byte[] bytes = sceneManager.getAppContext().getTransactionExportService()
                     .exportCsvBytes(session.userId(), filter);
             Files.write(target, bytes);
-            statusLabel.getStyleClass().setAll("success-text");
-            statusLabel.setText("Export complete.");
+            UiFeedback.success(statusLabel, "Export complete.");
         } catch (IOException e) {
-            statusLabel.getStyleClass().setAll("error-text");
-            statusLabel.setText("Unable to export transactions. Please try again.");
+            UiFeedback.error(statusLabel, "Unable to export transactions. Please try again.");
         } catch (RuntimeException e) {
-            statusLabel.getStyleClass().setAll("error-text");
-            statusLabel.setText(UiErrorMapper.toUserMessage(e));
+            UiFeedback.error(statusLabel, UiErrorMapper.toUserMessage(e));
         }
     }
 
@@ -202,10 +217,10 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         });
         transactionsTable.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected == null) {
-                detailArea.clear();
+                clearDetails();
                 return;
             }
-            detailArea.setText(formatDetails(selected));
+            showDetails(selected);
         });
     }
 
@@ -293,26 +308,29 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
             transactionsTable.setItems(FXCollections.observableArrayList(rows));
 
             boolean empty = rows.isEmpty();
-            emptyStateLabel.setVisible(empty);
-            emptyStateLabel.setManaged(empty);
+            emptyStateBox.setVisible(empty);
+            emptyStateBox.setManaged(empty);
             transactionsTable.setVisible(!empty);
             transactionsTable.setManaged(!empty);
 
             pageLabel.setText(pagination.pageLabel());
             previousPageButton.setDisable(!pagination.hasPrevious());
             nextPageButton.setDisable(!pagination.hasNext());
-            statusLabel.getStyleClass().setAll("success-text");
-            if (statusLabel.getText() == null || statusLabel.getText().startsWith("End date")
-                    || statusLabel.getText().startsWith("Something")
-                    || statusLabel.getText().startsWith("Unable")) {
-                statusLabel.setText("");
+            String current = statusLabel.getText();
+            if (current == null || current.isBlank()
+                    || current.startsWith("End date")
+                    || current.startsWith("Something")
+                    || current.startsWith("Unable")
+                    || current.startsWith("Export supports")) {
+                UiFeedback.clear(statusLabel);
             }
         } catch (RuntimeException e) {
-            statusLabel.getStyleClass().setAll("error-text");
-            statusLabel.setText(UiErrorMapper.toUserMessage(e));
+            UiFeedback.error(statusLabel, UiErrorMapper.toUserMessage(e));
             transactionsTable.getItems().clear();
-            emptyStateLabel.setVisible(true);
-            emptyStateLabel.setManaged(true);
+            emptyStateBox.setVisible(true);
+            emptyStateBox.setManaged(true);
+            transactionsTable.setVisible(false);
+            transactionsTable.setManaged(false);
         }
     }
 
@@ -328,8 +346,7 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
             transfersInTotalLabel.setText(CurrencyFormatter.format(tx.totalTransfersIn(session.userId(), null, null)));
             transfersOutTotalLabel.setText(CurrencyFormatter.format(tx.totalTransfersOut(session.userId(), null, null)));
         } catch (RuntimeException e) {
-            statusLabel.getStyleClass().setAll("error-text");
-            statusLabel.setText(UiErrorMapper.toUserMessage(e));
+            UiFeedback.error(statusLabel, UiErrorMapper.toUserMessage(e));
         }
     }
 
@@ -337,8 +354,7 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         LocalDate start = startDatePicker.getValue();
         LocalDate end = endDatePicker.getValue();
         if (start != null && end != null && end.isBefore(start)) {
-            statusLabel.getStyleClass().setAll("error-text");
-            statusLabel.setText("End date cannot be before start date.");
+            UiFeedback.error(statusLabel, "End date cannot be before start date.");
             return null;
         }
         AccountOption account = accountFilter.getSelectionModel().getSelectedItem();
@@ -355,17 +371,34 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         );
     }
 
-    private static String formatDetails(TransactionRowViewModel row) {
-        StringBuilder details = new StringBuilder();
-        details.append("Type: ").append(row.typeLabel()).append('\n');
-        details.append("Amount: ").append(row.signedAmount()).append('\n');
-        details.append("Account: ").append(row.accountLabel()).append('\n');
-        if (row.relatedAccountLabel() != null) {
-            details.append("Related account: ").append(row.relatedAccountLabel()).append('\n');
-        }
-        details.append("Description: ").append(row.description()).append('\n');
-        details.append("Date: ").append(row.dateLabel());
-        return details.toString();
+    private void showDetails(TransactionRowViewModel row) {
+        detailPlaceholderLabel.setVisible(false);
+        detailPlaceholderLabel.setManaged(false);
+        detailGrid.setVisible(true);
+        detailGrid.setManaged(true);
+        detailTypeLabel.setText(row.typeLabel());
+        detailAmountLabel.setText(row.signedAmount());
+        detailAmountLabel.getStyleClass().removeAll("amount-credit", "amount-debit");
+        detailAmountLabel.getStyleClass().add(row.credit() ? "amount-credit" : "amount-debit");
+        detailAccountLabel.setText(row.accountLabel());
+        detailRelatedLabel.setText(row.relatedAccountLabel() == null ? "—" : row.relatedAccountLabel());
+        detailDescriptionLabel.setText(row.description() == null || row.description().isBlank()
+                ? "—"
+                : row.description());
+        detailDateLabel.setText(row.dateLabel());
+    }
+
+    private void clearDetails() {
+        detailPlaceholderLabel.setVisible(true);
+        detailPlaceholderLabel.setManaged(true);
+        detailGrid.setVisible(false);
+        detailGrid.setManaged(false);
+        detailTypeLabel.setText("");
+        detailAmountLabel.setText("");
+        detailAccountLabel.setText("");
+        detailRelatedLabel.setText("");
+        detailDescriptionLabel.setText("");
+        detailDateLabel.setText("");
     }
 
     private UserSession requireSession() {
