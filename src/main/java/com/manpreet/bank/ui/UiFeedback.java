@@ -43,10 +43,15 @@ public final class UiFeedback {
         show(label, Kind.INFO, message);
     }
 
+    /**
+     * Clears status text and hides the label so it does not reserve layout space.
+     */
     public static void clear(Label label) {
         Objects.requireNonNull(label, "label must not be null");
         label.setText("");
         label.getStyleClass().removeAll("success-text", "error-text", "info-text");
         label.getStyleClass().add("success-text");
+        label.setVisible(false);
+        label.setManaged(false);
     }
 }

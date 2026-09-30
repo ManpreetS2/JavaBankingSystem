@@ -1,5 +1,6 @@
 package com.manpreet.bank.ui;
 
+import com.manpreet.bank.util.MoneyUtil;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -25,6 +26,9 @@ public final class DialogAmountValidator {
             amount = new BigDecimal(trimmed);
         } catch (NumberFormatException e) {
             return Optional.of("Enter a valid amount such as 25.00");
+        }
+        if (amount.scale() > MoneyUtil.SCALE) {
+            return Optional.of("Amount cannot have more than 2 decimal places.");
         }
         if (amount.compareTo(BigDecimal.ZERO) == 0) {
             return Optional.of("Amount must be greater than zero.");

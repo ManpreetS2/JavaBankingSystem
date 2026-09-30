@@ -25,6 +25,7 @@ import javafx.util.StringConverter;
 
 /**
  * Shared functional banking dialogs used by dashboard and accounts screens.
+ * Dialog owner window wiring is deferred until a clean owner reference is available.
  */
 public final class BankingDialogs {
 
@@ -45,7 +46,7 @@ public final class BankingDialogs {
             );
             return Optional.of(true);
         } catch (RuntimeException e) {
-            showError(e);
+            showError(context, e);
             return Optional.of(false);
         }
     }
@@ -64,7 +65,7 @@ public final class BankingDialogs {
             );
             return Optional.of(true);
         } catch (RuntimeException e) {
-            showError(e);
+            showError(context, e);
             return Optional.of(false);
         }
     }
@@ -72,7 +73,7 @@ public final class BankingDialogs {
     public static Optional<Boolean> showTransfer(AppContext context, UserSession session) {
         List<Account> accounts = context.getAccountService().getAccountsForUser(session.userId());
         if (accounts.size() < 2) {
-            showMessage("Transfer requires both checking and savings accounts.");
+            showMessage(context, "Transfer requires both checking and savings accounts.");
             return Optional.empty();
         }
 
@@ -141,6 +142,7 @@ public final class BankingDialogs {
         content.getStyleClass().add("dialog-container");
         dialog.getDialogPane().setContent(content);
         dialog.getDialogPane().getStyleClass().add("dialog-container");
+        styleDialog(context, dialog);
         ButtonType transferButton = new ButtonType("Transfer", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(transferButton, ButtonType.CANCEL);
 
@@ -173,11 +175,11 @@ public final class BankingDialogs {
         Account to = toBox.getSelectionModel().getSelectedItem();
         Optional<String> amountError = DialogAmountValidator.validate(amountField.getText());
         if (amountError.isPresent()) {
-            showMessage(amountError.get());
+            showMessage(context, amountError.get());
             return Optional.of(false);
         }
         if (from.getId() == to.getId()) {
-            showMessage("Source and destination accounts must be different");
+            showMessage(context, "Source and destination accounts must be different");
             return Optional.of(false);
         }
 
@@ -191,10 +193,10 @@ public final class BankingDialogs {
             );
             return Optional.of(true);
         } catch (NumberFormatException e) {
-            showMessage("Enter a valid amount such as 25.00");
+            showMessage(context, "Enter a valid amount such as 25.00");
             return Optional.of(false);
         } catch (RuntimeException e) {
-            showError(e);
+            showError(context, e);
             return Optional.of(false);
         }
     }
@@ -258,6 +260,7 @@ public final class BankingDialogs {
         content.getStyleClass().add("dialog-container");
         dialog.getDialogPane().setContent(content);
         dialog.getDialogPane().getStyleClass().add("dialog-container");
+        styleDialog(context, dialog);
         ButtonType actionButton = new ButtonType(action, ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(actionButton, ButtonType.CANCEL);
         dialog.getDialogPane().lookupButton(actionButton).disableProperty().bind(
@@ -276,7 +279,7 @@ public final class BankingDialogs {
 
         Optional<String> amountError = DialogAmountValidator.validate(amountField.getText());
         if (amountError.isPresent()) {
-            showMessage(amountError.get());
+            showMessage(context, amountError.get());
             return null;
         }
 
@@ -287,9 +290,13 @@ public final class BankingDialogs {
                     descriptionField.getText()
             );
         } catch (NumberFormatException e) {
-            showMessage("Enter a valid amount such as 25.00");
+            showMessage(context, "Enter a valid amount such as 25.00");
             return null;
         }
+    }
+
+    private static void styleDialog(AppContext context, Dialog<?> dialog) {
+        context.getThemeManager().applyTo(dialog.getDialogPane());
     }
 
     private static Label labeled(String text) {
@@ -342,16 +349,17 @@ public final class BankingDialogs {
         return grid;
     }
 
-    private static void showError(RuntimeException error) {
-        showMessage(UiErrorMapper.toUserMessage(error));
+    private static void showError(AppContext context, RuntimeException error) {
+        showMessage(context, UiErrorMapper.toUserMessage(error));
     }
 
-    private static void showMessage(String message) {
+    private static void showMessage(AppContext context, String message) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Notice");
         dialog.setContentText(message);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
         dialog.getDialogPane().getStyleClass().add("dialog-container");
+        styleDialog(context, dialog);
         dialog.showAndWait();
     }
 
