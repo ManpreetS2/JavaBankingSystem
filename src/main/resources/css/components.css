@@ -1,74 +1,217 @@
-/* Reusable component classes. */
+/* Reusable component system. */
 
-.button-primary {
-    -fx-pref-height: 44px;
-    -fx-background-radius: 10px;
-    -fx-padding: 0 18 0 18;
-    -fx-cursor: hand;
-}
-
-.button-secondary {
-    -fx-pref-height: 44px;
-    -fx-background-radius: 10px;
-    -fx-padding: 0 18 0 18;
-    -fx-cursor: hand;
-}
-
+/* Buttons */
+.button-primary,
+.button-secondary,
+.button-ghost,
 .button-danger {
-    -fx-pref-height: 44px;
+    -fx-pref-height: 40px;
+    -fx-min-height: 40px;
     -fx-background-radius: 10px;
-    -fx-padding: 0 18 0 18;
+    -fx-padding: 0 16 0 16;
     -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
 }
 
+.button-primary:disabled,
+.button-secondary:disabled,
+.button-ghost:disabled,
+.button-danger:disabled {
+    -fx-opacity: 0.45;
+    -fx-cursor: default;
+}
+
+.button-compact {
+    -fx-pref-height: 36px;
+    -fx-min-height: 36px;
+    -fx-padding: 0 12 0 12;
+}
+
+/* Inputs */
+.input,
+.text-area-input {
+    -fx-pref-height: 40px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-padding: 0 12 0 12;
+    -fx-font-size: 14px;
+}
+
+.text-area-input {
+    -fx-pref-height: 96px;
+    -fx-padding: 8 12 8 12;
+}
+
+.input:focused,
+.text-area-input:focused {
+    -fx-border-width: 2px;
+}
+
+.input-error {
+    -fx-border-width: 2px;
+}
+
+.field-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.field-group {
+    -fx-spacing: 4;
+}
+
+/* Cards & panels */
 .card,
 .account-card,
-.metric-card {
+.metric-card,
+.hero-card,
+.action-card,
+.filter-panel,
+.detail-panel,
+.empty-state-card,
+.dialog-container,
+.auth-card {
     -fx-background-radius: 14px;
     -fx-padding: 16;
 }
 
+.hero-card {
+    -fx-padding: 24;
+    -fx-spacing: 8;
+}
+
+.metric-card {
+    -fx-spacing: 4;
+    -fx-min-width: 120px;
+}
+
+.account-card {
+    -fx-spacing: 8;
+}
+
+.account-card-selected {
+    -fx-border-width: 2px;
+}
+
+.filter-panel,
+.detail-panel {
+    -fx-spacing: 12;
+}
+
+.action-card {
+    -fx-spacing: 12;
+}
+
+.empty-state-card {
+    -fx-alignment: CENTER;
+    -fx-spacing: 8;
+    -fx-padding: 32 24 32 24;
+}
+
+/* Shell */
 .sidebar {
-    -fx-pref-width: 236px;
-    -fx-min-width: 236px;
+    -fx-pref-width: 248px;
+    -fx-min-width: 248px;
     -fx-padding: 24 16 24 16;
     -fx-spacing: 8;
 }
 
+.sidebar-brand {
+    -fx-spacing: 4;
+    -fx-padding: 0 8 16 8;
+}
+
+.sidebar-nav-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 12 8 4 8;
+}
+
 .sidebar-item {
     -fx-pref-height: 40px;
+    -fx-min-height: 40px;
+    -fx-max-width: Infinity;
     -fx-alignment: CENTER_LEFT;
     -fx-padding: 0 12 0 12;
     -fx-background-radius: 10px;
     -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-background-color: transparent;
 }
 
 .sidebar-item-active {
     -fx-font-weight: bold;
 }
 
-.input {
+.sidebar-footer {
+    -fx-spacing: 8;
+    -fx-padding: 16 0 0 0;
+}
+
+.shell-topbar {
+    -fx-padding: 16 24 16 24;
+    -fx-spacing: 12;
+    -fx-alignment: CENTER_LEFT;
+    -fx-min-height: 72px;
+}
+
+.shell-content-host {
+    -fx-padding: 0;
+}
+
+/* Auth */
+.auth-root {
+    -fx-alignment: CENTER;
+    -fx-padding: 40;
+}
+
+.auth-card {
+    -fx-spacing: 12;
+    -fx-pref-width: 420px;
+    -fx-max-width: 420px;
+    -fx-padding: 32;
+}
+
+/* Tables */
+.transactions-table {
+    -fx-background-radius: 14px;
+    -fx-padding: 0;
+}
+
+.transactions-table .column-header-background {
+    -fx-background-radius: 14px 14px 0 0;
+}
+
+.transactions-table .table-row-cell {
     -fx-pref-height: 44px;
-    -fx-background-radius: 10px;
-    -fx-padding: 0 12 0 12;
+    -fx-cell-size: 44px;
 }
 
-.error-text {
-    -fx-font-size: 13px;
+.amount-credit,
+.amount-debit {
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_RIGHT;
 }
 
-.success-text {
-    -fx-font-size: 13px;
-}
-
-.transaction-row {
-    -fx-padding: 8 0 8 0;
-}
-
+/* Badges & status */
 .badge {
     -fx-padding: 2 8 2 8;
     -fx-background-radius: 999px;
     -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.status-banner {
+    -fx-padding: 8 12 8 12;
+    -fx-background-radius: 10px;
+    -fx-font-size: 13px;
+}
+
+.error-text,
+.success-text,
+.info-text {
+    -fx-font-size: 13px;
 }
 
 .empty-state {
@@ -76,34 +219,39 @@
     -fx-alignment: CENTER;
 }
 
-.dialog-container {
-    -fx-padding: 16;
-    -fx-spacing: 12;
-}
-
-.auth-root {
-    -fx-alignment: CENTER;
-    -fx-padding: 40;
-    -fx-spacing: 12;
-}
-
-.content-root {
-    -fx-padding: 24;
-    -fx-spacing: 16;
-}
-
-.shell-topbar {
-    -fx-padding: 16 24 16 24;
-    -fx-spacing: 12;
-    -fx-alignment: CENTER_LEFT;
-}
-
-.filter-panel,
-.detail-panel {
-    -fx-background-radius: 14px;
-    -fx-padding: 16;
-}
-
 .summary-row {
+    -fx-alignment: TOP_LEFT;
+    -fx-spacing: 12;
+}
+
+.quick-actions {
+    -fx-spacing: 12;
     -fx-alignment: CENTER_LEFT;
+}
+
+.pagination-bar {
+    -fx-spacing: 12;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 4 0 0 0;
+}
+
+.detail-grid {
+    -fx-hgap: 16;
+    -fx-vgap: 8;
+}
+
+.detail-key {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.detail-value {
+    -fx-font-size: 14px;
+}
+
+.selection-chip {
+    -fx-padding: 6 12 6 12;
+    -fx-background-radius: 999px;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
 }
