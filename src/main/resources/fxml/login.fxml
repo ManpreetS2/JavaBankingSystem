@@ -8,18 +8,27 @@
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.manpreet.bank.controller.LoginController"
-      spacing="12"
       styleClass="auth-root">
 
-    <Label text="Banking System" styleClass="page-title"/>
-    <Label text="Sign in to continue" styleClass="body-secondary"/>
+    <VBox spacing="12" styleClass="auth-card">
+        <Label text="Banking System" styleClass="page-title"/>
+        <Label text="Sign in to continue" styleClass="page-subtitle body-secondary"/>
 
-    <Label fx:id="infoLabel" styleClass="success-text"/>
-    <Label fx:id="errorLabel" styleClass="error-text"/>
+        <Label fx:id="infoLabel" styleClass="success-text"/>
+        <Label fx:id="errorLabel" styleClass="error-text"/>
 
-    <TextField fx:id="usernameOrEmailField" promptText="Username or email" styleClass="input"/>
-    <PasswordField fx:id="passwordField" promptText="Password" styleClass="input"/>
+        <VBox spacing="4" styleClass="field-group">
+            <Label text="Username or email" styleClass="field-label"/>
+            <TextField fx:id="usernameOrEmailField" promptText="Username or email" styleClass="input"/>
+        </VBox>
+        <VBox spacing="4" styleClass="field-group">
+            <Label text="Password" styleClass="field-label"/>
+            <PasswordField fx:id="passwordField" promptText="Password" styleClass="input"/>
+        </VBox>
 
-    <Button text="Login" onAction="#handleLogin" styleClass="button-primary" defaultButton="true"/>
-    <Button text="Create account" onAction="#goToRegister" styleClass="button-secondary"/>
+        <Button text="Login" onAction="#handleLogin" styleClass="button-primary" defaultButton="true"
+                maxWidth="Infinity"/>
+        <Button text="Create account" onAction="#goToRegister" styleClass="button-secondary"
+                maxWidth="Infinity"/>
+    </VBox>
 </VBox>
