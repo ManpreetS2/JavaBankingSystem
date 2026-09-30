@@ -61,10 +61,18 @@ public class ThemeManager {
     }
 
     private List<String> currentStylesheetUrls() {
+        return stylesheetPaths().stream().map(ThemeManager::resource).toList();
+    }
+
+    /**
+     * Classpath stylesheet paths for the current theme (base, components, theme).
+     * Useful for tests that verify resources resolve without creating JavaFX nodes.
+     */
+    List<String> stylesheetPaths() {
         return List.of(
-                resource(BASE),
-                resource(COMPONENTS),
-                resource(currentTheme == Theme.DARK ? DARK : LIGHT)
+                BASE,
+                COMPONENTS,
+                currentTheme == Theme.DARK ? DARK : LIGHT
         );
     }
 

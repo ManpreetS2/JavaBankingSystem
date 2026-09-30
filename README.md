@@ -25,8 +25,8 @@ A modern desktop banking product with authentication, checking/savings accounts,
 - Ownership-scoped transaction history and filters
 - CSV export from the Transactions screen (all filtered results, batched fetch, up to 10,000 transactions per export)
 - Authenticated app shell with Dashboard, Accounts, and Transactions
-- Light/dark theme infrastructure
-- Neutral production-oriented UI foundation (final visual polish deferred)
+- Shared light/dark design system for shell, workspaces, and banking dialogs
+- Inline dialog validation with service-layer authoritative money rules
 
 ## Architecture
 
