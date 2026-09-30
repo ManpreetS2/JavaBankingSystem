@@ -17,8 +17,13 @@
         <sqlite.version>3.53.4.0</sqlite.version>
         <junit.version>5.11.4</junit.version>
         <app.mainClass>com.manpreet.bank.App</app.mainClass>
+        <!-- Keep in sync with AppInfo.PACKAGE_NAME / DATA_DIRECTORY_NAME branding. -->
         <app.packageName>BankingSystem</app.packageName>
-        <!-- jpackage requires a numeric vendor version; keep separate from Maven SNAPSHOT. -->
+        <!--
+          Numeric jpackage version (AppInfo.PACKAGE_VERSION).
+          Distinct from project.version (1.0-SNAPSHOT / AppInfo.VERSION) because jpackage
+          rejects non-numeric SNAPSHOT suffixes. Bump both intentionally on release.
+        -->
         <app.packageVersion>1.0.0</app.packageVersion>
         <!-- Forwarded to the JavaFX process via javafx-maven-plugin options. -->
         <bank.db.path></bank.db.path>
@@ -75,6 +80,7 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                         <manifestEntries>
+                            <!-- Mirrors AppInfo.APPLICATION_NAME / AppInfo.VENDOR -->
                             <Implementation-Title>Banking System</Implementation-Title>
                             <Implementation-Vendor>JavaBankingSystem</Implementation-Vendor>
                         </manifestEntries>
@@ -124,10 +130,9 @@
 
     <profiles>
         <!--
-          Non-modular classpath packaging for local demo distribution.
-          Usage:
-            mvn -Ppackage-app clean package
-            mvn -Ppackage-app exec:exec
+          Non-modular classpath packaging helpers for local demo distribution.
+          Preferred entry point: ./scripts/package-app.sh
+          (also used by ./scripts/verify-release.sh)
         -->
         <profile>
             <id>package-app</id>
