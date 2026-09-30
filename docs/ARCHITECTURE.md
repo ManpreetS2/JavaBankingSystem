@@ -113,8 +113,9 @@ Parent directories are created before SQLite opens. Failures surface as concise 
 - Disabled by default
 - Enabled only with `-Dbank.demo.seed=true`
 - Uses normal auth/account/transaction services (no bypass login, no weakened hashing)
-- Idempotent via durable seed-marker transaction descriptions (not current balances)
-- Spending demo balances to zero must not recreate sample activity on the next seed
+- Seed state is derived from stable marker descriptions (not balances): empty → seed all; complete → no-op; partial → fail fast with an actionable recreate message
+- Marker detection uses an ownership-scoped description query, not the newest-100 activity page
+- Spending a complete demo dataset to zero must not recreate sample activity on the next seed
 
 ## Packaging lifecycle
 

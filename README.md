@@ -102,7 +102,7 @@ Public test credentials for walkthroughs/screenshots—not production secrets:
 | Username | `demouser` |
 | Password | `DemoPassword12` |
 
-Seeding uses normal `AuthService` / `AccountService` rules and is idempotent (durable seed-marker transaction descriptions). Spending demo balances to zero does not recreate sample activity.
+Seeding uses normal `AuthService` / `AccountService` rules. A complete seed is idempotent even after balances return to zero. A partially seeded demo database fails fast with an actionable recreate message (it is not auto-repaired or silently duplicated).
 
 Packaged apps use the same `-Dbank.demo.seed=true` JVM property when you add it to the app’s Java options; normal packaged launches remain demo-free.
 

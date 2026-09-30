@@ -10,8 +10,10 @@ import com.manpreet.bank.repository.AccountRepository;
 import com.manpreet.bank.repository.TransactionRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class TransactionService {
 
@@ -51,6 +53,13 @@ public class TransactionService {
         Objects.requireNonNull(filter, "filter must not be null");
         TransactionFilter resolved = validateFilter(userId, filter);
         return transactionRepository.countByFilter(userId, resolved);
+    }
+
+    /**
+     * Ownership-scoped description existence check that is not limited by recent-page size.
+     */
+    public Set<String> findExistingDescriptions(long userId, Collection<String> descriptions) {
+        return transactionRepository.findExistingDescriptionsForUser(userId, descriptions);
     }
 
     public BigDecimal totalDeposits(long userId, LocalDate startDate, LocalDate endDate) {
