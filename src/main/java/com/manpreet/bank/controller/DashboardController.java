@@ -11,6 +11,7 @@ import com.manpreet.bank.ui.TransactionRowViewModel;
 import com.manpreet.bank.ui.TransactionViewMapper;
 import com.manpreet.bank.ui.UiErrorMapper;
 import com.manpreet.bank.ui.UiFeedback;
+import com.manpreet.bank.ui.UiWindows;
 import com.manpreet.bank.util.AccountNumberFormatter;
 import com.manpreet.bank.util.CurrencyFormatter;
 import java.util.HashMap;
@@ -42,8 +43,6 @@ public class DashboardController implements AppAwareController, ShellAwareContro
     @FXML
     private Label savingsBalanceLabel;
     @FXML
-    private Label emptyStateLabel;
-    @FXML
     private VBox emptyStateBox;
     @FXML
     private TableView<TransactionRowViewModel> transactionsTable;
@@ -71,6 +70,7 @@ public class DashboardController implements AppAwareController, ShellAwareContro
         dateColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().dateLabel()));
         amountColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().signedAmount()));
         amountColumn.setCellFactory(column -> signedAmountCell());
+        UiFeedback.clear(statusLabel);
         refreshDashboard();
     }
 
@@ -85,7 +85,9 @@ public class DashboardController implements AppAwareController, ShellAwareContro
         if (session == null || viewModel == null) {
             return;
         }
-        BankingDialogs.showDeposit(sceneManager.getAppContext(), session, viewModel.checking())
+        UiFeedback.clear(statusLabel);
+        BankingDialogs.showDeposit(
+                        sceneManager.getAppContext(), session, viewModel.checking(), UiWindows.from(statusLabel))
                 .ifPresent(success -> {
                     if (success) {
                         UiFeedback.success(statusLabel, "Deposit successful.");
@@ -100,7 +102,9 @@ public class DashboardController implements AppAwareController, ShellAwareContro
         if (session == null || viewModel == null) {
             return;
         }
-        BankingDialogs.showWithdraw(sceneManager.getAppContext(), session, viewModel.checking())
+        UiFeedback.clear(statusLabel);
+        BankingDialogs.showWithdraw(
+                        sceneManager.getAppContext(), session, viewModel.checking(), UiWindows.from(statusLabel))
                 .ifPresent(success -> {
                     if (success) {
                         UiFeedback.success(statusLabel, "Withdrawal successful.");
@@ -115,7 +119,8 @@ public class DashboardController implements AppAwareController, ShellAwareContro
         if (session == null) {
             return;
         }
-        BankingDialogs.showTransfer(sceneManager.getAppContext(), session)
+        UiFeedback.clear(statusLabel);
+        BankingDialogs.showTransfer(sceneManager.getAppContext(), session, UiWindows.from(statusLabel))
                 .ifPresent(success -> {
                     if (success) {
                         UiFeedback.success(statusLabel, "Transfer successful.");

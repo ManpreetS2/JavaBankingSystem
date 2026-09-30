@@ -21,19 +21,23 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Window;
 import javafx.util.StringConverter;
 
 /**
  * Shared functional banking dialogs used by dashboard and accounts screens.
- * Dialog owner window wiring is deferred until a clean owner reference is available.
  */
 public final class BankingDialogs {
 
     private BankingDialogs() {
     }
 
-    public static Optional<Boolean> showDeposit(AppContext context, UserSession session, Account preferred) {
-        AccountSelection selection = chooseAccount(context, session, preferred, "Deposit", "Current balance");
+    public static Optional<Boolean> showDeposit(AppContext context,
+                                                UserSession session,
+                                                Account preferred,
+                                                Window owner) {
+        AccountSelection selection = chooseAccount(
+                context, session, preferred, "Deposit", "Current balance", owner);
         if (selection == null) {
             return Optional.empty();
         }
@@ -46,13 +50,17 @@ public final class BankingDialogs {
             );
             return Optional.of(true);
         } catch (RuntimeException e) {
-            showError(context, e);
+            showError(context, owner, e);
             return Optional.of(false);
         }
     }
 
-    public static Optional<Boolean> showWithdraw(AppContext context, UserSession session, Account preferred) {
-        AccountSelection selection = chooseAccount(context, session, preferred, "Withdraw", "Available balance");
+    public static Optional<Boolean> showWithdraw(AppContext context,
+                                                 UserSession session,
+                                                 Account preferred,
+                                                 Window owner) {
+        AccountSelection selection = chooseAccount(
+                context, session, preferred, "Withdraw", "Available balance", owner);
         if (selection == null) {
             return Optional.empty();
         }
@@ -65,21 +73,22 @@ public final class BankingDialogs {
             );
             return Optional.of(true);
         } catch (RuntimeException e) {
-            showError(context, e);
+            showError(context, owner, e);
             return Optional.of(false);
         }
     }
 
-    public static Optional<Boolean> showTransfer(AppContext context, UserSession session) {
+    public static Optional<Boolean> showTransfer(AppContext context, UserSession session, Window owner) {
         List<Account> accounts = context.getAccountService().getAccountsForUser(session.userId());
         if (accounts.size() < 2) {
-            showMessage(context, "Transfer requires both checking and savings accounts.");
+            showMessage(context, owner, "Transfer requires both checking and savings accounts.");
             return Optional.empty();
         }
 
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Transfer");
         dialog.setHeaderText("Move money between your accounts");
+        initOwner(dialog, owner);
 
         ComboBox<Account> fromBox = accountCombo(accounts);
         ComboBox<Account> toBox = accountCombo(accounts);
@@ -175,11 +184,11 @@ public final class BankingDialogs {
         Account to = toBox.getSelectionModel().getSelectedItem();
         Optional<String> amountError = DialogAmountValidator.validate(amountField.getText());
         if (amountError.isPresent()) {
-            showMessage(context, amountError.get());
+            showMessage(context, owner, amountError.get());
             return Optional.of(false);
         }
         if (from.getId() == to.getId()) {
-            showMessage(context, "Source and destination accounts must be different");
+            showMessage(context, owner, "Source and destination accounts must be different");
             return Optional.of(false);
         }
 
@@ -193,10 +202,10 @@ public final class BankingDialogs {
             );
             return Optional.of(true);
         } catch (NumberFormatException e) {
-            showMessage(context, "Enter a valid amount such as 25.00");
+            showMessage(context, owner, "Enter a valid amount such as 25.00");
             return Optional.of(false);
         } catch (RuntimeException e) {
-            showError(context, e);
+            showError(context, owner, e);
             return Optional.of(false);
         }
     }
@@ -205,11 +214,13 @@ public final class BankingDialogs {
                                                   UserSession session,
                                                   Account preferred,
                                                   String action,
-                                                  String balanceCaption) {
+                                                  String balanceCaption,
+                                                  Window owner) {
         List<Account> accounts = context.getAccountService().getAccountsForUser(session.userId());
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(action);
         dialog.setHeaderText(action + " money");
+        initOwner(dialog, owner);
 
         ComboBox<Account> accountBox = accountCombo(accounts);
         if (preferred != null) {
@@ -279,7 +290,7 @@ public final class BankingDialogs {
 
         Optional<String> amountError = DialogAmountValidator.validate(amountField.getText());
         if (amountError.isPresent()) {
-            showMessage(context, amountError.get());
+            showMessage(context, owner, amountError.get());
             return null;
         }
 
@@ -290,13 +301,19 @@ public final class BankingDialogs {
                     descriptionField.getText()
             );
         } catch (NumberFormatException e) {
-            showMessage(context, "Enter a valid amount such as 25.00");
+            showMessage(context, owner, "Enter a valid amount such as 25.00");
             return null;
         }
     }
 
     private static void styleDialog(AppContext context, Dialog<?> dialog) {
         context.getThemeManager().applyTo(dialog.getDialogPane());
+    }
+
+    private static void initOwner(Dialog<?> dialog, Window owner) {
+        if (owner != null) {
+            dialog.initOwner(owner);
+        }
     }
 
     private static Label labeled(String text) {
@@ -349,16 +366,17 @@ public final class BankingDialogs {
         return grid;
     }
 
-    private static void showError(AppContext context, RuntimeException error) {
-        showMessage(context, UiErrorMapper.toUserMessage(error));
+    private static void showError(AppContext context, Window owner, RuntimeException error) {
+        showMessage(context, owner, UiErrorMapper.toUserMessage(error));
     }
 
-    private static void showMessage(AppContext context, String message) {
+    private static void showMessage(AppContext context, Window owner, String message) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Notice");
         dialog.setContentText(message);
         dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
         dialog.getDialogPane().getStyleClass().add("dialog-container");
+        initOwner(dialog, owner);
         styleDialog(context, dialog);
         dialog.showAndWait();
     }

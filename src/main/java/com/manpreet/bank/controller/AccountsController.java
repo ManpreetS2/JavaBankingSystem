@@ -11,6 +11,7 @@ import com.manpreet.bank.ui.TransactionRowViewModel;
 import com.manpreet.bank.ui.TransactionViewMapper;
 import com.manpreet.bank.ui.UiErrorMapper;
 import com.manpreet.bank.ui.UiFeedback;
+import com.manpreet.bank.ui.UiWindows;
 import com.manpreet.bank.util.AccountNumberFormatter;
 import com.manpreet.bank.util.CurrencyFormatter;
 import java.util.HashMap;
@@ -52,8 +53,6 @@ public class AccountsController implements AppAwareController, ShellAwareControl
     @FXML
     private Label activityScopeChip;
     @FXML
-    private Label emptyStateLabel;
-    @FXML
     private VBox emptyStateBox;
     @FXML
     private TableView<TransactionRowViewModel> transactionsTable;
@@ -81,6 +80,7 @@ public class AccountsController implements AppAwareController, ShellAwareControl
         dateColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().dateLabel()));
         amountColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().signedAmount()));
         amountColumn.setCellFactory(column -> signedAmountCell());
+        UiFeedback.clear(statusLabel);
         refreshAccounts();
     }
 
@@ -91,25 +91,29 @@ public class AccountsController implements AppAwareController, ShellAwareControl
 
     @FXML
     private void depositChecking() {
-        mutate(() -> BankingDialogs.showDeposit(sceneManager.getAppContext(), requireSession(), checking),
+        mutate(() -> BankingDialogs.showDeposit(
+                        sceneManager.getAppContext(), requireSession(), checking, UiWindows.from(statusLabel)),
                 "Deposit successful.");
     }
 
     @FXML
     private void withdrawChecking() {
-        mutate(() -> BankingDialogs.showWithdraw(sceneManager.getAppContext(), requireSession(), checking),
+        mutate(() -> BankingDialogs.showWithdraw(
+                        sceneManager.getAppContext(), requireSession(), checking, UiWindows.from(statusLabel)),
                 "Withdrawal successful.");
     }
 
     @FXML
     private void depositSavings() {
-        mutate(() -> BankingDialogs.showDeposit(sceneManager.getAppContext(), requireSession(), savings),
+        mutate(() -> BankingDialogs.showDeposit(
+                        sceneManager.getAppContext(), requireSession(), savings, UiWindows.from(statusLabel)),
                 "Deposit successful.");
     }
 
     @FXML
     private void transferBetweenAccounts() {
-        mutate(() -> BankingDialogs.showTransfer(sceneManager.getAppContext(), requireSession()),
+        mutate(() -> BankingDialogs.showTransfer(
+                        sceneManager.getAppContext(), requireSession(), UiWindows.from(statusLabel)),
                 "Transfer successful.");
     }
 
@@ -132,6 +136,7 @@ public class AccountsController implements AppAwareController, ShellAwareControl
         if (session == null) {
             return;
         }
+        UiFeedback.clear(statusLabel);
         action.get().ifPresent(success -> {
             if (success) {
                 UiFeedback.success(statusLabel, successMessage);
