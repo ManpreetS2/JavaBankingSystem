@@ -1,6 +1,16 @@
 # Maven
 target/
 
+# Native / desktop packaging output
+dist/
+*.dmg
+*.pkg
+*.exe
+*.msi
+*.deb
+*.rpm
+*.app/
+
 # IDE
 .idea/
 .vscode/
