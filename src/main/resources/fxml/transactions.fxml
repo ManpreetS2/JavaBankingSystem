@@ -21,7 +21,7 @@
 
     <VBox spacing="4" styleClass="page-header">
         <Label text="Transactions" styleClass="page-title"/>
-        <Label text="Review and search account activity" styleClass="page-subtitle body-secondary"/>
+        <Label text="Review and search account activity" styleClass="page-subtitle, body-secondary"/>
         <Label fx:id="statusLabel" styleClass="success-text"/>
     </VBox>
 
@@ -102,9 +102,9 @@
     </TableView>
 
     <HBox spacing="12" styleClass="pagination-bar">
-        <Button fx:id="previousPageButton" text="Previous" onAction="#handlePreviousPage" styleClass="button-secondary button-compact"/>
+        <Button fx:id="previousPageButton" text="Previous" onAction="#handlePreviousPage" styleClass="button-secondary, button-compact"/>
         <Label fx:id="pageLabel" text="Page 1 of 1" styleClass="body-secondary"/>
-        <Button fx:id="nextPageButton" text="Next" onAction="#handleNextPage" styleClass="button-secondary button-compact"/>
+        <Button fx:id="nextPageButton" text="Next" onAction="#handleNextPage" styleClass="button-secondary, button-compact"/>
         <Region HBox.hgrow="ALWAYS"/>
     </HBox>
 

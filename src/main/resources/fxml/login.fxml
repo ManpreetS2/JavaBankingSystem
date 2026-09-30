@@ -12,7 +12,7 @@
 
     <VBox spacing="12" styleClass="auth-card">
         <Label text="Banking System" styleClass="page-title"/>
-        <Label text="Sign in to continue" styleClass="page-subtitle body-secondary"/>
+        <Label text="Sign in to continue" styleClass="page-subtitle, body-secondary"/>
 
         <Label fx:id="infoLabel" styleClass="success-text"/>
         <Label fx:id="errorLabel" styleClass="error-text"/>

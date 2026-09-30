@@ -17,7 +17,7 @@
     <VBox spacing="16" styleClass="content-root">
         <VBox spacing="4" styleClass="page-header">
             <Label text="Accounts" styleClass="page-title"/>
-            <Label text="Manage your checking and savings accounts" styleClass="page-subtitle body-secondary"/>
+            <Label text="Manage your checking and savings accounts" styleClass="page-subtitle, body-secondary"/>
             <Label fx:id="statusLabel" styleClass="success-text"/>
         </VBox>
 
@@ -28,9 +28,9 @@
                 <Label fx:id="checkingBalanceLabel" text="$0.00" styleClass="balance-secondary"/>
                 <Label fx:id="checkingOpenedLabel" styleClass="caption"/>
                 <HBox spacing="8">
-                    <Button text="Deposit" onAction="#depositChecking" styleClass="button-primary button-compact"/>
-                    <Button text="Withdraw" onAction="#withdrawChecking" styleClass="button-secondary button-compact"/>
-                    <Button text="View activity" onAction="#showCheckingActivity" styleClass="button-ghost button-compact"/>
+                    <Button text="Deposit" onAction="#depositChecking" styleClass="button-primary, button-compact"/>
+                    <Button text="Withdraw" onAction="#withdrawChecking" styleClass="button-secondary, button-compact"/>
+                    <Button text="View activity" onAction="#showCheckingActivity" styleClass="button-ghost, button-compact"/>
                 </HBox>
             </VBox>
             <VBox fx:id="savingsCard" spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
@@ -39,9 +39,9 @@
                 <Label fx:id="savingsBalanceLabel" text="$0.00" styleClass="balance-secondary"/>
                 <Label fx:id="savingsOpenedLabel" styleClass="caption"/>
                 <HBox spacing="8">
-                    <Button text="Deposit" onAction="#depositSavings" styleClass="button-primary button-compact"/>
-                    <Button text="Transfer" onAction="#transferBetweenAccounts" styleClass="button-secondary button-compact"/>
-                    <Button text="View activity" onAction="#showSavingsActivity" styleClass="button-ghost button-compact"/>
+                    <Button text="Deposit" onAction="#depositSavings" styleClass="button-primary, button-compact"/>
+                    <Button text="Transfer" onAction="#transferBetweenAccounts" styleClass="button-secondary, button-compact"/>
+                    <Button text="View activity" onAction="#showSavingsActivity" styleClass="button-ghost, button-compact"/>
                 </HBox>
             </VBox>
         </HBox>

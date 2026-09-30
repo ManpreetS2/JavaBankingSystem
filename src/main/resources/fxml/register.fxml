@@ -13,7 +13,7 @@
 
     <VBox spacing="12" styleClass="auth-card">
         <Label text="Create Account" styleClass="page-title"/>
-        <Label text="Open checking and savings accounts" styleClass="page-subtitle body-secondary"/>
+        <Label text="Open checking and savings accounts" styleClass="page-subtitle, body-secondary"/>
 
         <Label fx:id="errorLabel" styleClass="error-text"/>
 
