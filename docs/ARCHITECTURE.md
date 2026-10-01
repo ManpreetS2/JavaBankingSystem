@@ -22,6 +22,17 @@ Composition root:
 - `ApplicationPaths` chooses the OS application-data directory (or `-Dbank.db.path`) for normal desktop launches.
 - `AppInfo` centralizes product name / version metadata for titles and diagnostics.
 
+## Login and registration forms
+
+- `AuthFormValidator` runs the same `InputValidator` rules as `AuthService` before submit and reports the first invalid field in on-screen order; `AuthService` remains the authority
+- `FieldFeedback` marks the invalid field with `input-error`, exposes the message as accessible help, and clears the marker when the field is edited
+- The first field is focused on load, and Enter submits through each form's default button
+- Registration keeps the entered password when the error is in another field and clears both password fields only for password errors
+- Duplicate username or email errors focus the conflicting field
+- After registration, the login form is prefilled with the new username and focuses the password field
+- A failed sign-in clears the password without indicating which credential was wrong
+- Messages shown on these forms are formatted as sentences by `MessageText`, matching dialog and status feedback; service messages are unchanged
+
 ## Authenticated application shell
 
 After login, navigation uses `main-shell.fxml` / `MainShellController`:
