@@ -23,8 +23,8 @@ This is a local desktop product—not a production bank, PCI-compliant payment s
 | Accounts | Complete |
 | Transactions workspace | Complete |
 | Deposit / Withdraw / Transfer dialogs | Complete |
-| Light / dark themes | Complete (runtime toggle infrastructure) |
-| Settings / Profile | Placeholder only — not implemented |
+| Light / dark themes | Complete (sidebar toggle and Settings selector) |
+| Settings / Profile | Read-only profile and theme selection; preference persistence pending |
 | Screenshots | Folder prepared; captures pending manual QA |
 
 ## Architecture
@@ -173,7 +173,8 @@ docs/
 
 ## Known Scope / Future Work
 
-- Settings / profile preferences persistence
+- Persist the theme preference across restarts
+- Profile editing and password change (requires new service APIs)
 - Final visual QA screenshots under `docs/screenshots/`
 - Final application icon assets
 - External transfers / beneficiaries (future)
