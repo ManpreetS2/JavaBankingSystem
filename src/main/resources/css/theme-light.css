@@ -139,7 +139,8 @@
     -fx-border-color: #4F46E5;
 }
 
-.input-error {
+.input-error,
+.input-error:focused {
     -fx-border-color: #DC2626;
 }
 
