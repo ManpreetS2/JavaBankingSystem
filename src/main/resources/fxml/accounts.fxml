@@ -25,7 +25,7 @@
             <VBox fx:id="checkingCard" spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
                 <Label text="Checking" styleClass="card-title"/>
                 <Label fx:id="checkingNumberLabel" styleClass="body-secondary"/>
-                <Label fx:id="checkingBalanceLabel" text="$0.00" styleClass="balance-secondary"/>
+                <Label fx:id="checkingBalanceLabel" text="\$0.00" styleClass="balance-secondary"/>
                 <Label fx:id="checkingOpenedLabel" styleClass="caption"/>
                 <HBox spacing="8">
                     <Button text="Deposit" onAction="#depositChecking" styleClass="button-primary, button-compact"/>
@@ -36,7 +36,7 @@
             <VBox fx:id="savingsCard" spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
                 <Label text="Savings" styleClass="card-title"/>
                 <Label fx:id="savingsNumberLabel" styleClass="body-secondary"/>
-                <Label fx:id="savingsBalanceLabel" text="$0.00" styleClass="balance-secondary"/>
+                <Label fx:id="savingsBalanceLabel" text="\$0.00" styleClass="balance-secondary"/>
                 <Label fx:id="savingsOpenedLabel" styleClass="caption"/>
                 <HBox spacing="8">
                     <Button text="Deposit" onAction="#depositSavings" styleClass="button-primary, button-compact"/>
