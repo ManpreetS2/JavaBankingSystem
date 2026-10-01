@@ -29,7 +29,7 @@ After login, navigation uses `main-shell.fxml` / `MainShellController`:
 - Persistent sidebar: Dashboard, Accounts, Transactions, Settings, Logout
 - Content host swaps views inside one stage
 - Transactions loads a dedicated workspace inside the shell content region
-- Settings remains an integration target with a safe placeholder until that screen lands
+- Settings loads `settings.fxml` inside the shell content region
 - Logout clears `SessionManager` and returns to login
 - Authenticated content requires a valid session
 
@@ -52,13 +52,22 @@ Shared presentation:
 
 Dashboard and Accounts reuse the same mapper for consistent type labels, signed amounts, and transfer wording.
 
+## Settings / Profile
+
+`settings.fxml` / `SettingsController` provide:
+
+- Read-only profile details (name, username, email) from the active `UserSession` via `ProfileSummary`; no repository access and no credential fields
+- Light/dark theme selection through `ThemeManager.setTheme`, with labels and confirmation text from `ThemeOptions`
+- The selector reflects the active theme on load, and the shell reloads Settings when the sidebar toggle changes the theme so both controls stay in sync
+- Profile editing, password change, and theme persistence are not implemented; they require new service and storage support
+
 ## Theme infrastructure
 
 - `Theme` (`LIGHT` / `DARK`)
 - `ThemeManager` applies `base.css`, `components.css`, and the active theme stylesheet to managed scenes
 - Short-lived dialog roots use `ThemeManager.applyTo(Parent)` without remaining registered for theme updates
 - Controllers do not load CSS ad hoc
-- Theme persistence is deferred to the settings experience
+- Theme selection lasts for the running session; persisting it across restarts is not yet implemented
 
 ## Responsibilities
 
