@@ -3,51 +3,64 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.manpreet.bank.controller.RegisterController"
-      styleClass="auth-root">
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.manpreet.bank.controller.RegisterController"
+            fitToWidth="true"
+            fitToHeight="true"
+            hbarPolicy="NEVER"
+            styleClass="content-scroll">
 
-    <VBox spacing="12" styleClass="auth-card">
-        <Label text="Create Account" styleClass="page-title"/>
-        <Label text="Open checking and savings accounts" styleClass="page-subtitle, body-secondary"/>
+    <VBox styleClass="auth-root">
+        <VBox spacing="12" styleClass="auth-card" minHeight="-Infinity">
+            <Label text="Create Account" styleClass="page-title"/>
+            <Label text="Open checking and savings accounts" styleClass="page-subtitle, body-secondary"/>
 
-        <Label fx:id="errorLabel" styleClass="error-text" managed="false" visible="false"/>
+            <Label fx:id="errorLabel" styleClass="error-text" managed="false" visible="false"/>
 
-        <HBox spacing="12">
-            <VBox spacing="4" styleClass="field-group" HBox.hgrow="ALWAYS">
-                <Label text="First name" styleClass="field-label"/>
-                <TextField fx:id="firstNameField" promptText="First name" styleClass="input"/>
+            <HBox spacing="12">
+                <VBox spacing="4" styleClass="field-group" HBox.hgrow="ALWAYS">
+                    <Label text="First name" styleClass="field-label"/>
+                    <TextField fx:id="firstNameField" promptText="First name" styleClass="input"
+                               accessibleText="First name"/>
+                </VBox>
+                <VBox spacing="4" styleClass="field-group" HBox.hgrow="ALWAYS">
+                    <Label text="Last name" styleClass="field-label"/>
+                    <TextField fx:id="lastNameField" promptText="Last name" styleClass="input"
+                               accessibleText="Last name"/>
+                </VBox>
+            </HBox>
+
+            <VBox spacing="4" styleClass="field-group">
+                <Label text="Email" styleClass="field-label"/>
+                <TextField fx:id="emailField" promptText="Email" styleClass="input" accessibleText="Email"/>
             </VBox>
-            <VBox spacing="4" styleClass="field-group" HBox.hgrow="ALWAYS">
-                <Label text="Last name" styleClass="field-label"/>
-                <TextField fx:id="lastNameField" promptText="Last name" styleClass="input"/>
+            <VBox spacing="4" styleClass="field-group">
+                <Label text="Username" styleClass="field-label"/>
+                <TextField fx:id="usernameField" promptText="Username" styleClass="input" accessibleText="Username"/>
+                <Label text="3 to 30 characters: letters, numbers, dot, underscore, or hyphen" styleClass="caption"
+                       wrapText="true"/>
             </VBox>
-        </HBox>
+            <VBox spacing="4" styleClass="field-group">
+                <Label text="Password" styleClass="field-label"/>
+                <PasswordField fx:id="passwordField" promptText="Create a password" styleClass="input"
+                               accessibleText="Password" accessibleHelp="Use at least 12 characters"/>
+                <Label text="Use at least 12 characters" styleClass="caption"/>
+            </VBox>
+            <VBox spacing="4" styleClass="field-group">
+                <Label text="Confirm password" styleClass="field-label"/>
+                <PasswordField fx:id="confirmPasswordField" promptText="Re-enter password" styleClass="input"
+                               accessibleText="Confirm password"/>
+            </VBox>
 
-        <VBox spacing="4" styleClass="field-group">
-            <Label text="Email" styleClass="field-label"/>
-            <TextField fx:id="emailField" promptText="Email" styleClass="input"/>
+            <Button text="Register" onAction="#handleRegister" styleClass="button-primary" defaultButton="true"
+                    maxWidth="Infinity"/>
+            <Button text="Back to login" onAction="#goToLogin" styleClass="button-secondary"
+                    maxWidth="Infinity"/>
         </VBox>
-        <VBox spacing="4" styleClass="field-group">
-            <Label text="Username" styleClass="field-label"/>
-            <TextField fx:id="usernameField" promptText="Username" styleClass="input"/>
-        </VBox>
-        <VBox spacing="4" styleClass="field-group">
-            <Label text="Password" styleClass="field-label"/>
-            <PasswordField fx:id="passwordField" promptText="Minimum 12 characters" styleClass="input"/>
-        </VBox>
-        <VBox spacing="4" styleClass="field-group">
-            <Label text="Confirm password" styleClass="field-label"/>
-            <PasswordField fx:id="confirmPasswordField" promptText="Confirm password" styleClass="input"/>
-        </VBox>
-
-        <Button text="Register" onAction="#handleRegister" styleClass="button-primary" defaultButton="true"
-                maxWidth="Infinity"/>
-        <Button text="Back to login" onAction="#goToLogin" styleClass="button-secondary"
-                maxWidth="Infinity"/>
     </VBox>
-</VBox>
+</ScrollPane>
