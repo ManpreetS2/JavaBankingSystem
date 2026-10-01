@@ -55,12 +55,15 @@
             <Label text="Deposits, withdrawals, and transfers will appear here." styleClass="body-secondary"/>
         </VBox>
         <TableView fx:id="transactionsTable" styleClass="transactions-table" prefHeight="280" VBox.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS"/>
+            </columnResizePolicy>
             <columns>
                 <TableColumn fx:id="typeColumn" text="Type" prefWidth="160"/>
                 <TableColumn fx:id="accountColumn" text="Account" prefWidth="160"/>
                 <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="260"/>
-                <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
-                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120"/>
+                <TableColumn fx:id="dateColumn" text="Date" prefWidth="150" minWidth="130"/>
+                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120" minWidth="120"/>
             </columns>
         </TableView>
     </VBox>

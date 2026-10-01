@@ -94,12 +94,15 @@
         </VBox>
 
         <TableView fx:id="transactionsTable" styleClass="transactions-table" prefHeight="280" VBox.vgrow="ALWAYS" minHeight="180">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS"/>
+            </columnResizePolicy>
             <columns>
-                <TableColumn fx:id="dateColumn" text="Date" prefWidth="140"/>
+                <TableColumn fx:id="dateColumn" text="Date" prefWidth="140" minWidth="130"/>
                 <TableColumn fx:id="accountColumn" text="Account" prefWidth="160"/>
                 <TableColumn fx:id="typeColumn" text="Type" prefWidth="170"/>
                 <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="260"/>
-                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120"/>
+                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120" minWidth="120"/>
             </columns>
         </TableView>
 
