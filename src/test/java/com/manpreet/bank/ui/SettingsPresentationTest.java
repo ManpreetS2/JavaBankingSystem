@@ -109,6 +109,7 @@ class SettingsPresentationTest {
             String label = ThemeOptions.label(theme);
             assertFalse(label.isBlank(), "Blank label for " + theme);
             labels.add(label);
+            assertEquals(label + " theme", ThemeOptions.accessibleName(theme));
             assertEquals(label + " theme applied.", ThemeOptions.appliedMessage(theme));
         }
 
@@ -120,6 +121,7 @@ class SettingsPresentationTest {
     @Test
     void themeOptionsRejectMissingTheme() {
         assertThrows(NullPointerException.class, () -> ThemeOptions.label(null));
+        assertThrows(NullPointerException.class, () -> ThemeOptions.accessibleName(null));
         assertThrows(NullPointerException.class, () -> ThemeOptions.appliedMessage(null));
     }
 

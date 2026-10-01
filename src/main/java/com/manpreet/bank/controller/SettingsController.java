@@ -76,6 +76,7 @@ public class SettingsController implements AppAwareController {
         option.setToggleGroup(themeGroup);
         option.setUserData(theme);
         option.setText(ThemeOptions.label(theme));
+        option.setAccessibleText(ThemeOptions.accessibleName(theme));
     }
 
     private void applyTheme(Theme theme) {

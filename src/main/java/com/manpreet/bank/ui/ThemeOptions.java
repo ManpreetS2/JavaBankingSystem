@@ -18,7 +18,14 @@ public final class ThemeOptions {
         };
     }
 
+    /**
+     * Full name announced by assistive technology, since the visible label alone is a single word.
+     */
+    public static String accessibleName(Theme theme) {
+        return label(theme) + " theme";
+    }
+
     public static String appliedMessage(Theme theme) {
-        return label(theme) + " theme applied.";
+        return accessibleName(theme) + " applied.";
     }
 }
