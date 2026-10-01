@@ -17,7 +17,7 @@
 
     <VBox styleClass="auth-root">
         <VBox spacing="12" styleClass="auth-card" minHeight="-Infinity">
-            <Label text="Create Account" styleClass="page-title"/>
+            <Label text="Create account" styleClass="page-title"/>
             <Label text="Open checking and savings accounts" styleClass="page-subtitle, body-secondary"/>
 
             <Label fx:id="errorLabel" styleClass="error-text" managed="false" visible="false"/>
@@ -57,9 +57,9 @@
                                accessibleText="Confirm password"/>
             </VBox>
 
-            <Button text="Register" onAction="#handleRegister" styleClass="button-primary" defaultButton="true"
+            <Button text="Create account" onAction="#handleRegister" styleClass="button-primary" defaultButton="true"
                     maxWidth="Infinity"/>
-            <Button text="Back to login" onAction="#goToLogin" styleClass="button-secondary"
+            <Button text="Back to sign in" onAction="#goToLogin" styleClass="button-secondary"
                     maxWidth="Infinity"/>
         </VBox>
     </VBox>

@@ -7,6 +7,7 @@ import com.manpreet.bank.ui.AppAwareController;
 import com.manpreet.bank.ui.AuthFormValidator;
 import com.manpreet.bank.ui.AuthFormValidator.Field;
 import com.manpreet.bank.ui.FieldFeedback;
+import com.manpreet.bank.ui.MessageText;
 import com.manpreet.bank.ui.SceneManager;
 import com.manpreet.bank.ui.UiErrorMapper;
 import com.manpreet.bank.ui.UiFeedback;
@@ -84,13 +85,14 @@ public class RegisterController implements AppAwareController {
             stageProperties.put("loginIdentifier", session.username());
             sceneManager.showLogin();
         } catch (DuplicateUserException e) {
-            UiFeedback.error(errorLabel, e.getMessage());
+            String message = MessageText.asSentence(e.getMessage());
+            UiFeedback.error(errorLabel, message);
             AuthFormValidator.fieldForDuplicate(e).map(fields::get).ifPresent(field -> {
-                FieldFeedback.markInvalid(field, e.getMessage());
+                FieldFeedback.markInvalid(field, message);
                 field.requestFocus();
             });
         } catch (ValidationException e) {
-            UiFeedback.error(errorLabel, e.getMessage());
+            UiFeedback.error(errorLabel, MessageText.asSentence(e.getMessage()));
         } catch (RuntimeException e) {
             UiFeedback.error(errorLabel, UiErrorMapper.toUserMessage(e));
         }
@@ -106,13 +108,14 @@ public class RegisterController implements AppAwareController {
      * Password errors clear both password fields; errors on other fields keep the entered password.
      */
     private void showFieldError(AuthFormValidator.FieldError error) {
-        UiFeedback.error(errorLabel, error.message());
+        String message = MessageText.asSentence(error.message());
+        UiFeedback.error(errorLabel, message);
         boolean passwordError = error.field() == Field.PASSWORD || error.field() == Field.CONFIRM_PASSWORD;
         if (passwordError) {
             clearPasswords();
         }
         TextInputControl field = passwordError ? passwordField : fields.get(error.field());
-        FieldFeedback.markInvalid(field, error.message());
+        FieldFeedback.markInvalid(field, message);
         field.requestFocus();
     }
 

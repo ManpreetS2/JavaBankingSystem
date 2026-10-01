@@ -6,6 +6,7 @@ import com.manpreet.bank.session.UserSession;
 import com.manpreet.bank.ui.AppAwareController;
 import com.manpreet.bank.ui.AuthFormValidator;
 import com.manpreet.bank.ui.FieldFeedback;
+import com.manpreet.bank.ui.MessageText;
 import com.manpreet.bank.ui.SceneManager;
 import com.manpreet.bank.ui.UiErrorMapper;
 import com.manpreet.bank.ui.UiFeedback;
@@ -70,7 +71,7 @@ public class LoginController implements AppAwareController {
             passwordField.clear();
             sceneManager.showAuthenticatedShell();
         } catch (AuthenticationException | ValidationException e) {
-            UiFeedback.error(errorLabel, e.getMessage());
+            UiFeedback.error(errorLabel, MessageText.asSentence(e.getMessage()));
             retryPassword();
         } catch (RuntimeException e) {
             UiFeedback.error(errorLabel, UiErrorMapper.toUserMessage(e));
@@ -87,8 +88,9 @@ public class LoginController implements AppAwareController {
         TextInputControl field = error.field() == AuthFormValidator.Field.PASSWORD
                 ? passwordField
                 : usernameOrEmailField;
-        UiFeedback.error(errorLabel, error.message());
-        FieldFeedback.markInvalid(field, error.message());
+        String message = MessageText.asSentence(error.message());
+        UiFeedback.error(errorLabel, message);
+        FieldFeedback.markInvalid(field, message);
         field.requestFocus();
     }
 

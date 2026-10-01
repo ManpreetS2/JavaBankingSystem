@@ -28,7 +28,7 @@
                            accessibleText="Password"/>
         </VBox>
 
-        <Button text="Login" onAction="#handleLogin" styleClass="button-primary" defaultButton="true"
+        <Button text="Sign in" onAction="#handleLogin" styleClass="button-primary" defaultButton="true"
                 maxWidth="Infinity"/>
         <Button text="Create account" onAction="#goToRegister" styleClass="button-secondary"
                 maxWidth="Infinity"/>

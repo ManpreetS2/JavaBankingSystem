@@ -31,6 +31,7 @@ Composition root:
 - Duplicate username or email errors focus the conflicting field
 - After registration, the login form is prefilled with the new username and focuses the password field
 - A failed sign-in clears the password without indicating which credential was wrong
+- Messages shown on these forms are formatted as sentences by `MessageText`, matching dialog and status feedback; service messages are unchanged
 
 ## Authenticated application shell
 
