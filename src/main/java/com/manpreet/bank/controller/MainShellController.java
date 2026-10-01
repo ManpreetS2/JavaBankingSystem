@@ -71,18 +71,16 @@ public class MainShellController implements AppAwareController {
     }
 
     @FXML
-    private void showSettingsPlaceholder() {
-        currentSection = Section.SETTINGS;
-        updateNavStyles();
-        contentHost.getChildren().setAll(placeholder(
-                "Settings",
-                "Profile and preferences will connect here. Use Toggle theme in the sidebar for now."
-        ));
+    private void showSettings() {
+        loadContent("/fxml/settings.fxml", Section.SETTINGS);
     }
 
     @FXML
     private void toggleTheme() {
         sceneManager.getAppContext().getThemeManager().toggleTheme();
+        if (currentSection == Section.SETTINGS) {
+            showSettings();
+        }
     }
 
     @FXML
@@ -95,7 +93,7 @@ public class MainShellController implements AppAwareController {
         switch (currentSection) {
             case ACCOUNTS -> showAccounts();
             case TRANSACTIONS -> showTransactions();
-            case SETTINGS -> showSettingsPlaceholder();
+            case SETTINGS -> showSettings();
             default -> showDashboard();
         }
     }

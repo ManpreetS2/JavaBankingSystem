@@ -22,7 +22,7 @@
             <Button fx:id="dashboardNavButton" text="Dashboard" onAction="#showDashboard" styleClass="sidebar-item"/>
             <Button fx:id="accountsNavButton" text="Accounts" onAction="#showAccounts" styleClass="sidebar-item"/>
             <Button fx:id="transactionsNavButton" text="Transactions" onAction="#showTransactions" styleClass="sidebar-item"/>
-            <Button fx:id="settingsNavButton" text="Settings" onAction="#showSettingsPlaceholder" styleClass="sidebar-item"/>
+            <Button fx:id="settingsNavButton" text="Settings" onAction="#showSettings" styleClass="sidebar-item"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
