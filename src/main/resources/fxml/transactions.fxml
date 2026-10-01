@@ -36,22 +36,22 @@
             </VBox>
             <VBox spacing="4" styleClass="metric-card" prefWidth="160">
                 <Label text="Deposits" styleClass="metric-label"/>
-                <Label fx:id="depositsTotalLabel" text="$0.00" styleClass="metric-value"/>
+                <Label fx:id="depositsTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
             <VBox spacing="4" styleClass="metric-card" prefWidth="160">
                 <Label text="Withdrawals" styleClass="metric-label"/>
-                <Label fx:id="withdrawalsTotalLabel" text="$0.00" styleClass="metric-value"/>
+                <Label fx:id="withdrawalsTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
             <VBox spacing="4" styleClass="metric-card" prefWidth="160">
                 <Label text="Transfers in" styleClass="metric-label"/>
-                <Label fx:id="transfersInTotalLabel" text="$0.00" styleClass="metric-value"/>
+                <Label fx:id="transfersInTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
             <VBox spacing="4" styleClass="metric-card" prefWidth="160">
                 <Label text="Transfers out" styleClass="metric-label"/>
-                <Label fx:id="transfersOutTotalLabel" text="$0.00" styleClass="metric-value"/>
+                <Label fx:id="transfersOutTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
         </FlowPane>

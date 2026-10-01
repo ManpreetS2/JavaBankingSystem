@@ -23,7 +23,7 @@
 
         <VBox spacing="8" styleClass="hero-card">
             <Label text="Total balance" styleClass="metric-label"/>
-            <Label fx:id="totalBalanceLabel" text="$0.00" styleClass="balance-primary"/>
+            <Label fx:id="totalBalanceLabel" text="\$0.00" styleClass="balance-primary"/>
             <Label text="Combined checking and savings" styleClass="caption"/>
         </VBox>
 
@@ -31,12 +31,12 @@
             <VBox spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
                 <Label text="Checking" styleClass="card-title"/>
                 <Label fx:id="checkingNumberLabel" styleClass="body-secondary"/>
-                <Label fx:id="checkingBalanceLabel" text="$0.00" styleClass="balance-secondary"/>
+                <Label fx:id="checkingBalanceLabel" text="\$0.00" styleClass="balance-secondary"/>
             </VBox>
             <VBox spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
                 <Label text="Savings" styleClass="card-title"/>
                 <Label fx:id="savingsNumberLabel" styleClass="body-secondary"/>
-                <Label fx:id="savingsBalanceLabel" text="$0.00" styleClass="balance-secondary"/>
+                <Label fx:id="savingsBalanceLabel" text="\$0.00" styleClass="balance-secondary"/>
             </VBox>
         </HBox>
 
