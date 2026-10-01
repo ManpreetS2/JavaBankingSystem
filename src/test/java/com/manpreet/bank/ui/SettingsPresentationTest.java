@@ -3,6 +3,7 @@ package com.manpreet.bank.ui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.manpreet.bank.session.UserSession;
@@ -123,6 +124,26 @@ class SettingsPresentationTest {
         assertThrows(NullPointerException.class, () -> ThemeOptions.label(null));
         assertThrows(NullPointerException.class, () -> ThemeOptions.accessibleName(null));
         assertThrows(NullPointerException.class, () -> ThemeOptions.appliedMessage(null));
+    }
+
+    @Test
+    void profileValuesWrapInsteadOfTruncating() throws IOException {
+        // Names may be up to 100 characters and emails up to 254, so these labels must wrap.
+        String fxml = Files.readString(Path.of("src/main/resources/fxml/settings.fxml"));
+        List<String> wrapped = List.of(
+                "displayNameLabel",
+                "usernameHandleLabel",
+                "firstNameValueLabel",
+                "lastNameValueLabel",
+                "usernameValueLabel",
+                "emailValueLabel"
+        );
+        for (String id : wrapped) {
+            int start = fxml.indexOf("fx:id=\"" + id + "\"");
+            assertTrue(start >= 0, "Missing label " + id);
+            String element = fxml.substring(fxml.lastIndexOf('<', start), fxml.indexOf("/>", start));
+            assertTrue(element.contains("wrapText=\"true\""), id + " must wrap long values");
+        }
     }
 
     @Test

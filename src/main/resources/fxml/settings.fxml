@@ -24,22 +24,22 @@
         <VBox spacing="12" styleClass="action-card">
             <Label text="Profile" styleClass="section-title"/>
             <VBox spacing="2">
-                <Label fx:id="displayNameLabel" styleClass="card-title"/>
-                <Label fx:id="usernameHandleLabel" styleClass="body-secondary"/>
+                <Label fx:id="displayNameLabel" wrapText="true" styleClass="card-title"/>
+                <Label fx:id="usernameHandleLabel" wrapText="true" styleClass="body-secondary"/>
             </VBox>
             <GridPane styleClass="detail-grid">
                 <columnConstraints>
                     <ColumnConstraints minWidth="120" prefWidth="140"/>
                     <ColumnConstraints hgrow="ALWAYS"/>
                 </columnConstraints>
-                <Label text="First name" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <Label fx:id="firstNameValueLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                <Label text="Last name" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                <Label fx:id="lastNameValueLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                <Label text="Username" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <Label fx:id="usernameValueLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                <Label text="Email" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                <Label fx:id="emailValueLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Label text="First name" styleClass="detail-key" GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label fx:id="firstNameValueLabel" wrapText="true" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Label text="Last name" styleClass="detail-key" GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label fx:id="lastNameValueLabel" wrapText="true" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="Username" styleClass="detail-key" GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label fx:id="usernameValueLabel" wrapText="true" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="Email" styleClass="detail-key" GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <Label fx:id="emailValueLabel" wrapText="true" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
             </GridPane>
             <Label text="Profile details are set during registration and are read-only."
                    styleClass="caption" wrapText="true"/>
