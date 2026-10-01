@@ -6,12 +6,14 @@ import com.manpreet.bank.model.TransactionType;
 import com.manpreet.bank.service.TransactionFilter;
 import com.manpreet.bank.session.UserSession;
 import com.manpreet.bank.ui.AppAwareController;
+import com.manpreet.bank.ui.CsvExportTarget;
 import com.manpreet.bank.ui.PaginationState;
 import com.manpreet.bank.ui.SceneManager;
 import com.manpreet.bank.ui.TransactionRowViewModel;
 import com.manpreet.bank.ui.TransactionViewMapper;
 import com.manpreet.bank.ui.UiErrorMapper;
 import com.manpreet.bank.ui.UiFeedback;
+import com.manpreet.bank.ui.UiWindows;
 import com.manpreet.bank.util.AccountNumberFormatter;
 import com.manpreet.bank.util.CurrencyFormatter;
 import java.io.IOException;
@@ -28,8 +30,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -170,15 +175,22 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         }
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Export transactions");
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV files", "*.csv"));
+        FileChooser.ExtensionFilter csvFilter = new FileChooser.ExtensionFilter("CSV files", "*.csv");
+        chooser.getExtensionFilters().add(csvFilter);
+        chooser.setSelectedExtensionFilter(csvFilter);
         chooser.setInitialFileName("transactions-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + ".csv");
         var file = chooser.showSaveDialog(transactionsTable.getScene().getWindow());
         if (file == null) {
             return;
         }
-        Path target = file.toPath();
-        if (!target.getFileName().toString().toLowerCase(java.util.Locale.ROOT).endsWith(".csv")) {
-            target = target.resolveSibling(target.getFileName().toString() + ".csv");
+        exportTo(session, filter, file.toPath());
+    }
+
+    private void exportTo(UserSession session, TransactionFilter filter, Path chosen) {
+        Path target = CsvExportTarget.withCsvExtension(chosen);
+        if (CsvExportTarget.requiresOverwriteConfirmation(chosen, target) && !confirmReplace(target)) {
+            UiFeedback.info(statusLabel, "Export canceled.");
+            return;
         }
         try {
             byte[] bytes = sceneManager.getAppContext().getTransactionExportService()
@@ -190,6 +202,19 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         } catch (RuntimeException e) {
             UiFeedback.error(statusLabel, UiErrorMapper.toUserMessage(e));
         }
+    }
+
+    private boolean confirmReplace(Path target) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Export transactions");
+        dialog.setHeaderText("Replace existing file?");
+        dialog.setContentText(target.getFileName() + " already exists. Replacing it overwrites its contents.");
+        ButtonType replace = new ButtonType("Replace", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(replace, ButtonType.CANCEL);
+        dialog.getDialogPane().getStyleClass().add("dialog-container");
+        dialog.initOwner(UiWindows.from(statusLabel));
+        sceneManager.getAppContext().getThemeManager().applyTo(dialog.getDialogPane());
+        return dialog.showAndWait().filter(replace::equals).isPresent();
     }
 
     private void configureTable() {
