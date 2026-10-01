@@ -43,7 +43,7 @@
         <VBox spacing="12" styleClass="action-card">
             <Label text="Quick actions" styleClass="section-title"/>
             <HBox spacing="12" styleClass="quick-actions">
-                <Button text="Deposit" onAction="#handleDeposit" styleClass="button-primary" defaultButton="true"/>
+                <Button text="Deposit" onAction="#handleDeposit" styleClass="button-primary"/>
                 <Button text="Withdraw" onAction="#handleWithdraw" styleClass="button-secondary"/>
                 <Button text="Transfer" onAction="#handleTransfer" styleClass="button-secondary"/>
             </HBox>
