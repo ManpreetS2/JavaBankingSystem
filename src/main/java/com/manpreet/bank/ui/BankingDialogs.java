@@ -12,7 +12,9 @@ import java.util.Optional;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -36,46 +38,18 @@ public final class BankingDialogs {
                                                 UserSession session,
                                                 Account preferred,
                                                 Window owner) {
-        AccountSelection selection = chooseAccount(
-                context, session, preferred, "Deposit", "Current balance", owner);
-        if (selection == null) {
-            return Optional.empty();
-        }
-        try {
-            context.getAccountService().deposit(
-                    session.userId(),
-                    selection.account().getId(),
-                    selection.amount(),
-                    selection.description()
-            );
-            return Optional.of(true);
-        } catch (RuntimeException e) {
-            showError(context, owner, e);
-            return Optional.of(false);
-        }
+        return showAccountOperation(context, session, preferred, "Deposit", "Current balance", owner,
+                (account, amount, description) -> context.getAccountService()
+                        .deposit(session.userId(), account.getId(), amount, description));
     }
 
     public static Optional<Boolean> showWithdraw(AppContext context,
                                                  UserSession session,
                                                  Account preferred,
                                                  Window owner) {
-        AccountSelection selection = chooseAccount(
-                context, session, preferred, "Withdraw", "Available balance", owner);
-        if (selection == null) {
-            return Optional.empty();
-        }
-        try {
-            context.getAccountService().withdraw(
-                    session.userId(),
-                    selection.account().getId(),
-                    selection.amount(),
-                    selection.description()
-            );
-            return Optional.of(true);
-        } catch (RuntimeException e) {
-            showError(context, owner, e);
-            return Optional.of(false);
-        }
+        return showAccountOperation(context, session, preferred, "Withdraw", "Available balance", owner,
+                (account, amount, description) -> context.getAccountService()
+                        .withdraw(session.userId(), account.getId(), amount, description));
     }
 
     public static Optional<Boolean> showTransfer(AppContext context, UserSession session, Window owner) {
@@ -175,47 +149,36 @@ public final class BankingDialogs {
                         ))
         );
 
-        Optional<ButtonType> result = dialog.showAndWait();
-        if (result.isEmpty() || result.get() != transferButton) {
-            return Optional.empty();
-        }
+        Button confirm = (Button) dialog.getDialogPane().lookupButton(transferButton);
+        confirm.addEventFilter(ActionEvent.ACTION, event -> {
+            Account from = fromBox.getSelectionModel().getSelectedItem();
+            Account to = toBox.getSelectionModel().getSelectedItem();
+            Optional<String> rejection = from == null || to == null || from.getId() == to.getId()
+                    ? Optional.of("Source and destination accounts must be different.")
+                    : BankingOperationAttempt.run(amountField.getText(), amount -> context.getAccountService()
+                            .transfer(session.userId(), from.getId(), to.getId(), amount, descriptionField.getText()));
+            rejection.ifPresent(message -> {
+                event.consume();
+                showRejection(amountField, validationLabel, message);
+            });
+        });
 
-        Account from = fromBox.getSelectionModel().getSelectedItem();
-        Account to = toBox.getSelectionModel().getSelectedItem();
-        Optional<String> amountError = DialogAmountValidator.validate(amountField.getText());
-        if (amountError.isPresent()) {
-            showMessage(context, owner, amountError.get());
-            return Optional.of(false);
-        }
-        if (from.getId() == to.getId()) {
-            showMessage(context, owner, "Source and destination accounts must be different");
-            return Optional.of(false);
-        }
-
-        try {
-            context.getAccountService().transfer(
-                    session.userId(),
-                    from.getId(),
-                    to.getId(),
-                    new BigDecimal(amountField.getText().trim()),
-                    descriptionField.getText()
-            );
-            return Optional.of(true);
-        } catch (NumberFormatException e) {
-            showMessage(context, owner, "Enter a valid amount such as 25.00");
-            return Optional.of(false);
-        } catch (RuntimeException e) {
-            showError(context, owner, e);
-            return Optional.of(false);
-        }
+        return dialog.showAndWait().filter(transferButton::equals).map(button -> true);
     }
 
-    private static AccountSelection chooseAccount(AppContext context,
-                                                  UserSession session,
-                                                  Account preferred,
-                                                  String action,
-                                                  String balanceCaption,
-                                                  Window owner) {
+    /**
+     * Shows a single-account dialog that runs {@code operation} when confirmed.
+     * A rejected operation keeps the dialog open with the entered values and shows the reason inline.
+     *
+     * @return {@code Optional.of(true)} when the operation succeeded; empty when the dialog was canceled
+     */
+    private static Optional<Boolean> showAccountOperation(AppContext context,
+                                                          UserSession session,
+                                                          Account preferred,
+                                                          String action,
+                                                          String balanceCaption,
+                                                          Window owner,
+                                                          AccountOperation operation) {
         List<Account> accounts = context.getAccountService().getAccountsForUser(session.userId());
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(action);
@@ -283,27 +246,29 @@ public final class BankingDialogs {
                         ))
         );
 
-        Optional<ButtonType> result = dialog.showAndWait();
-        if (result.isEmpty() || result.get() != actionButton) {
-            return null;
-        }
+        Button confirm = (Button) dialog.getDialogPane().lookupButton(actionButton);
+        confirm.addEventFilter(ActionEvent.ACTION, event -> {
+            Account account = accountBox.getSelectionModel().getSelectedItem();
+            Optional<String> rejection = account == null
+                    ? Optional.of("Select an account.")
+                    : BankingOperationAttempt.run(amountField.getText(),
+                            amount -> operation.run(account, amount, descriptionField.getText()));
+            rejection.ifPresent(message -> {
+                event.consume();
+                showRejection(amountField, validationLabel, message);
+            });
+        });
 
-        Optional<String> amountError = DialogAmountValidator.validate(amountField.getText());
-        if (amountError.isPresent()) {
-            showMessage(context, owner, amountError.get());
-            return null;
-        }
+        return dialog.showAndWait().filter(actionButton::equals).map(button -> true);
+    }
 
-        try {
-            return new AccountSelection(
-                    accountBox.getSelectionModel().getSelectedItem(),
-                    new BigDecimal(amountField.getText().trim()),
-                    descriptionField.getText()
-            );
-        } catch (NumberFormatException e) {
-            showMessage(context, owner, "Enter a valid amount such as 25.00");
-            return null;
-        }
+    /**
+     * Shows why an operation was rejected and returns focus to the amount so it can be corrected in place.
+     */
+    private static void showRejection(TextField amountField, Label validationLabel, String message) {
+        validationLabel.setText(message);
+        amountField.requestFocus();
+        amountField.selectAll();
     }
 
     private static void styleDialog(AppContext context, Dialog<?> dialog) {
@@ -366,10 +331,6 @@ public final class BankingDialogs {
         return grid;
     }
 
-    private static void showError(AppContext context, Window owner, RuntimeException error) {
-        showMessage(context, owner, UiErrorMapper.toUserMessage(error));
-    }
-
     private static void showMessage(AppContext context, Window owner, String message) {
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Notice");
@@ -381,6 +342,8 @@ public final class BankingDialogs {
         dialog.showAndWait();
     }
 
-    private record AccountSelection(Account account, BigDecimal amount, String description) {
+    @FunctionalInterface
+    private interface AccountOperation {
+        void run(Account account, BigDecimal amount, String description);
     }
 }

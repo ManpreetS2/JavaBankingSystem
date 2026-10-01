@@ -63,6 +63,14 @@ Shared presentation:
 
 Dashboard and Accounts reuse the same mapper for consistent type labels, signed amounts, and transfer wording.
 
+## Banking dialogs
+
+`BankingDialogs` provides the Deposit, Withdraw, and Transfer dialogs shared by Dashboard and Accounts:
+
+- The confirm button runs the service operation through `BankingOperationAttempt` before the dialog closes
+- A rejected operation (insufficient funds, service validation, or an unexpected failure) keeps the dialog open with the entered values, shows the reason inline, and returns focus to the amount
+- Only a successful operation closes the dialog; callers receive `Optional.of(true)` on success and an empty result on cancel
+
 ## Settings / Profile
 
 `settings.fxml` / `SettingsController` provide:
