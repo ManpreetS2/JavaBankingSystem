@@ -1,5 +1,6 @@
 package com.manpreet.bank;
 
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Objects;
@@ -72,22 +73,39 @@ public final class ApplicationPaths {
                     .resolve(AppInfo.DATA_DIRECTORY_NAME);
         }
         if (os.contains("win")) {
-            String appData = environment.apply("APPDATA");
-            if (appData != null && !appData.isBlank()) {
-                return Path.of(appData).resolve(AppInfo.DATA_DIRECTORY_NAME);
+            Path appData = absolutePathOrNull(environment.apply("APPDATA"));
+            if (appData != null) {
+                return appData.resolve(AppInfo.DATA_DIRECTORY_NAME);
             }
             return userHome.resolve("AppData")
                     .resolve("Roaming")
                     .resolve(AppInfo.DATA_DIRECTORY_NAME);
         }
 
-        String xdg = environment.apply("XDG_DATA_HOME");
-        if (xdg != null && !xdg.isBlank()) {
-            return Path.of(xdg).resolve(AppInfo.DATA_DIRECTORY_NAME);
+        // The XDG Base Directory specification says relative values are invalid and must be ignored.
+        Path xdg = absolutePathOrNull(environment.apply("XDG_DATA_HOME"));
+        if (xdg != null) {
+            return xdg.resolve(AppInfo.DATA_DIRECTORY_NAME);
         }
         return userHome.resolve(".local")
                 .resolve("share")
                 .resolve(AppInfo.DATA_DIRECTORY_NAME);
+    }
+
+    /**
+     * Returns the value as a path when it is an absolute path; blank, relative, or malformed values return null
+     * so a relative environment value cannot place the database under the working directory.
+     */
+    private static Path absolutePathOrNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            Path path = Path.of(value.trim());
+            return path.isAbsolute() ? path : null;
+        } catch (InvalidPathException e) {
+            return null;
+        }
     }
 
     private static String valueOrEmpty(String value) {

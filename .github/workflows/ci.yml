@@ -21,5 +21,10 @@ jobs:
           java-version: "21"
           cache: maven
 
+      - name: Validate packaging scripts
+        run: |
+          bash -n scripts/package-app.sh
+          bash -n scripts/verify-release.sh
+
       - name: Run tests
         run: mvn --batch-mode clean test

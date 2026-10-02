@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.manpreet.bank.controller.SettingsController"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            styleClass="content-scroll">
+
+    <VBox spacing="16" styleClass="content-root">
+        <VBox spacing="4" styleClass="page-header">
+            <Label text="Settings" styleClass="page-title"/>
+            <Label text="Your profile and application preferences" styleClass="page-subtitle, body-secondary"/>
+            <Label fx:id="statusLabel" styleClass="success-text" managed="false" visible="false"/>
+        </VBox>
+
+        <VBox spacing="12" styleClass="action-card">
+            <Label text="Profile" styleClass="section-title"/>
+            <VBox spacing="2">
+                <Label fx:id="displayNameLabel" wrapText="true" styleClass="card-title"/>
+                <Label fx:id="usernameHandleLabel" wrapText="true" styleClass="body-secondary"/>
+            </VBox>
+            <GridPane styleClass="detail-grid">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120" prefWidth="140"/>
+                    <ColumnConstraints hgrow="ALWAYS"/>
+                </columnConstraints>
+                <Label text="First name" styleClass="detail-key" GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label fx:id="firstNameValueLabel" wrapText="true" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Label text="Last name" styleClass="detail-key" GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label fx:id="lastNameValueLabel" wrapText="true" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="Username" styleClass="detail-key" GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label fx:id="usernameValueLabel" wrapText="true" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="Email" styleClass="detail-key" GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <Label fx:id="emailValueLabel" wrapText="true" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            </GridPane>
+            <Label text="Profile details are set during registration and are read-only."
+                   styleClass="caption" wrapText="true"/>
+        </VBox>
+
+        <VBox spacing="12" styleClass="action-card">
+            <Label text="Appearance" styleClass="section-title"/>
+            <Label text="Theme" styleClass="field-label"/>
+            <HBox spacing="24">
+                <RadioButton fx:id="lightThemeOption" styleClass="body"
+                             accessibleHelp="Switches the application to the light theme"/>
+                <RadioButton fx:id="darkThemeOption" styleClass="body"
+                             accessibleHelp="Switches the application to the dark theme"/>
+            </HBox>
+            <Label text="Applies to every screen and dialog until you close the application."
+                   styleClass="caption" wrapText="true"/>
+        </VBox>
+    </VBox>
+</ScrollPane>

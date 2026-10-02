@@ -22,15 +22,26 @@ Composition root:
 - `ApplicationPaths` chooses the OS application-data directory (or `-Dbank.db.path`) for normal desktop launches.
 - `AppInfo` centralizes product name / version metadata for titles and diagnostics.
 
+## Login and registration forms
+
+- `AuthFormValidator` runs the same `InputValidator` rules as `AuthService` before submit and reports the first invalid field in on-screen order; `AuthService` remains the authority
+- `FieldFeedback` marks the invalid field with `input-error`, exposes the message as accessible help, and clears the marker when the field is edited
+- The first field is focused on load, and Enter submits through each form's default button
+- Registration keeps the entered password when the error is in another field and clears both password fields only for password errors
+- Duplicate username or email errors focus the conflicting field
+- After registration, the login form is prefilled with the new username and focuses the password field
+- A failed sign-in clears the password without indicating which credential was wrong
+- Messages shown on these forms are formatted as sentences by `MessageText`, matching dialog and status feedback; service messages are unchanged
+
 ## Authenticated application shell
 
 After login, navigation uses `main-shell.fxml` / `MainShellController`:
 
-- Persistent sidebar: Dashboard, Accounts, Transactions, Settings, Logout
+- Persistent sidebar: Dashboard, Accounts, Transactions, Settings, Sign out
 - Content host swaps views inside one stage
 - Transactions loads a dedicated workspace inside the shell content region
-- Settings remains an integration target with a safe placeholder until that screen lands
-- Logout clears `SessionManager` and returns to login
+- Settings loads `settings.fxml` inside the shell content region
+- Sign out clears `SessionManager` and returns to the sign-in screen
 - Authenticated content requires a valid session
 
 ## Transactions workspace
@@ -52,13 +63,30 @@ Shared presentation:
 
 Dashboard and Accounts reuse the same mapper for consistent type labels, signed amounts, and transfer wording.
 
+## Banking dialogs
+
+`BankingDialogs` provides the Deposit, Withdraw, and Transfer dialogs shared by Dashboard and Accounts:
+
+- The confirm button runs the service operation through `BankingOperationAttempt` before the dialog closes
+- A rejected operation (insufficient funds, service validation, or an unexpected failure) keeps the dialog open with the entered values, shows the reason inline, and returns focus to the amount
+- Only a successful operation closes the dialog; callers receive `Optional.of(true)` on success and an empty result on cancel
+
+## Settings / Profile
+
+`settings.fxml` / `SettingsController` provide:
+
+- Read-only profile details (name, username, email) from the active `UserSession` via `ProfileSummary`; no repository access and no credential fields
+- Light/dark theme selection through `ThemeManager.setTheme`, with labels and confirmation text from `ThemeOptions`
+- The selector reflects the active theme on load, and the shell reloads Settings when the sidebar toggle changes the theme so both controls stay in sync
+- Profile editing, password change, and theme persistence are not implemented; they require new service and storage support
+
 ## Theme infrastructure
 
 - `Theme` (`LIGHT` / `DARK`)
 - `ThemeManager` applies `base.css`, `components.css`, and the active theme stylesheet to managed scenes
 - Short-lived dialog roots use `ThemeManager.applyTo(Parent)` without remaining registered for theme updates
 - Controllers do not load CSS ad hoc
-- Theme persistence is deferred to the settings experience
+- Theme selection lasts for the running session; persisting it across restarts is not yet implemented
 
 ## Responsibilities
 
@@ -113,7 +141,9 @@ Parent directories are created before SQLite opens. Failures surface as concise 
 - Disabled by default
 - Enabled only with `-Dbank.demo.seed=true`
 - Uses normal auth/account/transaction services (no bypass login, no weakened hashing)
-- Idempotent: repeated launches do not duplicate the demo user or sample activity
+- Seed state is derived from stable marker descriptions (not balances): empty → seed all; complete → no-op; partial → fail fast with an actionable recreate message
+- Marker detection uses an ownership-scoped description query, not the newest-100 activity page
+- Spending a complete demo dataset to zero must not recreate sample activity on the next seed
 
 ## Packaging lifecycle
 
@@ -126,6 +156,8 @@ Parent directories are created before SQLite opens. Failures surface as concise 
 - Domain money uses `BigDecimal`, never `double`/`float`
 - Canonical USD scale is 2 decimal places
 - Values requiring more than 2 decimals are rejected
+- A single deposit, withdrawal, or transfer is limited to `MoneyUtil.MAX_TRANSACTION_AMOUNT` ($1,000,000.00), enforced by `AccountService`
+- Dialog amount entry accepts plain decimals only; exponent notation such as `1E+15` is rejected before it reaches the service
 - SQLite stores balances/amounts as exact text strings such as `1400.00`
 - UI formatting uses `CurrencyFormatter` only
 
@@ -136,7 +168,7 @@ Parent directories are created before SQLite opens. Failures surface as concise 
 - account scope (must be owned by authenticated user)
 - transaction type
 - start/end dates (`>= start`, `< end+1 day`)
-- search text (description / owned account labels)
+- search text (description / owned account labels), case-insensitive for all letters through the `unicode_lower` SQL function that `DatabaseManager` registers on each connection; SQLite's built-in `LOWER()` only handles ASCII
 - limit/offset pagination (1–100)
 
 Queries always join through the authenticated user's accounts.

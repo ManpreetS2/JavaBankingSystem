@@ -23,7 +23,7 @@
 
         <VBox spacing="8" styleClass="hero-card">
             <Label text="Total balance" styleClass="metric-label"/>
-            <Label fx:id="totalBalanceLabel" text="$0.00" styleClass="balance-primary"/>
+            <Label fx:id="totalBalanceLabel" text="\$0.00" styleClass="balance-primary"/>
             <Label text="Combined checking and savings" styleClass="caption"/>
         </VBox>
 
@@ -31,19 +31,19 @@
             <VBox spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
                 <Label text="Checking" styleClass="card-title"/>
                 <Label fx:id="checkingNumberLabel" styleClass="body-secondary"/>
-                <Label fx:id="checkingBalanceLabel" text="$0.00" styleClass="balance-secondary"/>
+                <Label fx:id="checkingBalanceLabel" text="\$0.00" styleClass="balance-secondary"/>
             </VBox>
             <VBox spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
                 <Label text="Savings" styleClass="card-title"/>
                 <Label fx:id="savingsNumberLabel" styleClass="body-secondary"/>
-                <Label fx:id="savingsBalanceLabel" text="$0.00" styleClass="balance-secondary"/>
+                <Label fx:id="savingsBalanceLabel" text="\$0.00" styleClass="balance-secondary"/>
             </VBox>
         </HBox>
 
         <VBox spacing="12" styleClass="action-card">
             <Label text="Quick actions" styleClass="section-title"/>
             <HBox spacing="12" styleClass="quick-actions">
-                <Button text="Deposit" onAction="#handleDeposit" styleClass="button-primary" defaultButton="true"/>
+                <Button text="Deposit" onAction="#handleDeposit" styleClass="button-primary"/>
                 <Button text="Withdraw" onAction="#handleWithdraw" styleClass="button-secondary"/>
                 <Button text="Transfer" onAction="#handleTransfer" styleClass="button-secondary"/>
             </HBox>
@@ -55,12 +55,15 @@
             <Label text="Deposits, withdrawals, and transfers will appear here." styleClass="body-secondary"/>
         </VBox>
         <TableView fx:id="transactionsTable" styleClass="transactions-table" prefHeight="280" VBox.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS"/>
+            </columnResizePolicy>
             <columns>
                 <TableColumn fx:id="typeColumn" text="Type" prefWidth="160"/>
                 <TableColumn fx:id="accountColumn" text="Account" prefWidth="160"/>
                 <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="260"/>
-                <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
-                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120"/>
+                <TableColumn fx:id="dateColumn" text="Date" prefWidth="150" minWidth="130"/>
+                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120" minWidth="120"/>
             </columns>
         </TableView>
     </VBox>

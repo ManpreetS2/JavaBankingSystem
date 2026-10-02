@@ -36,22 +36,22 @@
             </VBox>
             <VBox spacing="4" styleClass="metric-card" prefWidth="160">
                 <Label text="Deposits" styleClass="metric-label"/>
-                <Label fx:id="depositsTotalLabel" text="$0.00" styleClass="metric-value"/>
+                <Label fx:id="depositsTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
             <VBox spacing="4" styleClass="metric-card" prefWidth="160">
                 <Label text="Withdrawals" styleClass="metric-label"/>
-                <Label fx:id="withdrawalsTotalLabel" text="$0.00" styleClass="metric-value"/>
+                <Label fx:id="withdrawalsTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
             <VBox spacing="4" styleClass="metric-card" prefWidth="160">
                 <Label text="Transfers in" styleClass="metric-label"/>
-                <Label fx:id="transfersInTotalLabel" text="$0.00" styleClass="metric-value"/>
+                <Label fx:id="transfersInTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
             <VBox spacing="4" styleClass="metric-card" prefWidth="160">
                 <Label text="Transfers out" styleClass="metric-label"/>
-                <Label fx:id="transfersOutTotalLabel" text="$0.00" styleClass="metric-value"/>
+                <Label fx:id="transfersOutTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
         </FlowPane>
@@ -94,12 +94,15 @@
         </VBox>
 
         <TableView fx:id="transactionsTable" styleClass="transactions-table" prefHeight="280" VBox.vgrow="ALWAYS" minHeight="180">
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS"/>
+            </columnResizePolicy>
             <columns>
-                <TableColumn fx:id="dateColumn" text="Date" prefWidth="140"/>
+                <TableColumn fx:id="dateColumn" text="Date" prefWidth="140" minWidth="130"/>
                 <TableColumn fx:id="accountColumn" text="Account" prefWidth="160"/>
                 <TableColumn fx:id="typeColumn" text="Type" prefWidth="170"/>
                 <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="260"/>
-                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120"/>
+                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120" minWidth="120"/>
             </columns>
         </TableView>
 

@@ -16,10 +16,13 @@ import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public class TransactionRepository {
 
@@ -204,6 +207,59 @@ public class TransactionRepository {
         }
     }
 
+    /**
+     * Returns which of the supplied descriptions already exist on accounts owned by {@code userId}.
+     * Ownership-scoped and independent of recent-activity pagination limits.
+     */
+    public Set<String> findExistingDescriptionsForUser(long userId, Collection<String> descriptions) {
+        Objects.requireNonNull(descriptions, "descriptions must not be null");
+        if (descriptions.isEmpty()) {
+            return Set.of();
+        }
+
+        List<String> unique = descriptions.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(value -> !value.isEmpty())
+                .distinct()
+                .toList();
+        if (unique.isEmpty()) {
+            return Set.of();
+        }
+
+        StringBuilder sql = new StringBuilder("""
+                SELECT DISTINCT t.description
+                FROM transactions t
+                INNER JOIN accounts a ON a.id = t.account_id
+                WHERE a.user_id = ?
+                  AND t.description IN (
+                """);
+        for (int i = 0; i < unique.size(); i++) {
+            if (i > 0) {
+                sql.append(", ");
+            }
+            sql.append('?');
+        }
+        sql.append(')');
+
+        try (Connection connection = databaseManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            statement.setLong(1, userId);
+            for (int i = 0; i < unique.size(); i++) {
+                statement.setString(i + 2, unique.get(i));
+            }
+            Set<String> found = new HashSet<>();
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    found.add(resultSet.getString(1));
+                }
+            }
+            return Set.copyOf(found);
+        } catch (SQLException e) {
+            throw new BankingOperationException("Unable to inspect transaction descriptions", e);
+        }
+    }
+
     public BigDecimal sumAmountByType(long userId, TransactionType type, LocalDate startDate, LocalDate endDate) {
         try (Connection connection = databaseManager.getConnection()) {
             StringBuilder sql = new StringBuilder("""
@@ -247,9 +303,9 @@ public class TransactionRepository {
         if (filter.searchText() != null) {
             sql.append("""
                      AND (
-                        LOWER(COALESCE(t.description, '')) LIKE ? ESCAPE '\\'
-                        OR LOWER(a.account_number) LIKE ? ESCAPE '\\'
-                        OR LOWER(a.account_type) LIKE ? ESCAPE '\\'
+                        unicode_lower(COALESCE(t.description, '')) LIKE ? ESCAPE '\\'
+                        OR unicode_lower(a.account_number) LIKE ? ESCAPE '\\'
+                        OR unicode_lower(a.account_type) LIKE ? ESCAPE '\\'
                      )
                     """);
             String pattern = "%" + escapeLikeLiteral(filter.searchText().toLowerCase(Locale.ROOT)) + "%";

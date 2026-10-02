@@ -65,7 +65,7 @@ public class AppContext {
         this.accountService = new AccountService(databaseManager, accountRepository, transactionRepository);
         this.transactionService = new TransactionService(accountRepository, transactionRepository);
         this.transactionExportService = new TransactionExportService(transactionService, accountRepository);
-        this.demoDataSeeder = new DemoDataSeeder(authService, accountService);
+        this.demoDataSeeder = new DemoDataSeeder(authService, accountService, transactionService);
         this.sessionManager = new SessionManager();
         this.themeManager = new ThemeManager();
     }

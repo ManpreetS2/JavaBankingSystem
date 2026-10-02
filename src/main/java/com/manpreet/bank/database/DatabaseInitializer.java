@@ -38,8 +38,9 @@ public class DatabaseInitializer {
 
                 if (currentVersion > CURRENT_SCHEMA_VERSION) {
                     throw new IllegalStateException(
-                            "Unsupported database schema version " + currentVersion
-                                    + "; this application supports version " + CURRENT_SCHEMA_VERSION + "."
+                            "The local database uses unsupported schema version " + currentVersion
+                                    + " (this application supports version " + CURRENT_SCHEMA_VERSION
+                                    + "). Delete the database file shown in the startup log and restart."
                     );
                 }
 
