@@ -21,9 +21,10 @@ A modern desktop banking product with authentication, checking/savings accounts,
 - Checking and savings accounts created at registration
 - Deposits, withdrawals, and internal transfers
 - Atomic SQLite banking transactions
+- Dedicated Transactions workspace with search, account/type/date filters, and pagination
 - Ownership-scoped transaction history and filters
-- CSV export service for filtered transactions
-- Authenticated app shell with Dashboard and Accounts
+- CSV export from the Transactions screen (all filtered results, batched fetch, up to 10,000 transactions per export)
+- Authenticated app shell with Dashboard, Accounts, and Transactions
 - Light/dark theme infrastructure
 - Neutral production-oriented UI foundation (final visual polish deferred)
 
@@ -80,6 +81,5 @@ Screenshots will be added after final visual design work.
 ## Roadmap
 
 - Final Figma visual polish
-- Dedicated transactions workspace integration
 - Settings/profile preferences persistence
 - External transfers / beneficiaries (future)

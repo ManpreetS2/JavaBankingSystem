@@ -15,9 +15,9 @@ import java.util.Objects;
 
 public class TransactionService {
 
-    private static final int MIN_LIMIT = 1;
-    private static final int MAX_LIMIT = 100;
-    private static final int DEFAULT_LIMIT = 20;
+    public static final int MIN_LIMIT = 1;
+    public static final int MAX_LIMIT = 100;
+    public static final int DEFAULT_LIMIT = 20;
 
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
@@ -33,12 +33,12 @@ public class TransactionService {
     }
 
     public List<Transaction> getAccountHistory(long userId, long accountId) {
-        ensureOwnedAccount(userId, accountId);
-        return search(userId, new TransactionFilter(accountId, null, null, null, null, MAX_LIMIT, 0));
+        return getAccountHistory(userId, accountId, DEFAULT_LIMIT);
     }
 
-    public List<Transaction> getUserHistory(long userId, int limit) {
-        return getRecentActivity(userId, limit);
+    public List<Transaction> getAccountHistory(long userId, long accountId, int limit) {
+        ensureOwnedAccount(userId, accountId);
+        return search(userId, new TransactionFilter(accountId, null, null, null, null, limit, 0));
     }
 
     public List<Transaction> search(long userId, TransactionFilter filter) {
@@ -59,6 +59,14 @@ public class TransactionService {
 
     public BigDecimal totalWithdrawals(long userId, LocalDate startDate, LocalDate endDate) {
         return transactionRepository.sumAmountByType(userId, TransactionType.WITHDRAWAL, startDate, endDate);
+    }
+
+    public BigDecimal totalTransfersIn(long userId, LocalDate startDate, LocalDate endDate) {
+        return transactionRepository.sumAmountByType(userId, TransactionType.TRANSFER_IN, startDate, endDate);
+    }
+
+    public BigDecimal totalTransfersOut(long userId, LocalDate startDate, LocalDate endDate) {
+        return transactionRepository.sumAmountByType(userId, TransactionType.TRANSFER_OUT, startDate, endDate);
     }
 
     private TransactionFilter validateFilter(long userId, TransactionFilter filter) {

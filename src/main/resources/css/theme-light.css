@@ -22,6 +22,8 @@
 .card,
 .account-card,
 .metric-card,
+.filter-panel,
+.detail-panel,
 .dialog-container {
     -fx-background-color: #FFFFFF;
 }

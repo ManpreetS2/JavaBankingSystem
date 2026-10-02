@@ -25,9 +25,29 @@ After login, navigation uses `main-shell.fxml` / `MainShellController`:
 
 - Persistent sidebar: Dashboard, Accounts, Transactions, Settings, Logout
 - Content host swaps views inside one stage
-- Transactions and Settings are integration targets with safe placeholders until those dedicated screens land
+- Transactions loads a dedicated workspace inside the shell content region
+- Settings remains an integration target with a safe placeholder until that screen lands
 - Logout clears `SessionManager` and returns to login
 - Authenticated content requires a valid session
+
+## Transactions workspace
+
+`transactions.fxml` / `TransactionsController` provide:
+
+- Filter controls: search, account, transaction type, start/end date
+- Server-side filtering via `TransactionFilter` (controllers do not filter in memory)
+- Pagination with page size 20 using repository `limit` / `offset` / `count`
+- Summary metrics: matching result count (current filters) plus all-activity deposit/withdrawal/transfer totals
+- Row selection detail panel (masked account labels only)
+- CSV export through `FileChooser`, writing UTF-8 bytes from `TransactionExportService`
+
+Shared presentation:
+
+- `TransactionRowViewModel` — immutable UI row
+- `TransactionViewMapper` — maps ledger rows using a once-loaded `Map<Long, Account>` (no N+1)
+- `PaginationState` — pure page index / total / enablement helpers
+
+Dashboard and Accounts reuse the same mapper for consistent type labels, signed amounts, and transfer wording.
 
 ## Theme infrastructure
 
@@ -104,6 +124,12 @@ Queries always join through the authenticated user's accounts.
 - Proper CSV escaping for commas/quotes/newlines
 - Masked account labels
 - No password hashes or credentials
+- Counts matching rows first; exports of more than 10,000 matching transactions are rejected with a validation message (no partial CSV is produced)
+- Fetches matching rows internally in batches of 100
+- Export respects the current filter criteria and is not limited to the visible UI page
+- Descriptions beginning with `=`, `+`, `-`, `@`, tab, or carriage return are prefixed with `'` so spreadsheets do not evaluate them as formulas
+
+Search text normalization for filters uses `Locale.ROOT` for technical lowercase comparisons.
 
 ## Atomic transfers
 

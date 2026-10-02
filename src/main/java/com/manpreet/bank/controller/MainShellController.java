@@ -64,13 +64,8 @@ public class MainShellController implements AppAwareController {
     }
 
     @FXML
-    private void showTransactionsPlaceholder() {
-        currentSection = Section.TRANSACTIONS;
-        updateNavStyles();
-        contentHost.getChildren().setAll(placeholder(
-                "Transactions",
-                "A dedicated transaction workspace will connect here. Recent activity is available on Dashboard and Accounts."
-        ));
+    private void showTransactions() {
+        loadContent("/fxml/transactions.fxml", Section.TRANSACTIONS);
     }
 
     @FXML
@@ -97,7 +92,7 @@ public class MainShellController implements AppAwareController {
     public void refreshCurrentSection() {
         switch (currentSection) {
             case ACCOUNTS -> showAccounts();
-            case TRANSACTIONS -> showTransactionsPlaceholder();
+            case TRANSACTIONS -> showTransactions();
             case SETTINGS -> showSettingsPlaceholder();
             default -> showDashboard();
         }

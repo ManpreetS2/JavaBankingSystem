@@ -97,3 +97,13 @@
     -fx-spacing: 12;
     -fx-alignment: CENTER_LEFT;
 }
+
+.filter-panel,
+.detail-panel {
+    -fx-background-radius: 14px;
+    -fx-padding: 16;
+}
+
+.summary-row {
+    -fx-alignment: CENTER_LEFT;
+}
