@@ -50,7 +50,7 @@ public class AccountService {
     }
 
     public DepositResult deposit(long userId, long accountId, BigDecimal amount, String description) {
-        BigDecimal depositAmount = MoneyUtil.requirePositiveAmount(amount, "Deposit amount");
+        BigDecimal depositAmount = MoneyUtil.requireTransactionAmount(amount, "Deposit amount");
         String normalizedDescription = normalizeDescription(description, "Deposit");
 
         try {
@@ -79,7 +79,7 @@ public class AccountService {
     }
 
     public WithdrawalResult withdraw(long userId, long accountId, BigDecimal amount, String description) {
-        BigDecimal withdrawalAmount = MoneyUtil.requirePositiveAmount(amount, "Withdrawal amount");
+        BigDecimal withdrawalAmount = MoneyUtil.requireTransactionAmount(amount, "Withdrawal amount");
         String normalizedDescription = normalizeDescription(description, "Withdrawal");
 
         try {
@@ -120,7 +120,7 @@ public class AccountService {
             throw new ValidationException("Source and destination accounts must be different");
         }
 
-        BigDecimal transferAmount = MoneyUtil.requirePositiveAmount(amount, "Transfer amount");
+        BigDecimal transferAmount = MoneyUtil.requireTransactionAmount(amount, "Transfer amount");
         String normalizedDescription = normalizeDescription(description, "Transfer");
 
         try {

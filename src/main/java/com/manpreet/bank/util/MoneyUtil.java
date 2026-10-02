@@ -13,6 +13,11 @@ public final class MoneyUtil {
     public static final int SCALE = 2;
     public static final BigDecimal ZERO = BigDecimal.ZERO.setScale(SCALE, RoundingMode.UNNECESSARY);
 
+    /**
+     * Largest amount accepted for a single deposit, withdrawal, or transfer.
+     */
+    public static final BigDecimal MAX_TRANSACTION_AMOUNT = new BigDecimal("1000000.00");
+
     private MoneyUtil() {
     }
 
@@ -28,6 +33,19 @@ public final class MoneyUtil {
         BigDecimal normalized = requireValidAmount(amount, fieldName);
         if (normalized.compareTo(ZERO) <= 0) {
             throw new ValidationException(fieldName + " must be greater than zero");
+        }
+        return normalized;
+    }
+
+    /**
+     * Validates a deposit, withdrawal, or transfer amount: positive, at most two decimal places,
+     * and no larger than {@link #MAX_TRANSACTION_AMOUNT}.
+     */
+    public static BigDecimal requireTransactionAmount(BigDecimal amount, String fieldName) {
+        BigDecimal normalized = requirePositiveAmount(amount, fieldName);
+        if (normalized.compareTo(MAX_TRANSACTION_AMOUNT) > 0) {
+            throw new ValidationException(
+                    fieldName + " cannot exceed " + CurrencyFormatter.format(MAX_TRANSACTION_AMOUNT));
         }
         return normalized;
     }
