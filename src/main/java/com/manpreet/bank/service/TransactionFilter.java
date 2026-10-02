@@ -33,10 +33,6 @@ public record TransactionFilter(
         );
     }
 
-    public TransactionFilter withoutPagingDefaults() {
-        return withDefaults(20);
-    }
-
     public TransactionFilter withDefaults(int defaultLimit) {
         int resolvedLimit = limit == null ? defaultLimit : limit;
         int resolvedOffset = offset == null ? 0 : offset;

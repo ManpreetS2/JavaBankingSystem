@@ -109,6 +109,11 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
     private SceneManager sceneManager;
     private MainShellController shellController;
     private final PaginationState pagination = new PaginationState();
+    /**
+     * True while the status shows a filter, load, or export error; the next successful load clears it.
+     * Export results such as "Export complete." stay until the user acts again.
+     */
+    private boolean statusClearsOnNextLoad;
     private Map<Long, Account> accountsById = Map.of();
     private TransactionFilter activeFilter = TransactionFilter.recent(PaginationState.PAGE_SIZE);
 
@@ -118,7 +123,7 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         configureTable();
         configureFilters();
         clearDetails();
-        UiFeedback.clear(statusLabel);
+        clearStatus();
         loadSummaries();
         applyFilters(true);
     }
@@ -140,7 +145,7 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         typeFilter.getSelectionModel().selectFirst();
         startDatePicker.setValue(null);
         endDatePicker.setValue(null);
-        UiFeedback.clear(statusLabel);
+        clearStatus();
         clearDetails();
         applyFilters(true);
     }
@@ -189,18 +194,18 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
     private void exportTo(UserSession session, TransactionFilter filter, Path chosen) {
         Path target = CsvExportTarget.withCsvExtension(chosen);
         if (CsvExportTarget.requiresOverwriteConfirmation(chosen, target) && !confirmReplace(target)) {
-            UiFeedback.info(statusLabel, "Export canceled.");
+            showResult(UiFeedback.Kind.INFO, "Export canceled.");
             return;
         }
         try {
             byte[] bytes = sceneManager.getAppContext().getTransactionExportService()
                     .exportCsvBytes(session.userId(), filter);
             Files.write(target, bytes);
-            UiFeedback.success(statusLabel, "Export complete.");
+            showResult(UiFeedback.Kind.SUCCESS, "Export complete.");
         } catch (IOException e) {
-            UiFeedback.error(statusLabel, "Unable to export transactions. Please try again.");
+            showError("Unable to export transactions. Please try again.");
         } catch (RuntimeException e) {
-            UiFeedback.error(statusLabel, UiErrorMapper.toUserMessage(e));
+            showError(UiErrorMapper.toUserMessage(e));
         }
     }
 
@@ -340,16 +345,11 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
             pageLabel.setText(pagination.pageLabel());
             previousPageButton.setDisable(!pagination.hasPrevious());
             nextPageButton.setDisable(!pagination.hasNext());
-            String current = statusLabel.getText();
-            if (current == null || current.isBlank()
-                    || current.startsWith("End date")
-                    || current.startsWith("Something")
-                    || current.startsWith("Unable")
-                    || current.startsWith("Export supports")) {
-                UiFeedback.clear(statusLabel);
+            if (statusClearsOnNextLoad) {
+                clearStatus();
             }
         } catch (RuntimeException e) {
-            UiFeedback.error(statusLabel, UiErrorMapper.toUserMessage(e));
+            showError(UiErrorMapper.toUserMessage(e));
             transactionsTable.getItems().clear();
             emptyStateBox.setVisible(true);
             emptyStateBox.setManaged(true);
@@ -370,7 +370,7 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
             transfersInTotalLabel.setText(CurrencyFormatter.format(tx.totalTransfersIn(session.userId(), null, null)));
             transfersOutTotalLabel.setText(CurrencyFormatter.format(tx.totalTransfersOut(session.userId(), null, null)));
         } catch (RuntimeException e) {
-            UiFeedback.error(statusLabel, UiErrorMapper.toUserMessage(e));
+            showError(UiErrorMapper.toUserMessage(e));
         }
     }
 
@@ -378,7 +378,7 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         LocalDate start = startDatePicker.getValue();
         LocalDate end = endDatePicker.getValue();
         if (start != null && end != null && end.isBefore(start)) {
-            UiFeedback.error(statusLabel, "End date cannot be before start date.");
+            showError("End date cannot be before start date.");
             return null;
         }
         AccountOption account = accountFilter.getSelectionModel().getSelectedItem();
@@ -423,6 +423,21 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         detailRelatedLabel.setText("");
         detailDescriptionLabel.setText("");
         detailDateLabel.setText("");
+    }
+
+    private void showError(String message) {
+        UiFeedback.error(statusLabel, message);
+        statusClearsOnNextLoad = true;
+    }
+
+    private void showResult(UiFeedback.Kind kind, String message) {
+        UiFeedback.show(statusLabel, kind, message);
+        statusClearsOnNextLoad = false;
+    }
+
+    private void clearStatus() {
+        UiFeedback.clear(statusLabel);
+        statusClearsOnNextLoad = false;
     }
 
     private UserSession requireSession() {

@@ -37,9 +37,6 @@ public final class TransactionViewMapper {
                 ? null
                 : accountsById.get(transaction.getRelatedAccountId());
 
-        String accountLabel = account == null
-                ? "Account"
-                : shortAccountLabel(account.getAccountType());
         String relatedLabel = related == null
                 ? null
                 : shortAccountLabel(related.getAccountType());
