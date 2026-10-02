@@ -179,6 +179,39 @@ class ApplicationPathsTest {
         assertTrue(mac.startsWith(tempHome.toAbsolutePath().normalize()));
     }
 
+    @Test
+    void linuxIgnoresRelativeXdgDataHome() {
+        Path resolved = ApplicationPaths.applicationDataDirectory(
+                props("os.name", "Linux"),
+                env("XDG_DATA_HOME", "relative-data"),
+                tempHome
+        );
+        assertEquals(tempHome.resolve(".local").resolve("share").resolve(AppInfo.DATA_DIRECTORY_NAME), resolved);
+    }
+
+    @Test
+    void windowsIgnoresRelativeAppData() {
+        Path resolved = ApplicationPaths.applicationDataDirectory(
+                props("os.name", "Windows 11"),
+                env("APPDATA", "relative-app-data"),
+                tempHome
+        );
+        assertEquals(
+                tempHome.resolve("AppData").resolve("Roaming").resolve(AppInfo.DATA_DIRECTORY_NAME),
+                resolved
+        );
+    }
+
+    @Test
+    void relativeXdgDataHomeNeverResolvesUnderTheWorkingDirectory() {
+        Path resolved = ApplicationPaths.resolveDatabasePath(
+                props("os.name", "Linux"),
+                env("XDG_DATA_HOME", "relative-data"),
+                tempHome
+        );
+        assertTrue(resolved.startsWith(tempHome.toAbsolutePath().normalize()), resolved.toString());
+    }
+
     private static Function<String, String> props(String... keyValues) {
         Map<String, String> map = toMap(keyValues);
         return map::get;
