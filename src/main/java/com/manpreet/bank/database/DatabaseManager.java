@@ -7,13 +7,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Locale;
 import java.util.Objects;
+import org.sqlite.Function;
 
 /**
  * Manages SQLite JDBC connections for the banking application.
  * Connections enable foreign keys and must be closed by callers (prefer try-with-resources).
  */
 public class DatabaseManager {
+
+    /**
+     * SQL function that lowercases text with Java's Unicode rules. SQLite's built-in {@code LOWER()}
+     * only lowercases ASCII letters, so it cannot match a Java-lowercased search term against text such as "ÉCOLE".
+     */
+    public static final String UNICODE_LOWER_FUNCTION = "unicode_lower";
 
     private final Path databasePath;
 
@@ -46,6 +54,7 @@ public class DatabaseManager {
         Connection connection = DriverManager.getConnection(url);
         try {
             enableForeignKeys(connection);
+            registerFunctions(connection);
             return connection;
         } catch (SQLException configurationException) {
             try {
@@ -108,6 +117,19 @@ public class DatabaseManager {
     private void enableForeignKeys(Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             statement.execute("PRAGMA foreign_keys = ON");
+        }
+    }
+
+    private static void registerFunctions(Connection connection) throws SQLException {
+        Function.create(connection, UNICODE_LOWER_FUNCTION, new UnicodeLower(), 1, Function.FLAG_DETERMINISTIC);
+    }
+
+    private static final class UnicodeLower extends Function {
+
+        @Override
+        protected void xFunc() throws SQLException {
+            String value = value_text(0);
+            result(value == null ? null : value.toLowerCase(Locale.ROOT));
         }
     }
 }

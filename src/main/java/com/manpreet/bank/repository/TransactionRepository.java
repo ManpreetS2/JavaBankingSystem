@@ -303,9 +303,9 @@ public class TransactionRepository {
         if (filter.searchText() != null) {
             sql.append("""
                      AND (
-                        LOWER(COALESCE(t.description, '')) LIKE ? ESCAPE '\\'
-                        OR LOWER(a.account_number) LIKE ? ESCAPE '\\'
-                        OR LOWER(a.account_type) LIKE ? ESCAPE '\\'
+                        unicode_lower(COALESCE(t.description, '')) LIKE ? ESCAPE '\\'
+                        OR unicode_lower(a.account_number) LIKE ? ESCAPE '\\'
+                        OR unicode_lower(a.account_type) LIKE ? ESCAPE '\\'
                      )
                     """);
             String pattern = "%" + escapeLikeLiteral(filter.searchText().toLowerCase(Locale.ROOT)) + "%";
