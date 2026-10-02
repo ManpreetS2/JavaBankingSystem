@@ -53,6 +53,7 @@ Dashboard and Accounts reuse the same mapper for consistent type labels, signed 
 
 - `Theme` (`LIGHT` / `DARK`)
 - `ThemeManager` applies `base.css`, `components.css`, and the active theme stylesheet to managed scenes
+- Short-lived dialog roots use `ThemeManager.applyTo(Parent)` without remaining registered for theme updates
 - Controllers do not load CSS ad hoc
 - Theme persistence is deferred to the settings experience
 

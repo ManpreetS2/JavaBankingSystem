@@ -22,6 +22,8 @@ public class MainShellController implements AppAwareController {
     }
 
     @FXML
+    private Label shellSectionLabel;
+    @FXML
     private Label shellGreetingLabel;
     @FXML
     private Label shellUserLabel;
@@ -125,6 +127,14 @@ public class MainShellController implements AppAwareController {
         setActive(accountsNavButton, currentSection == Section.ACCOUNTS);
         setActive(transactionsNavButton, currentSection == Section.TRANSACTIONS);
         setActive(settingsNavButton, currentSection == Section.SETTINGS);
+        if (shellSectionLabel != null) {
+            shellSectionLabel.setText(switch (currentSection) {
+                case DASHBOARD -> "Dashboard";
+                case ACCOUNTS -> "Accounts";
+                case TRANSACTIONS -> "Transactions";
+                case SETTINGS -> "Settings";
+            });
+        }
     }
 
     private static void setActive(Button button, boolean active) {
@@ -144,12 +154,12 @@ public class MainShellController implements AppAwareController {
 
     private static VBox placeholder(String title, String body) {
         Label titleLabel = new Label(title);
-        titleLabel.getStyleClass().add("section-title");
+        titleLabel.getStyleClass().add("page-title");
         Label bodyLabel = new Label(body);
-        bodyLabel.getStyleClass().addAll("body-secondary", "empty-state");
+        bodyLabel.getStyleClass().add("body-secondary");
         bodyLabel.setWrapText(true);
         VBox box = new VBox(12, titleLabel, bodyLabel);
-        box.getStyleClass().add("content-root");
+        box.getStyleClass().addAll("content-root", "empty-state-card");
         return box;
     }
 }

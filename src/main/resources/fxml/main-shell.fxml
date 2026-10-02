@@ -4,34 +4,46 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.manpreet.bank.controller.MainShellController"
-            fx:id="shellRoot">
+            fx:controller="com.manpreet.bank.controller.MainShellController">
 
     <left>
         <VBox fx:id="sidebar" styleClass="sidebar">
-            <Label text="Banking System" styleClass="section-title"/>
+            <VBox styleClass="sidebar-brand">
+                <Label text="Banking System" styleClass="brand-mark"/>
+                <Label text="Personal banking" styleClass="brand-tagline"/>
+            </VBox>
+
+            <Label text="NAVIGATION" styleClass="sidebar-nav-label"/>
             <Button fx:id="dashboardNavButton" text="Dashboard" onAction="#showDashboard" styleClass="sidebar-item"/>
             <Button fx:id="accountsNavButton" text="Accounts" onAction="#showAccounts" styleClass="sidebar-item"/>
             <Button fx:id="transactionsNavButton" text="Transactions" onAction="#showTransactions" styleClass="sidebar-item"/>
             <Button fx:id="settingsNavButton" text="Settings" onAction="#showSettingsPlaceholder" styleClass="sidebar-item"/>
-            <VBox VBox.vgrow="ALWAYS"/>
-            <Button text="Toggle theme" onAction="#toggleTheme" styleClass="sidebar-item"/>
-            <Button text="Logout" onAction="#handleLogout" styleClass="sidebar-item"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox styleClass="sidebar-footer">
+                <Button text="Toggle theme" onAction="#toggleTheme" styleClass="sidebar-item"/>
+                <Button text="Logout" onAction="#handleLogout" styleClass="sidebar-item"/>
+            </VBox>
         </VBox>
     </left>
 
     <center>
         <VBox>
             <HBox styleClass="shell-topbar">
-                <Label fx:id="shellGreetingLabel" text="Welcome" styleClass="page-title"/>
-                <HBox HBox.hgrow="ALWAYS"/>
+                <VBox spacing="2">
+                    <Label fx:id="shellSectionLabel" text="Dashboard" styleClass="section-title"/>
+                    <Label fx:id="shellGreetingLabel" text="Welcome" styleClass="body-secondary"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
                 <Label fx:id="shellUserLabel" styleClass="body-secondary"/>
             </HBox>
-            <StackPane fx:id="contentHost" VBox.vgrow="ALWAYS"/>
+            <StackPane fx:id="contentHost" styleClass="shell-content-host" VBox.vgrow="ALWAYS"/>
         </VBox>
     </center>
 </BorderPane>

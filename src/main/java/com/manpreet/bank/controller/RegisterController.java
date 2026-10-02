@@ -5,6 +5,7 @@ import com.manpreet.bank.exception.ValidationException;
 import com.manpreet.bank.ui.AppAwareController;
 import com.manpreet.bank.ui.SceneManager;
 import com.manpreet.bank.ui.UiErrorMapper;
+import com.manpreet.bank.ui.UiFeedback;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -32,16 +33,17 @@ public class RegisterController implements AppAwareController {
     @Override
     public void setSceneManager(SceneManager sceneManager) {
         this.sceneManager = sceneManager;
+        UiFeedback.clear(errorLabel);
     }
 
     @FXML
     private void handleRegister() {
-        errorLabel.setText("");
+        UiFeedback.clear(errorLabel);
         String password = passwordField.getText();
         String confirm = confirmPasswordField.getText();
 
         if (password == null || !password.equals(confirm)) {
-            errorLabel.setText("Password and confirmation do not match");
+            UiFeedback.error(errorLabel, "Password and confirmation do not match");
             clearPasswords();
             return;
         }
@@ -61,10 +63,10 @@ public class RegisterController implements AppAwareController {
             );
             sceneManager.showLogin();
         } catch (ValidationException | DuplicateUserException e) {
-            errorLabel.setText(e.getMessage());
+            UiFeedback.error(errorLabel, e.getMessage());
             clearPasswords();
         } catch (RuntimeException e) {
-            errorLabel.setText(UiErrorMapper.toUserMessage(e));
+            UiFeedback.error(errorLabel, UiErrorMapper.toUserMessage(e));
             clearPasswords();
         }
     }

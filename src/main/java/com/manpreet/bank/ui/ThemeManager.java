@@ -3,10 +3,11 @@ package com.manpreet.bank.ui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 /**
- * Applies light/dark stylesheets to application scenes.
+ * Applies light/dark stylesheets to application scenes and transient dialog roots.
  */
 public class ThemeManager {
 
@@ -41,11 +42,38 @@ public class ThemeManager {
         setTheme(currentTheme == Theme.LIGHT ? Theme.DARK : Theme.LIGHT);
     }
 
-    private void applyTo(Scene scene) {
-        scene.getStylesheets().clear();
-        scene.getStylesheets().add(resource(BASE));
-        scene.getStylesheets().add(resource(COMPONENTS));
-        scene.getStylesheets().add(resource(currentTheme == Theme.DARK ? DARK : LIGHT));
+    /**
+     * Applies the current application stylesheets to a scene.
+     * Managed scenes are also updated when the theme changes.
+     */
+    public synchronized void applyTo(Scene scene) {
+        Objects.requireNonNull(scene, "scene must not be null");
+        scene.getStylesheets().setAll(currentStylesheetUrls());
+    }
+
+    /**
+     * Applies the current application stylesheets to a parent root such as a {@code DialogPane}.
+     * Does not register the parent for future theme updates (suitable for short-lived dialogs).
+     */
+    public synchronized void applyTo(Parent parent) {
+        Objects.requireNonNull(parent, "parent must not be null");
+        parent.getStylesheets().setAll(currentStylesheetUrls());
+    }
+
+    private List<String> currentStylesheetUrls() {
+        return stylesheetPaths().stream().map(ThemeManager::resource).toList();
+    }
+
+    /**
+     * Classpath stylesheet paths for the current theme (base, components, theme).
+     * Useful for tests that verify resources resolve without creating JavaFX nodes.
+     */
+    List<String> stylesheetPaths() {
+        return List.of(
+                BASE,
+                COMPONENTS,
+                currentTheme == Theme.DARK ? DARK : LIGHT
+        );
     }
 
     private static String resource(String path) {

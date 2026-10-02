@@ -1,22 +1,43 @@
 package com.manpreet.bank.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.manpreet.bank.exception.InsufficientFundsException;
 import com.manpreet.bank.exception.ValidationException;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class UiSupportTest {
 
     @Test
-    void themeManagerTracksCurrentTheme() {
+    void themeManagerTracksCurrentThemeAndResolvesStylesheets() {
         ThemeManager manager = new ThemeManager();
         assertEquals(Theme.LIGHT, manager.getCurrentTheme());
+        List<String> lightPaths = manager.stylesheetPaths();
+        assertEquals(3, lightPaths.size());
+        assertTrue(lightPaths.get(0).endsWith("/css/base.css"));
+        assertTrue(lightPaths.get(1).endsWith("/css/components.css"));
+        assertTrue(lightPaths.get(2).endsWith("/css/theme-light.css"));
+        for (String path : lightPaths) {
+            assertNotNull(ThemeManager.class.getResource(path), "Missing stylesheet resource: " + path);
+        }
+
         manager.toggleTheme();
         assertEquals(Theme.DARK, manager.getCurrentTheme());
+        assertTrue(manager.stylesheetPaths().get(2).endsWith("/css/theme-dark.css"));
+        assertNotNull(ThemeManager.class.getResource(manager.stylesheetPaths().get(2)));
+
         manager.setTheme(Theme.LIGHT);
         assertEquals(Theme.LIGHT, manager.getCurrentTheme());
+    }
+
+    @Test
+    void uiWindowsReturnsNullForMissingNode() {
+        assertNull(UiWindows.from(null));
     }
 
     @Test

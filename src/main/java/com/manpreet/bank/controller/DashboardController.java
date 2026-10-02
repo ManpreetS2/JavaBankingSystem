@@ -10,6 +10,8 @@ import com.manpreet.bank.ui.SceneManager;
 import com.manpreet.bank.ui.TransactionRowViewModel;
 import com.manpreet.bank.ui.TransactionViewMapper;
 import com.manpreet.bank.ui.UiErrorMapper;
+import com.manpreet.bank.ui.UiFeedback;
+import com.manpreet.bank.ui.UiWindows;
 import com.manpreet.bank.util.AccountNumberFormatter;
 import com.manpreet.bank.util.CurrencyFormatter;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
 
 public class DashboardController implements AppAwareController, ShellAwareController {
 
@@ -40,7 +43,7 @@ public class DashboardController implements AppAwareController, ShellAwareContro
     @FXML
     private Label savingsBalanceLabel;
     @FXML
-    private Label emptyStateLabel;
+    private VBox emptyStateBox;
     @FXML
     private TableView<TransactionRowViewModel> transactionsTable;
     @FXML
@@ -67,6 +70,7 @@ public class DashboardController implements AppAwareController, ShellAwareContro
         dateColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().dateLabel()));
         amountColumn.setCellValueFactory(cd -> new SimpleStringProperty(cd.getValue().signedAmount()));
         amountColumn.setCellFactory(column -> signedAmountCell());
+        UiFeedback.clear(statusLabel);
         refreshDashboard();
     }
 
@@ -81,10 +85,12 @@ public class DashboardController implements AppAwareController, ShellAwareContro
         if (session == null || viewModel == null) {
             return;
         }
-        BankingDialogs.showDeposit(sceneManager.getAppContext(), session, viewModel.checking())
+        UiFeedback.clear(statusLabel);
+        BankingDialogs.showDeposit(
+                        sceneManager.getAppContext(), session, viewModel.checking(), UiWindows.from(statusLabel))
                 .ifPresent(success -> {
                     if (success) {
-                        statusLabel.setText("Deposit successful.");
+                        UiFeedback.success(statusLabel, "Deposit successful.");
                         refreshDashboard();
                     }
                 });
@@ -96,10 +102,12 @@ public class DashboardController implements AppAwareController, ShellAwareContro
         if (session == null || viewModel == null) {
             return;
         }
-        BankingDialogs.showWithdraw(sceneManager.getAppContext(), session, viewModel.checking())
+        UiFeedback.clear(statusLabel);
+        BankingDialogs.showWithdraw(
+                        sceneManager.getAppContext(), session, viewModel.checking(), UiWindows.from(statusLabel))
                 .ifPresent(success -> {
                     if (success) {
-                        statusLabel.setText("Withdrawal successful.");
+                        UiFeedback.success(statusLabel, "Withdrawal successful.");
                         refreshDashboard();
                     }
                 });
@@ -111,10 +119,11 @@ public class DashboardController implements AppAwareController, ShellAwareContro
         if (session == null) {
             return;
         }
-        BankingDialogs.showTransfer(sceneManager.getAppContext(), session)
+        UiFeedback.clear(statusLabel);
+        BankingDialogs.showTransfer(sceneManager.getAppContext(), session, UiWindows.from(statusLabel))
                 .ifPresent(success -> {
                     if (success) {
-                        statusLabel.setText("Transfer successful.");
+                        UiFeedback.success(statusLabel, "Transfer successful.");
                         refreshDashboard();
                     }
                 });
@@ -142,14 +151,18 @@ public class DashboardController implements AppAwareController, ShellAwareContro
                     viewModel.recentTransactions(), accountsById);
             transactionsTable.setItems(FXCollections.observableArrayList(rows));
             boolean empty = rows.isEmpty();
-            emptyStateLabel.setVisible(empty);
-            emptyStateLabel.setManaged(empty);
+            emptyStateBox.setVisible(empty);
+            emptyStateBox.setManaged(empty);
             transactionsTable.setVisible(!empty);
             transactionsTable.setManaged(!empty);
             subtitleLabel.setText("Hello " + session.firstName() + ", here is your banking overview.");
         } catch (RuntimeException e) {
-            statusLabel.getStyleClass().setAll("error-text");
-            statusLabel.setText(UiErrorMapper.toUserMessage(e));
+            UiFeedback.error(statusLabel, UiErrorMapper.toUserMessage(e));
+            transactionsTable.getItems().clear();
+            emptyStateBox.setVisible(true);
+            emptyStateBox.setManaged(true);
+            transactionsTable.setVisible(false);
+            transactionsTable.setManaged(false);
         }
     }
 

@@ -47,14 +47,6 @@ public class SceneManager {
         showFullScreen("/fxml/main-shell.fxml", "Banking System");
     }
 
-    /**
-     * Compatibility alias for authenticated navigation.
-     */
-    @Deprecated
-    public void showDashboard() {
-        showAuthenticatedShell();
-    }
-
     private void showFullScreen(String fxmlPath, String title) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));

@@ -2,56 +2,69 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.manpreet.bank.controller.AccountsController"
-      spacing="16"
-      styleClass="content-root">
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.manpreet.bank.controller.AccountsController"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            styleClass="content-scroll">
 
-    <Label text="Accounts" styleClass="section-title"/>
-    <Label text="Manage your checking and savings accounts" styleClass="body-secondary"/>
-    <Label fx:id="statusLabel" styleClass="success-text"/>
-
-    <HBox spacing="16">
-        <VBox spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
-            <Label text="Checking" styleClass="section-title"/>
-            <Label fx:id="checkingNumberLabel" styleClass="body-secondary"/>
-            <Label fx:id="checkingBalanceLabel" text="$0.00" styleClass="balance-primary"/>
-            <Label fx:id="checkingOpenedLabel" styleClass="caption"/>
-            <HBox spacing="8">
-                <Button text="Deposit" onAction="#depositChecking" styleClass="button-primary"/>
-                <Button text="Withdraw" onAction="#withdrawChecking" styleClass="button-secondary"/>
-            </HBox>
+    <VBox spacing="16" styleClass="content-root">
+        <VBox spacing="4" styleClass="page-header">
+            <Label text="Accounts" styleClass="page-title"/>
+            <Label text="Manage your checking and savings accounts" styleClass="page-subtitle, body-secondary"/>
+            <Label fx:id="statusLabel" styleClass="success-text" managed="false" visible="false"/>
         </VBox>
-        <VBox spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
-            <Label text="Savings" styleClass="section-title"/>
-            <Label fx:id="savingsNumberLabel" styleClass="body-secondary"/>
-            <Label fx:id="savingsBalanceLabel" text="$0.00" styleClass="balance-primary"/>
-            <Label fx:id="savingsOpenedLabel" styleClass="caption"/>
-            <HBox spacing="8">
-                <Button text="Deposit" onAction="#depositSavings" styleClass="button-primary"/>
-                <Button text="Transfer" onAction="#transferBetweenAccounts" styleClass="button-secondary"/>
-            </HBox>
-        </VBox>
-    </HBox>
 
-    <Label text="Selected account activity" styleClass="section-title"/>
-    <Label fx:id="activityScopeLabel" text="Select an account to view recent activity." styleClass="body-secondary"/>
-    <HBox spacing="8">
-        <Button text="Show checking activity" onAction="#showCheckingActivity" styleClass="button-secondary"/>
-        <Button text="Show savings activity" onAction="#showSavingsActivity" styleClass="button-secondary"/>
-    </HBox>
-    <Label fx:id="emptyStateLabel" text="Select an account to view recent activity." styleClass="empty-state body-secondary"/>
-    <TableView fx:id="transactionsTable" styleClass="transactions-table" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="typeColumn" text="Type" prefWidth="140"/>
-            <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="280"/>
-            <TableColumn fx:id="dateColumn" text="Date" prefWidth="180"/>
-            <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120"/>
-        </columns>
-    </TableView>
-</VBox>
+        <HBox spacing="16">
+            <VBox fx:id="checkingCard" spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
+                <Label text="Checking" styleClass="card-title"/>
+                <Label fx:id="checkingNumberLabel" styleClass="body-secondary"/>
+                <Label fx:id="checkingBalanceLabel" text="$0.00" styleClass="balance-secondary"/>
+                <Label fx:id="checkingOpenedLabel" styleClass="caption"/>
+                <HBox spacing="8">
+                    <Button text="Deposit" onAction="#depositChecking" styleClass="button-primary, button-compact"/>
+                    <Button text="Withdraw" onAction="#withdrawChecking" styleClass="button-secondary, button-compact"/>
+                    <Button text="View activity" onAction="#showCheckingActivity" styleClass="button-ghost, button-compact"/>
+                </HBox>
+            </VBox>
+            <VBox fx:id="savingsCard" spacing="8" styleClass="account-card" HBox.hgrow="ALWAYS">
+                <Label text="Savings" styleClass="card-title"/>
+                <Label fx:id="savingsNumberLabel" styleClass="body-secondary"/>
+                <Label fx:id="savingsBalanceLabel" text="$0.00" styleClass="balance-secondary"/>
+                <Label fx:id="savingsOpenedLabel" styleClass="caption"/>
+                <HBox spacing="8">
+                    <Button text="Deposit" onAction="#depositSavings" styleClass="button-primary, button-compact"/>
+                    <Button text="Transfer" onAction="#transferBetweenAccounts" styleClass="button-secondary, button-compact"/>
+                    <Button text="View activity" onAction="#showSavingsActivity" styleClass="button-ghost, button-compact"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <VBox spacing="12" styleClass="action-card">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="Account activity" styleClass="section-title"/>
+                <Label fx:id="activityScopeChip" text="Checking" styleClass="selection-chip"/>
+            </HBox>
+            <Label fx:id="activityScopeLabel" text="Select an account to view recent activity." styleClass="body-secondary"/>
+        </VBox>
+
+        <VBox fx:id="emptyStateBox" spacing="8" styleClass="empty-state-card" managed="false" visible="false">
+            <Label text="No transactions yet" styleClass="card-title"/>
+            <Label text="Activity for the selected account will appear here." styleClass="body-secondary"/>
+        </VBox>
+        <TableView fx:id="transactionsTable" styleClass="transactions-table" prefHeight="280" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="typeColumn" text="Type" prefWidth="160"/>
+                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="300"/>
+                <TableColumn fx:id="dateColumn" text="Date" prefWidth="160"/>
+                <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120"/>
+            </columns>
+        </TableView>
+    </VBox>
+</ScrollPane>
