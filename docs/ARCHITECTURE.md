@@ -168,7 +168,7 @@ Parent directories are created before SQLite opens. Failures surface as concise 
 - account scope (must be owned by authenticated user)
 - transaction type
 - start/end dates (`>= start`, `< end+1 day`)
-- search text (description / owned account labels)
+- search text (description / owned account labels), case-insensitive for all letters through the `unicode_lower` SQL function that `DatabaseManager` registers on each connection; SQLite's built-in `LOWER()` only handles ASCII
 - limit/offset pagination (1–100)
 
 Queries always join through the authenticated user's accounts.
