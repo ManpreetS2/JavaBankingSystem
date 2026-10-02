@@ -156,6 +156,8 @@ Parent directories are created before SQLite opens. Failures surface as concise 
 - Domain money uses `BigDecimal`, never `double`/`float`
 - Canonical USD scale is 2 decimal places
 - Values requiring more than 2 decimals are rejected
+- A single deposit, withdrawal, or transfer is limited to `MoneyUtil.MAX_TRANSACTION_AMOUNT` ($1,000,000.00), enforced by `AccountService`
+- Dialog amount entry accepts plain decimals only; exponent notation such as `1E+15` is rejected before it reaches the service
 - SQLite stores balances/amounts as exact text strings such as `1400.00`
 - UI formatting uses `CurrencyFormatter` only
 
