@@ -126,6 +126,33 @@
     -fx-background-color: #B91C1C;
 }
 
+/* Keyboard focus: a ring drawn as an effect so focusing never changes layout. Shown for keyboard focus only. */
+.button-primary:focus-visible,
+.button-secondary:focus-visible,
+.button-ghost:focus-visible,
+.button-danger:focus-visible {
+    -fx-effect: dropshadow(one-pass-box, #4F46E5, 5, 1.0, 0, 0);
+}
+
+/* Primary buttons share the ring color, so they get a white gap between the fill and the ring. */
+.button-primary:focus-visible {
+    -fx-effect: null;
+    -fx-background-color: #4F46E5, #FFFFFF, #4F46E5;
+    -fx-background-insets: -4, -2, 0;
+    -fx-background-radius: 14px, 12px, 10px;
+}
+
+/* Sidebar items have no fill at rest, so their ring is a 2px background layer inside the item. */
+.sidebar-item:focus-visible {
+    -fx-background-color: #A5B4FC, #111827;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 10px, 8px;
+}
+
+.sidebar-item-active:focus-visible {
+    -fx-background-color: #A5B4FC, #4F46E5;
+}
+
 .input,
 .text-area-input {
     -fx-background-color: #FFFFFF;
