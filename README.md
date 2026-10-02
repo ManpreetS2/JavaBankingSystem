@@ -149,6 +149,8 @@ Place final icons in `src/main/resources/icons/` as `app.png` / `app.icns` when 
 | Windows | `%APPDATA%/BankingSystem/banking.db` |
 | Linux | `$XDG_DATA_HOME/BankingSystem/banking.db` or `~/.local/share/BankingSystem/banking.db` |
 
+`%APPDATA%` and `$XDG_DATA_HOME` are used only when they hold an absolute path; otherwise the default location applies.
+
 Legacy `./data/banking.db` from earlier development builds is not moved or deleted automatically.
 
 ## Project Structure

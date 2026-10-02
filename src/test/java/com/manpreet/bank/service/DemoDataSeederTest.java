@@ -163,6 +163,41 @@ class DemoDataSeederTest {
         assertEquals(1, countExactDescription(session.userId(), DemoDataSeeder.DESC_PAYCHECK));
     }
 
+    @Test
+    void existingAccountWithTheDemoUsernameIsReportedAsAConflict() {
+        context.getAuthService().register("Real", "Person", "real@example.com",
+                DemoDataSeeder.DEMO_USERNAME, "my-own-password-123");
+
+        IllegalStateException error = assertThrows(IllegalStateException.class,
+                () -> context.getDemoDataSeeder().seedIfAbsent());
+
+        assertEquals(DemoDataSeeder.DEMO_ACCOUNT_CONFLICT_MESSAGE, error.getMessage());
+        assertTrue(error.getMessage().contains("-Dbank.db.path"));
+    }
+
+    @Test
+    void existingAccountWithTheDemoEmailIsReportedAsAConflict() {
+        context.getAuthService().register("Real", "Person", DemoDataSeeder.DEMO_EMAIL,
+                "someone_else", "my-own-password-123");
+
+        IllegalStateException error = assertThrows(IllegalStateException.class,
+                () -> context.getDemoDataSeeder().seedIfAbsent());
+
+        assertEquals(DemoDataSeeder.DEMO_ACCOUNT_CONFLICT_MESSAGE, error.getMessage());
+    }
+
+    @Test
+    void conflictingAccountIsLeftUntouched() {
+        UserSession real = context.getAuthService().register("Real", "Person", "real@example.com",
+                DemoDataSeeder.DEMO_USERNAME, "my-own-password-123");
+
+        assertThrows(IllegalStateException.class, () -> context.getDemoDataSeeder().seedIfAbsent());
+
+        assertEquals(0, context.getTransactionService().getRecentActivity(real.userId(), 20).size());
+        assertEquals(real.userId(),
+                context.getAuthService().authenticate(DemoDataSeeder.DEMO_USERNAME, "my-own-password-123").userId());
+    }
+
     private void drainDemoBalancesToZero(long userId) {
         List<Account> accounts = context.getAccountService().getAccountsForUser(userId);
         Account checking = find(accounts, AccountType.CHECKING);
