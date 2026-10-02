@@ -28,7 +28,7 @@
 
             <VBox styleClass="sidebar-footer">
                 <Button text="Toggle theme" onAction="#toggleTheme" styleClass="sidebar-item"/>
-                <Button text="Logout" onAction="#handleLogout" styleClass="sidebar-item"/>
+                <Button text="Sign out" onAction="#handleLogout" styleClass="sidebar-item"/>
             </VBox>
         </VBox>
     </left>

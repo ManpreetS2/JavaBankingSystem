@@ -24,7 +24,7 @@ class AppInfoTest {
     @Test
     void windowTitlesUseProductName() {
         assertEquals(AppInfo.APPLICATION_NAME, AppInfo.windowTitle());
-        assertEquals(AppInfo.APPLICATION_NAME + " — Login", AppInfo.windowTitle("Login"));
+        assertEquals(AppInfo.APPLICATION_NAME + " — Sign in", AppInfo.windowTitle("Sign in"));
         assertEquals(AppInfo.APPLICATION_NAME, AppInfo.windowTitle("  "));
     }
 }

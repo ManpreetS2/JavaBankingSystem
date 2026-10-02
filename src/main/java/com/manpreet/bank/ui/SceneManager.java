@@ -33,11 +33,11 @@ public class SceneManager {
     }
 
     public void showLogin() {
-        showFullScreen("/fxml/login.fxml", AppInfo.windowTitle("Login"));
+        showFullScreen("/fxml/login.fxml", AppInfo.windowTitle("Sign in"));
     }
 
     public void showRegister() {
-        showFullScreen("/fxml/register.fxml", AppInfo.windowTitle("Register"));
+        showFullScreen("/fxml/register.fxml", AppInfo.windowTitle("Create account"));
     }
 
     public void showAuthenticatedShell() {

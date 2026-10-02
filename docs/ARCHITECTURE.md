@@ -37,11 +37,11 @@ Composition root:
 
 After login, navigation uses `main-shell.fxml` / `MainShellController`:
 
-- Persistent sidebar: Dashboard, Accounts, Transactions, Settings, Logout
+- Persistent sidebar: Dashboard, Accounts, Transactions, Settings, Sign out
 - Content host swaps views inside one stage
 - Transactions loads a dedicated workspace inside the shell content region
 - Settings loads `settings.fxml` inside the shell content region
-- Logout clears `SessionManager` and returns to login
+- Sign out clears `SessionManager` and returns to the sign-in screen
 - Authenticated content requires a valid session
 
 ## Transactions workspace
