@@ -1,5 +1,6 @@
 package com.manpreet.bank.service;
 
+import com.manpreet.bank.exception.AuthenticationException;
 import com.manpreet.bank.exception.DuplicateUserException;
 import com.manpreet.bank.model.Account;
 import com.manpreet.bank.model.AccountType;
@@ -44,6 +45,11 @@ public class DemoDataSeeder {
                     + "-Dbank.db.path at a fresh file) and restart with -Dbank.demo.seed=true. "
                     + "Partially seeded demo data is not automatically repaired.";
 
+    public static final String DEMO_ACCOUNT_CONFLICT_MESSAGE =
+            "The demo username '" + DEMO_USERNAME + "' or email '" + DEMO_EMAIL + "' belongs to an existing account "
+                    + "that does not use the demo password. Point -Dbank.db.path at a fresh database file "
+                    + "and restart with -Dbank.demo.seed=true.";
+
     enum SeedState {
         EMPTY,
         PARTIAL,
@@ -79,9 +85,19 @@ public class DemoDataSeeder {
             populateActivity(session.userId());
             return session;
         } catch (DuplicateUserException e) {
-            UserSession existing = authService.authenticate(DEMO_USERNAME, DEMO_PASSWORD);
+            UserSession existing = authenticateExistingDemoUser(e);
             populateActivity(existing.userId());
             return existing;
+        }
+    }
+
+    private UserSession authenticateExistingDemoUser(DuplicateUserException duplicate) {
+        try {
+            return authService.authenticate(DEMO_USERNAME, DEMO_PASSWORD);
+        } catch (AuthenticationException e) {
+            IllegalStateException conflict = new IllegalStateException(DEMO_ACCOUNT_CONFLICT_MESSAGE, e);
+            conflict.addSuppressed(duplicate);
+            throw conflict;
         }
     }
 
