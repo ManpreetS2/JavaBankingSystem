@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Optional explicit demo-data facility. Never runs automatically at startup.
+ * Optional explicit demo-data facility.
+ * Never runs during normal production startup unless {@code -Dbank.demo.seed=true} is set.
  */
 public class DemoDataSeeder {
 
@@ -27,7 +28,7 @@ public class DemoDataSeeder {
 
     /**
      * Creates a representative demo user and sample activity when missing.
-     * Safe to call repeatedly: existing demo username is left unchanged.
+     * Safe to call repeatedly: existing demo username/activity is left unchanged.
      */
     public UserSession seedIfAbsent() {
         try {
@@ -41,7 +42,9 @@ public class DemoDataSeeder {
             populateActivity(session.userId());
             return session;
         } catch (DuplicateUserException e) {
-            return authService.authenticate(DEMO_USERNAME, DEMO_PASSWORD);
+            UserSession existing = authService.authenticate(DEMO_USERNAME, DEMO_PASSWORD);
+            populateActivity(existing.userId());
+            return existing;
         }
     }
 
@@ -66,9 +69,16 @@ public class DemoDataSeeder {
                 userId,
                 checking.getId(),
                 savings.getId(),
-                new BigDecimal("400.00"),
+                new BigDecimal("500.00"),
+                "Emergency fund transfer"
+        );
+        accountService.withdraw(userId, checking.getId(), new BigDecimal("60.00"), "ATM withdrawal");
+        accountService.transfer(
+                userId,
+                checking.getId(),
+                savings.getId(),
+                new BigDecimal("200.00"),
                 "Transfer to savings"
         );
-        accountService.withdraw(userId, checking.getId(), new BigDecimal("45.00"), "ATM withdrawal");
     }
 }

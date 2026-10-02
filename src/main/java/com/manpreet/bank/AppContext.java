@@ -37,7 +37,7 @@ public class AppContext {
     private final ThemeManager themeManager;
 
     public AppContext() {
-        this(new DatabaseManager());
+        this(ApplicationPaths.resolveDatabasePath());
     }
 
     public AppContext(Path databasePath) {

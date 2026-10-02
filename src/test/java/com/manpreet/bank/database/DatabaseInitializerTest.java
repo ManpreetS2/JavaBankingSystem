@@ -270,7 +270,7 @@ class DatabaseInitializerTest {
         DatabaseInitializer legacyInitializer = new DatabaseInitializer(legacyManager);
         IllegalStateException error = assertThrows(IllegalStateException.class, legacyInitializer::initialize);
         assertTrue(error.getMessage().contains("older schema"));
-        assertTrue(error.getMessage().contains("Delete ./data/banking.db"));
+        assertTrue(error.getMessage().contains("Delete the database file"));
         assertEquals(0, legacyInitializer.readSchemaVersion());
     }
 

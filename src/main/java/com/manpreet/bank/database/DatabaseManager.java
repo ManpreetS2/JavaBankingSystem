@@ -15,12 +15,14 @@ import java.util.Objects;
  */
 public class DatabaseManager {
 
-    private static final Path DEFAULT_DATABASE_PATH = Path.of("data", "banking.db");
-
     private final Path databasePath;
 
+    /**
+     * Uses the resolved application-data database path.
+     * Prefer {@link #DatabaseManager(Path)} in tests.
+     */
     public DatabaseManager() {
-        this(DEFAULT_DATABASE_PATH);
+        this(com.manpreet.bank.ApplicationPaths.resolveDatabasePath());
     }
 
     public DatabaseManager(Path databasePath) {
@@ -95,7 +97,11 @@ public class DatabaseManager {
         try {
             Files.createDirectories(parent);
         } catch (IOException e) {
-            throw new SQLException("Unable to create database directory: " + parent, e);
+            throw new SQLException(
+                    "Unable to create the application data directory at " + parent
+                            + ". Check that the location is writable.",
+                    e
+            );
         }
     }
 
