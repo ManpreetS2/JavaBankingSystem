@@ -68,6 +68,43 @@ class ThemePreferencePersistenceTest {
     }
 
     @Test
+    void loadRuntimeFailureDefaultsToLight() {
+        ThemePreferenceStore failingStore = new ThemePreferenceStore() {
+            @Override
+            public Optional<String> load() {
+                throw new RuntimeException("preferences unavailable");
+            }
+
+            @Override
+            public void save(Theme theme) {
+                throw new UnsupportedOperationException("not used");
+            }
+        };
+
+        ThemeManager manager = new ThemeManager(failingStore);
+        assertEquals(Theme.LIGHT, manager.getCurrentTheme());
+        assertTrue(manager.stylesheetPaths().get(2).endsWith("/css/theme-light.css"));
+    }
+
+    @Test
+    void loadSecurityExceptionDefaultsToLight() {
+        ThemePreferenceStore failingStore = new ThemePreferenceStore() {
+            @Override
+            public Optional<String> load() {
+                throw new SecurityException("preferences denied");
+            }
+
+            @Override
+            public void save(Theme theme) {
+                throw new UnsupportedOperationException("not used");
+            }
+        };
+
+        ThemeManager manager = new ThemeManager(failingStore);
+        assertEquals(Theme.LIGHT, manager.getCurrentTheme());
+    }
+
+    @Test
     void setThemeLeavesCurrentThemeUnchangedWhenPersistenceFails() {
         ThemePreferenceStore failingStore = new ThemePreferenceStore() {
             @Override
@@ -129,6 +166,8 @@ class ThemePreferencePersistenceTest {
         assertTrue(controller.contains("lightThemeOption"));
         assertTrue(controller.contains("darkThemeOption"));
         assertTrue(controller.contains("themeManager().setTheme(theme)"));
+        assertTrue(controller.contains("catch (RuntimeException e)"));
+        assertTrue(controller.contains("selectCurrentTheme()"));
     }
 
     private static boolean endsWithTheme(List<String> urls, String suffix) {
