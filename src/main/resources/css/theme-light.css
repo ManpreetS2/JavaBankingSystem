@@ -308,6 +308,15 @@
     -fx-border-width: 0 1 0 0;
 }
 
+.transactions-table .table-row-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #111827;
+}
+
+.transactions-table .table-row-cell:odd {
+    -fx-background-color: #F9FAFB;
+}
+
 .transactions-table .table-row-cell:selected {
     -fx-background-color: #EEF2FF;
 }

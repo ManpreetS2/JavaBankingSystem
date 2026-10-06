@@ -112,7 +112,7 @@ Packaged apps use the same `-Dbank.demo.seed=true` JVM property when you add it 
 mvn clean test
 ```
 
-80+ automated tests cover banking journeys, ownership, export limits, schema safeguards, path resolution, and demo seeding. Integration tests use JUnit `@TempDir` databases.
+170+ automated tests cover banking journeys, ownership, export limits, schema safeguards, path resolution, UI presentation, and demo seeding. Integration tests use JUnit `@TempDir` databases.
 
 ## Desktop Packaging
 
