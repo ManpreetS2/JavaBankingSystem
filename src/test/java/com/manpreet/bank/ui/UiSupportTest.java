@@ -9,13 +9,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.manpreet.bank.exception.InsufficientFundsException;
 import com.manpreet.bank.exception.ValidationException;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class UiSupportTest {
 
     @Test
     void themeManagerTracksCurrentThemeAndResolvesStylesheets() {
-        ThemeManager manager = new ThemeManager();
+        InMemoryThemePreferenceStore store = new InMemoryThemePreferenceStore();
+        ThemeManager manager = new ThemeManager(store);
         assertEquals(Theme.LIGHT, manager.getCurrentTheme());
         List<String> lightPaths = manager.stylesheetPaths();
         assertEquals(3, lightPaths.size());
@@ -28,11 +30,13 @@ class UiSupportTest {
 
         manager.toggleTheme();
         assertEquals(Theme.DARK, manager.getCurrentTheme());
+        assertEquals(Optional.of("DARK"), store.peek());
         assertTrue(manager.stylesheetPaths().get(2).endsWith("/css/theme-dark.css"));
         assertNotNull(ThemeManager.class.getResource(manager.stylesheetPaths().get(2)));
 
         manager.setTheme(Theme.LIGHT);
         assertEquals(Theme.LIGHT, manager.getCurrentTheme());
+        assertEquals(Optional.of("LIGHT"), store.peek());
     }
 
     @Test

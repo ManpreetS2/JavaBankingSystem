@@ -2,12 +2,15 @@ package com.manpreet.bank.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 /**
  * Applies light/dark stylesheets to application scenes and transient dialog roots.
+ * Loads and persists the selected theme through {@link ThemePreferenceStore}.
  */
 public class ThemeManager {
 
@@ -16,8 +19,18 @@ public class ThemeManager {
     private static final String LIGHT = "/css/theme-light.css";
     private static final String DARK = "/css/theme-dark.css";
 
+    private final ThemePreferenceStore preferenceStore;
     private final List<Scene> managedScenes = new ArrayList<>();
-    private Theme currentTheme = Theme.LIGHT;
+    private Theme currentTheme;
+
+    public ThemeManager() {
+        this(new PreferencesThemePreferenceStore());
+    }
+
+    public ThemeManager(ThemePreferenceStore preferenceStore) {
+        this.preferenceStore = Objects.requireNonNull(preferenceStore, "preferenceStore must not be null");
+        this.currentTheme = resolveTheme(preferenceStore.load());
+    }
 
     public Theme getCurrentTheme() {
         return currentTheme;
@@ -32,10 +45,12 @@ public class ThemeManager {
     }
 
     public synchronized void setTheme(Theme theme) {
-        this.currentTheme = Objects.requireNonNull(theme, "theme must not be null");
+        Theme next = Objects.requireNonNull(theme, "theme must not be null");
+        this.currentTheme = next;
         for (Scene scene : List.copyOf(managedScenes)) {
             applyTo(scene);
         }
+        preferenceStore.save(next);
     }
 
     public synchronized void toggleTheme() {
@@ -74,6 +89,21 @@ public class ThemeManager {
                 COMPONENTS,
                 currentTheme == Theme.DARK ? DARK : LIGHT
         );
+    }
+
+    static Theme resolveTheme(Optional<String> stored) {
+        if (stored.isEmpty()) {
+            return Theme.LIGHT;
+        }
+        String raw = stored.get().trim();
+        if (raw.isEmpty()) {
+            return Theme.LIGHT;
+        }
+        try {
+            return Theme.valueOf(raw.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ignored) {
+            return Theme.LIGHT;
+        }
     }
 
     private static String resource(String path) {
