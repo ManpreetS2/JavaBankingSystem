@@ -133,6 +133,14 @@
     -fx-effect: dropshadow(one-pass-box, #818CF8, 5, 1.0, 0, 0);
 }
 
+/* Primary buttons share the ring color, so they get a light gap between the fill and the ring. */
+.button-primary:focus-visible {
+    -fx-effect: null;
+    -fx-background-color: #4F46E5, #F8FAFC, #4F46E5;
+    -fx-background-insets: -4, -2, 0;
+    -fx-background-radius: 14px, 12px, 10px;
+}
+
 /* Sidebar items have no fill at rest, so their ring is a 2px background layer inside the item. */
 .sidebar-item:focus-visible {
     -fx-background-color: #818CF8, #0B0F17;

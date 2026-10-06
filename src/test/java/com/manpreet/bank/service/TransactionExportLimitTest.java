@@ -146,6 +146,7 @@ class TransactionExportLimitTest {
         assertEquals("'-5", TransactionExportService.neutralizeFormula("-5"));
         assertEquals("'@cmd", TransactionExportService.neutralizeFormula("@cmd"));
         assertEquals("'\tTab", TransactionExportService.neutralizeFormula("\tTab"));
+        assertEquals("'\rReturn", TransactionExportService.neutralizeFormula("\rReturn"));
         assertEquals("Coffee", TransactionExportService.neutralizeFormula("Coffee"));
         assertEquals("Pay -5 later", TransactionExportService.neutralizeFormula("Pay -5 later"));
         assertEquals("Café — ਪੰਜਾਬ", TransactionExportService.neutralizeFormula("Café — ਪੰਜਾਬ"));

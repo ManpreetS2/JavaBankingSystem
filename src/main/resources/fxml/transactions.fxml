@@ -62,6 +62,7 @@
                 <VBox spacing="4" styleClass="field-group">
                     <Label text="Search" styleClass="field-label"/>
                     <TextField fx:id="searchField" promptText="Description contains…" styleClass="input"
+                               accessibleText="Search transactions by description"
                                onAction="#handleSearch" prefWidth="220"/>
                 </VBox>
                 <VBox spacing="4" styleClass="field-group">

@@ -2,6 +2,7 @@ package com.manpreet.bank.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
@@ -43,6 +44,7 @@ class ThemePreferencePersistenceTest {
 
         assertEquals(Theme.DARK, manager.getCurrentTheme());
         assertEquals(Optional.of("DARK"), store.peek());
+        assertEquals(Theme.DARK, new ThemeManager(store).getCurrentTheme());
     }
 
     @Test
@@ -54,6 +56,7 @@ class ThemePreferencePersistenceTest {
 
         assertEquals(Theme.LIGHT, manager.getCurrentTheme());
         assertEquals(Optional.of("LIGHT"), store.peek());
+        assertEquals(Theme.LIGHT, new ThemeManager(store).getCurrentTheme());
     }
 
     @Test
@@ -64,6 +67,65 @@ class ThemePreferencePersistenceTest {
 
         ThemeManager manager = new ThemeManager(new InMemoryThemePreferenceStore("not-a-theme"));
         assertEquals(Theme.LIGHT, manager.getCurrentTheme());
+    }
+
+    @Test
+    void loadRuntimeFailureDefaultsToLight() {
+        ThemePreferenceStore failingStore = new ThemePreferenceStore() {
+            @Override
+            public Optional<String> load() {
+                throw new RuntimeException("preferences unavailable");
+            }
+
+            @Override
+            public void save(Theme theme) {
+                throw new UnsupportedOperationException("not used");
+            }
+        };
+
+        ThemeManager manager = new ThemeManager(failingStore);
+        assertEquals(Theme.LIGHT, manager.getCurrentTheme());
+        assertTrue(manager.stylesheetPaths().get(2).endsWith("/css/theme-light.css"));
+    }
+
+    @Test
+    void loadSecurityExceptionDefaultsToLight() {
+        ThemePreferenceStore failingStore = new ThemePreferenceStore() {
+            @Override
+            public Optional<String> load() {
+                throw new SecurityException("preferences denied");
+            }
+
+            @Override
+            public void save(Theme theme) {
+                throw new UnsupportedOperationException("not used");
+            }
+        };
+
+        ThemeManager manager = new ThemeManager(failingStore);
+        assertEquals(Theme.LIGHT, manager.getCurrentTheme());
+    }
+
+    @Test
+    void setThemeLeavesCurrentThemeUnchangedWhenPersistenceFails() {
+        ThemePreferenceStore failingStore = new ThemePreferenceStore() {
+            @Override
+            public Optional<String> load() {
+                return Optional.empty();
+            }
+
+            @Override
+            public void save(Theme theme) {
+                throw new IllegalStateException("Unable to save theme preference");
+            }
+        };
+        ThemeManager manager = new ThemeManager(failingStore);
+        AtomicReference<List<String>> applied = new AtomicReference<>(List.of());
+        manager.registerManagedTarget(applied::set);
+
+        assertThrows(IllegalStateException.class, () -> manager.setTheme(Theme.DARK));
+        assertEquals(Theme.LIGHT, manager.getCurrentTheme());
+        assertTrue(endsWithTheme(applied.get(), "/css/theme-light.css"));
     }
 
     @Test
@@ -106,6 +168,8 @@ class ThemePreferencePersistenceTest {
         assertTrue(controller.contains("lightThemeOption"));
         assertTrue(controller.contains("darkThemeOption"));
         assertTrue(controller.contains("themeManager().setTheme(theme)"));
+        assertTrue(controller.contains("catch (RuntimeException e)"));
+        assertTrue(controller.contains("selectCurrentTheme()"));
     }
 
     private static boolean endsWithTheme(List<String> urls, String suffix) {

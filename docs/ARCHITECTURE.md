@@ -85,7 +85,9 @@ Dashboard and Accounts reuse the same mapper for consistent type labels, signed 
 - `Theme` (`LIGHT` / `DARK`)
 - `ThemeManager` applies `base.css`, `components.css`, and the active theme stylesheet to managed scenes
 - `ThemePreferenceStore` / `PreferencesThemePreferenceStore` load and save the selected theme as an application preference (not banking/SQLite data)
+- `setTheme` persists before applying stylesheets; preference writes are flushed for durable restarts
 - Startup defaults to `LIGHT` when no preference exists or the stored value is invalid
+- Startup failure messages stay actionable and avoid echoing SQL/JDBC diagnostics to the console
 - Short-lived dialog roots use `ThemeManager.applyTo(Parent)` without remaining registered for theme updates
 - Controllers do not load CSS ad hoc
 
