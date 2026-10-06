@@ -78,15 +78,16 @@ Dashboard and Accounts reuse the same mapper for consistent type labels, signed 
 - Read-only profile details (name, username, email) from the active `UserSession` via `ProfileSummary`; no repository access and no credential fields
 - Light/dark theme selection through `ThemeManager.setTheme`, with labels and confirmation text from `ThemeOptions`
 - The selector reflects the active theme on load, and the shell reloads Settings when the sidebar toggle changes the theme so both controls stay in sync
-- Profile editing, password change, and theme persistence are not implemented; they require new service and storage support
+- Theme preference is persisted across restarts via `ThemePreferenceStore` (Java Preferences); profile editing and password change are not implemented
 
 ## Theme infrastructure
 
 - `Theme` (`LIGHT` / `DARK`)
 - `ThemeManager` applies `base.css`, `components.css`, and the active theme stylesheet to managed scenes
+- `ThemePreferenceStore` / `PreferencesThemePreferenceStore` load and save the selected theme as an application preference (not banking/SQLite data)
+- Startup defaults to `LIGHT` when no preference exists or the stored value is invalid
 - Short-lived dialog roots use `ThemeManager.applyTo(Parent)` without remaining registered for theme updates
 - Controllers do not load CSS ad hoc
-- Theme selection lasts for the running session; persisting it across restarts is not yet implemented
 
 ## Responsibilities
 

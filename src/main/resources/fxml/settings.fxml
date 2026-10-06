@@ -54,7 +54,7 @@
                 <RadioButton fx:id="darkThemeOption" styleClass="body"
                              accessibleHelp="Switches the application to the dark theme"/>
             </HBox>
-            <Label text="Applies to every screen and dialog until you close the application."
+            <Label text="Applies to every screen and dialog, and is remembered the next time you open the application."
                    styleClass="caption" wrapText="true"/>
         </VBox>
     </VBox>
