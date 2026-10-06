@@ -43,7 +43,6 @@ These cannot be reliably signed off without a human looking at the running UI:
 - Final screenshot assets under `docs/screenshots/`
 - Final application icon artwork (`app.png` / `app.icns`)
 - Full click-through theme toggle via UI (macOS System Events assistive access was unavailable in autonomous QA)
-- Profile editing / password change (explicitly out of release scope)
 
 ## Demo credentials (intentional, non-secret)
 
