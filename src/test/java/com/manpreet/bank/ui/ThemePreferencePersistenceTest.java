@@ -4,27 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.layout.Region;
-import org.junit.jupiter.api.BeforeAll;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 class ThemePreferencePersistenceTest {
-
-    @BeforeAll
-    static void startJavaFxToolkit() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-        try {
-            Platform.startup(latch::countDown);
-        } catch (IllegalStateException alreadyStarted) {
-            latch.countDown();
-        }
-        assertTrue(latch.await(5, TimeUnit.SECONDS), "JavaFX toolkit did not start");
-    }
 
     @Test
     void missingPreferenceDefaultsToLight() {
@@ -79,58 +67,48 @@ class ThemePreferencePersistenceTest {
     }
 
     @Test
-    void registeredScenesUpdateWhenThemeChanges() throws Exception {
+    void registeredTargetsUpdateWhenThemeChanges() {
         InMemoryThemePreferenceStore store = new InMemoryThemePreferenceStore();
         ThemeManager manager = new ThemeManager(store);
-        Scene scene = createSceneOnFxThread();
+        AtomicReference<List<String>> applied = new AtomicReference<>(List.of());
+        List<List<String>> history = new ArrayList<>();
 
-        manager.registerScene(scene);
-        assertTrue(stylesheetEndsWith(scene, "/css/theme-light.css"));
+        manager.registerManagedTarget(urls -> {
+            List<String> copy = List.copyOf(urls);
+            applied.set(copy);
+            history.add(copy);
+        });
+
+        assertEquals(1, history.size());
+        assertTrue(endsWithTheme(applied.get(), "/css/theme-light.css"));
 
         manager.setTheme(Theme.DARK);
-        assertTrue(stylesheetEndsWith(scene, "/css/theme-dark.css"));
+        assertTrue(endsWithTheme(applied.get(), "/css/theme-dark.css"));
         assertEquals(Optional.of("DARK"), store.peek());
 
         manager.setTheme(Theme.LIGHT);
-        assertTrue(stylesheetEndsWith(scene, "/css/theme-light.css"));
+        assertTrue(endsWithTheme(applied.get(), "/css/theme-light.css"));
         assertEquals(Optional.of("LIGHT"), store.peek());
+        assertEquals(3, history.size());
     }
 
     @Test
-    void settingsExplainsThemeIsRemembered() throws Exception {
-        String fxml = java.nio.file.Files.readString(
-                java.nio.file.Path.of("src/main/resources/fxml/settings.fxml"));
+    void settingsExplainsThemeIsRememberedAndBindingsStayValid() throws Exception {
+        String fxml = Files.readString(Path.of("src/main/resources/fxml/settings.fxml"));
         assertFalse(fxml.contains("until you close the application"));
         assertTrue(fxml.contains("remembered the next time you open the application"));
+        assertTrue(fxml.contains("fx:controller=\"com.manpreet.bank.controller.SettingsController\""));
+        assertTrue(fxml.contains("fx:id=\"lightThemeOption\""));
+        assertTrue(fxml.contains("fx:id=\"darkThemeOption\""));
+
+        String controller = Files.readString(
+                Path.of("src/main/java/com/manpreet/bank/controller/SettingsController.java"));
+        assertTrue(controller.contains("lightThemeOption"));
+        assertTrue(controller.contains("darkThemeOption"));
+        assertTrue(controller.contains("themeManager().setTheme(theme)"));
     }
 
-    private static Scene createSceneOnFxThread() throws Exception {
-        CountDownLatch latch = new CountDownLatch(1);
-        Scene[] holder = new Scene[1];
-        Throwable[] error = new Throwable[1];
-        Platform.runLater(() -> {
-            try {
-                holder[0] = new Scene(new Region(), 100, 100);
-            } catch (Throwable t) {
-                error[0] = t;
-            } finally {
-                latch.countDown();
-            }
-        });
-        assertTrue(latch.await(5, TimeUnit.SECONDS), "Timed out creating Scene");
-        if (error[0] != null) {
-            if (error[0] instanceof Error e) {
-                throw e;
-            }
-            if (error[0] instanceof Exception e) {
-                throw e;
-            }
-            throw new RuntimeException(error[0]);
-        }
-        return holder[0];
-    }
-
-    private static boolean stylesheetEndsWith(Scene scene, String suffix) {
-        return scene.getStylesheets().stream().anyMatch(url -> url.endsWith(suffix));
+    private static boolean endsWithTheme(List<String> urls, String suffix) {
+        return urls.stream().anyMatch(url -> url.endsWith(suffix));
     }
 }
