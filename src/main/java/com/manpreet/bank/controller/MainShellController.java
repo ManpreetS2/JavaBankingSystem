@@ -3,12 +3,15 @@ package com.manpreet.bank.controller;
 import com.manpreet.bank.session.UserSession;
 import com.manpreet.bank.ui.AppAwareController;
 import com.manpreet.bank.ui.SceneManager;
+import com.manpreet.bank.ui.ShellKeyboardShortcuts;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -42,6 +45,7 @@ public class MainShellController implements AppAwareController {
 
     private SceneManager sceneManager;
     private Section currentSection = Section.DASHBOARD;
+    private TransactionsController transactionsController;
 
     @Override
     public void setSceneManager(SceneManager sceneManager) {
@@ -52,6 +56,7 @@ public class MainShellController implements AppAwareController {
         }
         shellGreetingLabel.setText("Welcome, " + session.firstName());
         shellUserLabel.setText(session.username() + " · " + session.email());
+        installKeyboardShortcuts();
         showDashboard();
     }
 
@@ -85,6 +90,7 @@ public class MainShellController implements AppAwareController {
 
     @FXML
     private void handleLogout() {
+        clearKeyboardShortcuts();
         sceneManager.getAppContext().getSessionManager().endSession();
         sceneManager.showLogin();
     }
@@ -95,6 +101,58 @@ public class MainShellController implements AppAwareController {
             case TRANSACTIONS -> showTransactions();
             case SETTINGS -> showSettings();
             default -> showDashboard();
+        }
+    }
+
+    private void installKeyboardShortcuts() {
+        Scene scene = sceneManager.getStage().getScene();
+        if (scene == null) {
+            return;
+        }
+        clearKeyboardShortcuts(scene);
+        bind(scene, ShellKeyboardShortcuts.Action.DASHBOARD, this::showDashboard);
+        bind(scene, ShellKeyboardShortcuts.Action.ACCOUNTS, this::showAccounts);
+        bind(scene, ShellKeyboardShortcuts.Action.TRANSACTIONS, this::showTransactions);
+        bind(scene, ShellKeyboardShortcuts.Action.SETTINGS, this::showSettings);
+        bind(scene, ShellKeyboardShortcuts.Action.FOCUS_SEARCH, this::focusTransactionsSearch);
+        // Shortcut+, also opens Settings when it does not conflict with the digit mapping.
+        scene.getAccelerators().put(
+                new KeyCodeCombination(
+                        javafx.scene.input.KeyCode.COMMA,
+                        javafx.scene.input.KeyCombination.SHORTCUT_DOWN),
+                this::showSettings
+        );
+    }
+
+    private void clearKeyboardShortcuts() {
+        Scene scene = sceneManager == null ? null : sceneManager.getStage().getScene();
+        if (scene != null) {
+            clearKeyboardShortcuts(scene);
+        }
+    }
+
+    private static void clearKeyboardShortcuts(Scene scene) {
+        for (ShellKeyboardShortcuts.Action action : ShellKeyboardShortcuts.Action.values()) {
+            scene.getAccelerators().remove(ShellKeyboardShortcuts.combination(action));
+        }
+        scene.getAccelerators().remove(new KeyCodeCombination(
+                javafx.scene.input.KeyCode.COMMA,
+                javafx.scene.input.KeyCombination.SHORTCUT_DOWN));
+    }
+
+    private static void bind(Scene scene, ShellKeyboardShortcuts.Action action, Runnable handler) {
+        scene.getAccelerators().put(ShellKeyboardShortcuts.combination(action), handler);
+    }
+
+    private void focusTransactionsSearch() {
+        if (requireSession() == null) {
+            return;
+        }
+        if (currentSection != Section.TRANSACTIONS) {
+            showTransactions();
+        }
+        if (transactionsController != null) {
+            transactionsController.focusSearchField();
         }
     }
 
@@ -112,6 +170,7 @@ public class MainShellController implements AppAwareController {
             if (controller instanceof ShellAwareController shellAware) {
                 shellAware.setShellController(this);
             }
+            transactionsController = controller instanceof TransactionsController tx ? tx : null;
             contentHost.getChildren().setAll(content);
             currentSection = section;
             updateNavStyles();

@@ -161,8 +161,18 @@
 }
 
 .input:focused,
-.text-area-input:focused {
+.text-area-input:focused,
+.combo-box:focused,
+.date-picker:focused {
     -fx-border-color: #6366F1;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(one-pass-box, rgba(99, 102, 241, 0.45), 4, 1.0, 0, 0);
+}
+
+.combo-box:focus-visible,
+.date-picker:focus-visible,
+.radio-button:focus-visible {
+    -fx-effect: dropshadow(one-pass-box, #818CF8, 5, 1.0, 0, 0);
 }
 
 /* Date pickers: the editor sits inside the .input-styled picker, and the calendar opens in a popup. */
@@ -317,12 +327,26 @@
     -fx-background-color: #101624;
 }
 
+.transactions-table .table-row-cell:hover {
+    -fx-background-color: #1A2231;
+}
+
+.transactions-table .table-row-cell:focused {
+    -fx-background-color: #243044;
+    -fx-border-color: #818CF8;
+    -fx-border-width: 0 0 0 2;
+}
+
 .transactions-table .table-row-cell:selected {
     -fx-background-color: #1A2231;
 }
 
 .transactions-table .table-row-cell:selected .text {
     -fx-fill: #F8FAFC;
+}
+
+.sidebar-footer {
+    -fx-border-color: #243044 transparent transparent transparent;
 }
 
 .dialog-pane,

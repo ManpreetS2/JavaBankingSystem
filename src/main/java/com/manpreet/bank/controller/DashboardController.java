@@ -90,7 +90,7 @@ public class DashboardController implements AppAwareController, ShellAwareContro
                         sceneManager.getAppContext(), session, viewModel.checking(), UiWindows.from(statusLabel))
                 .ifPresent(success -> {
                     if (success) {
-                        UiFeedback.success(statusLabel, "Deposit successful.");
+                        UiFeedback.success(statusLabel, "Deposit complete.");
                         refreshDashboard();
                     }
                 });
@@ -107,7 +107,7 @@ public class DashboardController implements AppAwareController, ShellAwareContro
                         sceneManager.getAppContext(), session, viewModel.checking(), UiWindows.from(statusLabel))
                 .ifPresent(success -> {
                     if (success) {
-                        UiFeedback.success(statusLabel, "Withdrawal successful.");
+                        UiFeedback.success(statusLabel, "Withdrawal complete.");
                         refreshDashboard();
                     }
                 });
@@ -123,7 +123,7 @@ public class DashboardController implements AppAwareController, ShellAwareContro
         BankingDialogs.showTransfer(sceneManager.getAppContext(), session, UiWindows.from(statusLabel))
                 .ifPresent(success -> {
                     if (success) {
-                        UiFeedback.success(statusLabel, "Transfer successful.");
+                        UiFeedback.success(statusLabel, "Transfer complete.");
                         refreshDashboard();
                     }
                 });
