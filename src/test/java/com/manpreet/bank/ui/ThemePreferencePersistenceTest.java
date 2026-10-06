@@ -44,6 +44,7 @@ class ThemePreferencePersistenceTest {
 
         assertEquals(Theme.DARK, manager.getCurrentTheme());
         assertEquals(Optional.of("DARK"), store.peek());
+        assertEquals(Theme.DARK, new ThemeManager(store).getCurrentTheme());
     }
 
     @Test
@@ -55,6 +56,7 @@ class ThemePreferencePersistenceTest {
 
         assertEquals(Theme.LIGHT, manager.getCurrentTheme());
         assertEquals(Optional.of("LIGHT"), store.peek());
+        assertEquals(Theme.LIGHT, new ThemeManager(store).getCurrentTheme());
     }
 
     @Test
