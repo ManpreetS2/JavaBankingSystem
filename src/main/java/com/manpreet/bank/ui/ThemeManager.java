@@ -59,12 +59,13 @@ public class ThemeManager {
 
     public synchronized void setTheme(Theme theme) {
         Theme next = Objects.requireNonNull(theme, "theme must not be null");
+        // Persist first so a successful setTheme always means the preference was written.
+        preferenceStore.save(next);
         this.currentTheme = next;
         List<String> urls = currentStylesheetUrls();
         for (Consumer<List<String>> target : List.copyOf(managedTargets)) {
             target.accept(urls);
         }
-        preferenceStore.save(next);
     }
 
     public synchronized void toggleTheme() {
