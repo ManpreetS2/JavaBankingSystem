@@ -111,7 +111,7 @@ class SettingsPresentationTest {
             assertFalse(label.isBlank(), "Blank label for " + theme);
             labels.add(label);
             assertEquals(label + " theme", ThemeOptions.accessibleName(theme));
-            assertEquals(label + " theme applied.", ThemeOptions.appliedMessage(theme));
+            assertEquals("Theme updated.", ThemeOptions.appliedMessage(theme));
         }
 
         assertEquals(Theme.values().length, labels.size());

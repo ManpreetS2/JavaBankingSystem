@@ -26,7 +26,9 @@ class ThemeStylesheetCoverageTest {
             ".date-picker-popup .day-cell {",
             ".date-picker-popup .day-cell:selected {",
             ".dialog-pane .label {",
-            ".button-primary:focus-visible {"
+            ".button-primary:focus-visible {",
+            ".transactions-table .table-row-cell:hover {",
+            ".transactions-table .table-row-cell:focused {"
     );
 
     @Test

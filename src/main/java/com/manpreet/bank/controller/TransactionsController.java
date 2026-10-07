@@ -133,6 +133,16 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
         this.shellController = shellController;
     }
 
+    /**
+     * Moves keyboard focus to the transaction search field (shell Shortcut+F).
+     */
+    public void focusSearchField() {
+        if (searchField != null) {
+            searchField.requestFocus();
+            searchField.selectAll();
+        }
+    }
+
     @FXML
     private void handleSearch() {
         applyFilters(true);
@@ -201,7 +211,7 @@ public class TransactionsController implements AppAwareController, ShellAwareCon
             byte[] bytes = sceneManager.getAppContext().getTransactionExportService()
                     .exportCsvBytes(session.userId(), filter);
             Files.write(target, bytes);
-            showResult(UiFeedback.Kind.SUCCESS, "Export complete.");
+            showResult(UiFeedback.Kind.SUCCESS, "Transactions exported.");
         } catch (IOException e) {
             showError("Unable to export transactions. Please try again.");
         } catch (RuntimeException e) {

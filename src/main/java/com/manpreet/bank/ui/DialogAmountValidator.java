@@ -42,7 +42,7 @@ public final class DialogAmountValidator {
             return Optional.of("Amount cannot have more than 2 decimal places.");
         }
         if (amount.compareTo(BigDecimal.ZERO) == 0) {
-            return Optional.of("Amount must be greater than zero.");
+            return Optional.of("Enter an amount greater than $0.00.");
         }
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             return Optional.of("Amount cannot be negative.");

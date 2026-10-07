@@ -19,6 +19,7 @@ These were exercised by automated tests, packaging scripts, and/or non-interacti
 - Transaction search literals (`%`, `_`, `\`), filters, pagination, ownership scoping
 - CSV export escaping, UTF-8, formula neutralization (`= + - @` tab CR), masked accounts, export limits (including 10,000 / 10,001 count guards), no password/hash leakage
 - Theme preference load/save/fallback/rollback/restart via isolated stores (no real user Preferences node)
+- Shell keyboard shortcut mapping (Shortcut+1..4, Shortcut+,; Shortcut+F focuses search only on Transactions)
 - FXML controller/`fx:id`/`onAction` bindings and duplicate-`fx:id` guard for all seven FXML screens
 - Light/dark required stylesheet selectors for tables, date pickers, dialog labels, primary focus
 - Startup failure messaging strips SQL/JDBC diagnostics
