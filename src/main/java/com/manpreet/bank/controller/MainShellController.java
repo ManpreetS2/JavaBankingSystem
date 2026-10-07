@@ -11,7 +11,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -116,12 +115,7 @@ public class MainShellController implements AppAwareController {
         bind(scene, ShellKeyboardShortcuts.Action.SETTINGS, this::showSettings);
         bind(scene, ShellKeyboardShortcuts.Action.FOCUS_SEARCH, this::focusTransactionsSearch);
         // Shortcut+, also opens Settings when it does not conflict with the digit mapping.
-        scene.getAccelerators().put(
-                new KeyCodeCombination(
-                        javafx.scene.input.KeyCode.COMMA,
-                        javafx.scene.input.KeyCombination.SHORTCUT_DOWN),
-                this::showSettings
-        );
+        scene.getAccelerators().put(ShellKeyboardShortcuts.settingsComma(), this::showSettings);
     }
 
     private void clearKeyboardShortcuts() {
@@ -135,9 +129,7 @@ public class MainShellController implements AppAwareController {
         for (ShellKeyboardShortcuts.Action action : ShellKeyboardShortcuts.Action.values()) {
             scene.getAccelerators().remove(ShellKeyboardShortcuts.combination(action));
         }
-        scene.getAccelerators().remove(new KeyCodeCombination(
-                javafx.scene.input.KeyCode.COMMA,
-                javafx.scene.input.KeyCombination.SHORTCUT_DOWN));
+        scene.getAccelerators().remove(ShellKeyboardShortcuts.settingsComma());
     }
 
     private static void bind(Scene scene, ShellKeyboardShortcuts.Action action, Runnable handler) {
@@ -148,12 +140,13 @@ public class MainShellController implements AppAwareController {
         if (requireSession() == null) {
             return;
         }
-        if (currentSection != Section.TRANSACTIONS) {
-            showTransactions();
+        // Contextual Find: no-op unless Transactions is already active.
+        if (!ShellKeyboardShortcuts.allowsFocusSearch(
+                currentSection == Section.TRANSACTIONS,
+                transactionsController != null)) {
+            return;
         }
-        if (transactionsController != null) {
-            transactionsController.focusSearchField();
-        }
+        transactionsController.focusSearchField();
     }
 
     private void loadContent(String fxmlPath, Section section) {

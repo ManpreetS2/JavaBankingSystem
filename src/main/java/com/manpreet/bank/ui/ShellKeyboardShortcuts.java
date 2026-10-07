@@ -1,14 +1,16 @@
 package com.manpreet.bank.ui;
 
 import java.util.Objects;
-import java.util.Optional;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
 
 /**
  * Platform-neutral shell keyboard shortcuts using the JavaFX Shortcut modifier.
+ *
+ * <p>Runtime wiring uses {@link javafx.scene.Scene} accelerators with these
+ * combinations. Shortcut+F is contextual Find: the shell focuses transaction
+ * search only while Transactions is already active.
  */
 public final class ShellKeyboardShortcuts {
 
@@ -34,28 +36,16 @@ public final class ShellKeyboardShortcuts {
         };
     }
 
-    public static Optional<Action> resolve(KeyEvent event) {
-        Objects.requireNonNull(event, "event must not be null");
-        return resolve(event.getCode(), event.isShortcutDown(), event.isAltDown());
+    /** Secondary Settings accelerator (Shortcut+,). */
+    public static KeyCodeCombination settingsComma() {
+        return new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN);
     }
 
     /**
-     * Resolves a pressed key to a shell action when Shortcut is held.
-     * Digit and numpad equivalents map to the same destinations.
+     * Whether Shortcut+F should focus the Transactions search field.
+     * Does not navigate; inactive sections leave Find as a no-op.
      */
-    static Optional<Action> resolve(KeyCode code, boolean shortcutDown, boolean altDown) {
-        Objects.requireNonNull(code, "code must not be null");
-        if (!shortcutDown || altDown) {
-            return Optional.empty();
-        }
-        return switch (code) {
-            case DIGIT1, NUMPAD1 -> Optional.of(Action.DASHBOARD);
-            case DIGIT2, NUMPAD2 -> Optional.of(Action.ACCOUNTS);
-            case DIGIT3, NUMPAD3 -> Optional.of(Action.TRANSACTIONS);
-            case DIGIT4, NUMPAD4 -> Optional.of(Action.SETTINGS);
-            case F -> Optional.of(Action.FOCUS_SEARCH);
-            case COMMA -> Optional.of(Action.SETTINGS);
-            default -> Optional.empty();
-        };
+    public static boolean allowsFocusSearch(boolean transactionsSectionActive, boolean searchFieldAvailable) {
+        return transactionsSectionActive && searchFieldAvailable;
     }
 }

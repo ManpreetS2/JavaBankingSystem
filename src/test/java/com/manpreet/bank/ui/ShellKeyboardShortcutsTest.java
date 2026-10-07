@@ -1,6 +1,7 @@
 package com.manpreet.bank.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -14,41 +15,43 @@ import org.junit.jupiter.api.Test;
 class ShellKeyboardShortcutsTest {
 
     @Test
-    void combinationsUsePlatformShortcutModifier() {
-        for (ShellKeyboardShortcuts.Action action : ShellKeyboardShortcuts.Action.values()) {
-            KeyCodeCombination combination = ShellKeyboardShortcuts.combination(action);
-            assertEquals(KeyCombination.ModifierValue.DOWN, combination.getShortcut(),
-                    "Expected Shortcut modifier for " + action);
-        }
-        assertEquals(KeyCode.DIGIT1, ShellKeyboardShortcuts.combination(ShellKeyboardShortcuts.Action.DASHBOARD).getCode());
-        assertEquals(KeyCode.DIGIT2, ShellKeyboardShortcuts.combination(ShellKeyboardShortcuts.Action.ACCOUNTS).getCode());
-        assertEquals(KeyCode.DIGIT3, ShellKeyboardShortcuts.combination(ShellKeyboardShortcuts.Action.TRANSACTIONS).getCode());
-        assertEquals(KeyCode.DIGIT4, ShellKeyboardShortcuts.combination(ShellKeyboardShortcuts.Action.SETTINGS).getCode());
-        assertEquals(KeyCode.F, ShellKeyboardShortcuts.combination(ShellKeyboardShortcuts.Action.FOCUS_SEARCH).getCode());
+    void combinationsMatchRuntimeSceneAccelerators() {
+        assertCombination(ShellKeyboardShortcuts.Action.DASHBOARD, KeyCode.DIGIT1);
+        assertCombination(ShellKeyboardShortcuts.Action.ACCOUNTS, KeyCode.DIGIT2);
+        assertCombination(ShellKeyboardShortcuts.Action.TRANSACTIONS, KeyCode.DIGIT3);
+        assertCombination(ShellKeyboardShortcuts.Action.SETTINGS, KeyCode.DIGIT4);
+        assertCombination(ShellKeyboardShortcuts.Action.FOCUS_SEARCH, KeyCode.F);
+
+        KeyCodeCombination settingsComma = ShellKeyboardShortcuts.settingsComma();
+        assertEquals(KeyCode.COMMA, settingsComma.getCode());
+        assertEquals(KeyCombination.ModifierValue.DOWN, settingsComma.getShortcut());
     }
 
     @Test
-    void resolveMapsShortcutDigitsAndSearch() {
-        assertEquals(
-                ShellKeyboardShortcuts.Action.DASHBOARD,
-                ShellKeyboardShortcuts.resolve(KeyCode.DIGIT1, true, false).orElseThrow());
-        assertEquals(
-                ShellKeyboardShortcuts.Action.ACCOUNTS,
-                ShellKeyboardShortcuts.resolve(KeyCode.NUMPAD2, true, false).orElseThrow());
-        assertEquals(
-                ShellKeyboardShortcuts.Action.TRANSACTIONS,
-                ShellKeyboardShortcuts.resolve(KeyCode.DIGIT3, true, false).orElseThrow());
-        assertEquals(
-                ShellKeyboardShortcuts.Action.SETTINGS,
-                ShellKeyboardShortcuts.resolve(KeyCode.DIGIT4, true, false).orElseThrow());
-        assertEquals(
-                ShellKeyboardShortcuts.Action.FOCUS_SEARCH,
-                ShellKeyboardShortcuts.resolve(KeyCode.F, true, false).orElseThrow());
-        assertEquals(
-                ShellKeyboardShortcuts.Action.SETTINGS,
-                ShellKeyboardShortcuts.resolve(KeyCode.COMMA, true, false).orElseThrow());
-        assertTrue(ShellKeyboardShortcuts.resolve(KeyCode.DIGIT1, false, false).isEmpty());
-        assertTrue(ShellKeyboardShortcuts.resolve(KeyCode.DIGIT1, true, true).isEmpty());
+    void focusSearchIsContextualFindNotNavigation() {
+        assertTrue(ShellKeyboardShortcuts.allowsFocusSearch(true, true));
+        assertFalse(ShellKeyboardShortcuts.allowsFocusSearch(false, true));
+        assertFalse(ShellKeyboardShortcuts.allowsFocusSearch(true, false));
+        assertFalse(ShellKeyboardShortcuts.allowsFocusSearch(false, false));
+    }
+
+    @Test
+    void shellWiresAcceleratorsAndKeepsFocusSearchContextual() throws IOException {
+        String shell = Files.readString(Path.of(
+                "src/main/java/com/manpreet/bank/controller/MainShellController.java"));
+        assertTrue(shell.contains("ShellKeyboardShortcuts.combination(action)"));
+        assertTrue(shell.contains("ShellKeyboardShortcuts.settingsComma()"));
+        assertTrue(shell.contains("clearKeyboardShortcuts()"));
+        assertTrue(shell.contains("allowsFocusSearch("));
+
+        int methodStart = shell.indexOf("private void focusTransactionsSearch()");
+        assertTrue(methodStart >= 0, "focusTransactionsSearch must exist");
+        int methodEnd = shell.indexOf("\n    private void ", methodStart + 1);
+        assertTrue(methodEnd > methodStart);
+        String method = shell.substring(methodStart, methodEnd);
+        assertFalse(method.contains("showTransactions()"),
+                "Shortcut+F must not navigate to Transactions");
+        assertTrue(method.contains("return;"));
     }
 
     @Test
@@ -62,5 +65,12 @@ class ShellKeyboardShortcutsTest {
         String shell = Files.readString(Path.of("src/main/resources/fxml/main-shell.fxml"));
         assertTrue(shell.contains("sidebar-sign-out"));
         assertTrue(shell.contains("accessibleText=\"Sign out\""));
+    }
+
+    private static void assertCombination(ShellKeyboardShortcuts.Action action, KeyCode code) {
+        KeyCodeCombination combination = ShellKeyboardShortcuts.combination(action);
+        assertEquals(code, combination.getCode(), "Unexpected key for " + action);
+        assertEquals(KeyCombination.ModifierValue.DOWN, combination.getShortcut(),
+                "Expected Shortcut modifier for " + action);
     }
 }
