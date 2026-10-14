@@ -16,6 +16,9 @@ class ThemeStylesheetCoverageTest {
 
     private static final List<String> REQUIRED_SELECTORS = List.of(
             ".transactions-table .column-header,",
+            ".transactions-table .table-row-cell {",
+            ".transactions-table .table-row-cell:odd {",
+            ".transactions-table .table-row-cell:selected {",
             ".date-picker > .text-field {",
             ".date-picker > .arrow-button > .arrow {",
             ".date-picker-popup {",
