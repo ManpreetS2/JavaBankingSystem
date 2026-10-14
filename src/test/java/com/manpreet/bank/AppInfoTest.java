@@ -15,9 +15,10 @@ class AppInfoTest {
     }
 
     @Test
-    void displayVersionTracksMavenSnapshotConvention() {
-        assertEquals("1.0-SNAPSHOT", AppInfo.VERSION);
+    void displayVersionMatchesRelease() {
+        assertEquals("1.0.0", AppInfo.VERSION);
         assertEquals("1.0.0", AppInfo.PACKAGE_VERSION);
+        assertFalse(AppInfo.VERSION.toUpperCase().contains("SNAPSHOT"));
         assertTrue(AppInfo.displayNameWithVersion().contains(AppInfo.VERSION));
     }
 

@@ -45,7 +45,7 @@ This release is not a production bank and does not connect to a payment network.
 
 On macOS this produces `target/dist/BankingSystem.app`. The bundle uses `src/main/resources/icons/app.icns` when that file is present. JavaFX also loads `app.png` as the window icon.
 
-The package version is `1.0.0`. The Maven project version remains `1.0-SNAPSHOT` until a release is published. This document does not publish that release.
+The Maven project version, display version, and package version are all `1.0.0`. The macOS app image is unsigned and not notarized.
 
 ## Known limitations
 

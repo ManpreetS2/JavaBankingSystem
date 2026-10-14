@@ -150,14 +150,14 @@ Output: `target/dist/` (for example `BankingSystem.app` on macOS).
 
 | Value | Source | Purpose |
 |-------|--------|---------|
-| `1.0-SNAPSHOT` | Maven `project.version` / `AppInfo.VERSION` | Development display version |
+| `1.0.0` | Maven `project.version` / `AppInfo.VERSION` | Display version |
 | `1.0.0` | Maven `app.packageVersion` / `AppInfo.PACKAGE_VERSION` | Numeric jpackage version |
 
-Signing and notarization are out of scope. `mvn javafx:jlink` is not used because the project is intentionally non-modular.
+The packaged macOS app is unsigned and not notarized. `mvn javafx:jlink` is not used because the project is intentionally non-modular.
 
 Window icon: `src/main/resources/icons/app.png`. macOS bundle icon: `src/main/resources/icons/app.icns`.
 
-Release notes prepared for a later tag: [docs/RELEASE_NOTES_v1.0.0.md](docs/RELEASE_NOTES_v1.0.0.md).
+Release notes: [docs/RELEASE_NOTES_v1.0.0.md](docs/RELEASE_NOTES_v1.0.0.md).
 
 ## Data location
 

@@ -6,7 +6,7 @@
 
     <groupId>com.manpreet</groupId>
     <artifactId>JavaBankingSystem</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>JavaBankingSystem</name>
     <description>Portfolio-quality Java desktop banking application</description>
 
@@ -21,8 +21,8 @@
         <app.packageName>BankingSystem</app.packageName>
         <!--
           Numeric jpackage version (AppInfo.PACKAGE_VERSION).
-          Distinct from project.version (1.0-SNAPSHOT / AppInfo.VERSION) because jpackage
-          rejects non-numeric SNAPSHOT suffixes. Bump both intentionally on release.
+          Matches project.version / AppInfo.VERSION for this release (1.0.0).
+          jpackage still requires a numeric version with no SNAPSHOT suffix.
         -->
         <app.packageVersion>1.0.0</app.packageVersion>
         <!-- Forwarded to the JavaFX process via javafx-maven-plugin options. -->
