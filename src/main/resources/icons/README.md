@@ -1,12 +1,7 @@
 # Application icons
 
-Place the final product icon here as:
+- `app.svg` — vector source
+- `app.png` — 1024×1024 window icon loaded by `App.applyIcon`
+- `app.icns` — macOS bundle icon used by `scripts/package-app.sh`
 
-- `app.png` — loaded by the JavaFX stage when present (`App.applyIcon`)
-
-Optional packaging assets (referenced from Maven/jpackage configuration when available):
-
-- `app.icns` — macOS
-- `app.ico` — Windows
-
-Do not commit temporary or low-quality placeholders as final branding.
+No lettering. Navy background, cyan bank facade, central ledger mark.

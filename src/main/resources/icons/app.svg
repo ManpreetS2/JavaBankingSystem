@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="Java Banking System icon">
+  <!-- macOS-style rounded square, deep navy -->
+  <rect x="0" y="0" width="1024" height="1024" rx="228" ry="228" fill="#15233F"/>
+  <rect x="40" y="40" width="944" height="944" rx="200" ry="200" fill="none" stroke="#2F4F7A" stroke-width="8" opacity="0.55"/>
+
+  <!-- triangular bank roof -->
+  <path d="M512 220 L790 400 L234 400 Z" fill="#6FD0FF"/>
+
+  <!-- entablature -->
+  <rect x="262" y="400" width="500" height="54" rx="8" fill="#4BA8FF"/>
+
+  <!-- two clean pillars -->
+  <rect x="312" y="466" width="82" height="250" rx="12" fill="#5EC8FF"/>
+  <rect x="630" y="466" width="82" height="250" rx="12" fill="#5EC8FF"/>
+
+  <!-- base / plinth -->
+  <rect x="240" y="724" width="544" height="58" rx="12" fill="#3D8CFF"/>
+
+  <!-- central circular ledger / account symbol -->
+  <circle cx="512" cy="560" r="92" fill="#0E1830"/>
+  <circle cx="512" cy="560" r="92" fill="none" stroke="#7AD7FF" stroke-width="16"/>
+  <circle cx="512" cy="560" r="62" fill="none" stroke="#3D8CFF" stroke-width="8"/>
+
+  <!-- subtle ledger lines -->
+  <rect x="466" y="530" width="92" height="10" rx="5" fill="#7AD7FF"/>
+  <rect x="474" y="556" width="76" height="10" rx="5" fill="#5EC8FF"/>
+  <rect x="484" y="582" width="56" height="10" rx="5" fill="#3D8CFF"/>
+</svg>
