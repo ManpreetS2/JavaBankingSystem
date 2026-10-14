@@ -41,8 +41,8 @@ These cannot be reliably signed off without a human looking at the running UI:
 - Keyboard-only traversal feel (Tab order, focus rings on every interactive control)
 - Banking dialog usability (Deposit / Withdraw / Transfer) including focus return after validation errors
 - Confirm the Banking System window is foregrounded and titled correctly during a local GUI session
-- Final screenshot assets under `docs/screenshots/`
-- Final application icon artwork (`app.png` / `app.icns`)
+- Portfolio screenshots in `docs/screenshots/` were captured from the JavaFX UI; a human pass on a foreground window at 1200×760 and 1000×650 is still useful
+- Application icon files are `src/main/resources/icons/app.png` and `app.icns`; confirm the Dock icon after installing or launching the packaged `.app`
 - Full click-through theme toggle via UI (macOS System Events assistive access was unavailable in autonomous QA)
 
 ## Demo credentials (intentional, non-secret)

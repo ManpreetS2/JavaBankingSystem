@@ -1,14 +1,13 @@
 # Screenshots
 
-Add portfolio screenshots here after manual visual QA.
+Captures of the running JavaFX application (production FXML, CSS, and demo-mode data).
 
-Suggested filenames:
+- `01-login.png`
+- `02-dashboard.png`
+- `03-accounts.png`
+- `04-transactions.png`
+- `05-settings-light.png`
+- `06-settings-dark.png`
+- `07-transfer-dialog.png`
 
-- `login.png`
-- `dashboard.png`
-- `accounts.png`
-- `transactions.png`
-- `transfer-dialog.png`
-
-Do not commit fabricated or placeholder UI images.
-Reference real captures from the running desktop app (development or packaged).
+These are scene snapshots from the desktop UI, not HTML mockups.
