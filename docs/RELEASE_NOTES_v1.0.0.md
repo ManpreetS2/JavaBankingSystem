@@ -1,5 +1,11 @@
 # Java Banking System v1.0.0
 
+**Published:** October 14, 2026 · [Official GitHub Release](https://github.com/ManpreetS2/JavaBankingSystem/releases/tag/v1.0.0)
+
+**Downloads:** [macOS application ZIP](https://github.com/ManpreetS2/JavaBankingSystem/releases/download/v1.0.0/BankingSystem-v1.0.0-macOS.zip) · [70-second demo MP4](https://github.com/ManpreetS2/JavaBankingSystem/releases/download/v1.0.0/JavaBankingSystem-demo.mp4)
+
+**Release commit:** [`867a3a7`](https://github.com/ManpreetS2/JavaBankingSystem/commit/867a3a7295fdd910ffb06cecba6c1081c47b6d97). The annotated `v1.0.0` tag is an immutable snapshot; later documentation improvements on `main` do not change the tagged build.
+
 Local desktop banking simulation for portfolio and interview demonstration. Java 21, JavaFX, SQLite, and Maven.
 
 This release is not a production bank and does not connect to a payment network.
@@ -57,7 +63,7 @@ The Maven project version, display version, and package version are all `1.0.0`.
 
 ## Demo
 
-See [DEMO.md](DEMO.md). Demo credentials are for the optional seed only:
+The published MP4 is a captioned walkthrough of authentic JavaFX captures, not a recording of UI clicks. See [DEMO.md](DEMO.md) for a hands-on interactive walkthrough. Demo credentials are for the optional seed only:
 
 - Username: `demouser`
 - Password: `DemoPassword12`

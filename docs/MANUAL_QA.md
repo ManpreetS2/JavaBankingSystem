@@ -2,7 +2,7 @@
 
 This checklist separates checks verified by automated release-candidate QA from items that still need human eyes.
 
-Last autonomous QA pass branch: `feature/release-candidate-hardening`.
+Release baseline: **v1.0.0**, published October 14, 2026. The tagged release passed 197 automated tests, release packaging, and GitHub Actions CI. A packaged-app smoke check confirmed the login window opened; a full human interaction pass is still outstanding.
 
 ## AUTOMATICALLY VERIFIED
 
@@ -40,7 +40,7 @@ These cannot be reliably signed off without a human looking at the running UI:
 - Sidebar active-state appearance while navigating between sections
 - Keyboard-only traversal feel (Tab order, focus rings on every interactive control)
 - Banking dialog usability (Deposit / Withdraw / Transfer) including focus return after validation errors
-- Confirm the Banking System window is foregrounded and titled correctly during a local GUI session
+- Verify window title, keyboard operation, and other foreground interactions during a full local GUI session (the published release had a startup smoke check of the sign-in window)
 - Portfolio screenshots in `docs/screenshots/` were captured from the JavaFX UI; a human pass on a foreground window at 1200×760 and 1000×650 is still useful
 - Application icon files are `src/main/resources/icons/app.png` and `app.icns`; confirm the Dock icon after installing or launching the packaged `.app`
 - Full click-through theme toggle via UI (macOS System Events assistive access was unavailable in autonomous QA)
