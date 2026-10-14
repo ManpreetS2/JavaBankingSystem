@@ -82,7 +82,7 @@ public class DatabaseInitializer {
                 throw new IllegalStateException(
                         "Failed to initialize the banking database at "
                                 + databaseManager.getDatabasePath().toAbsolutePath()
-                                + ": " + exception.getMessage(),
+                                + ". Check disk space and file permissions, then restart.",
                         exception
                 );
             } finally {
@@ -96,7 +96,7 @@ public class DatabaseInitializer {
             throw new IllegalStateException(
                     "Failed to initialize the banking database at "
                             + databaseManager.getDatabasePath().toAbsolutePath()
-                            + ": " + e.getMessage(),
+                            + ". Check disk space and file permissions, then restart.",
                     e
             );
         }

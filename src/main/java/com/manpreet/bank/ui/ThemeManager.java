@@ -32,7 +32,7 @@ public class ThemeManager {
 
     public ThemeManager(ThemePreferenceStore preferenceStore) {
         this.preferenceStore = Objects.requireNonNull(preferenceStore, "preferenceStore must not be null");
-        this.currentTheme = resolveTheme(preferenceStore.load());
+        this.currentTheme = loadInitialTheme(preferenceStore);
     }
 
     public Theme getCurrentTheme() {
@@ -59,12 +59,13 @@ public class ThemeManager {
 
     public synchronized void setTheme(Theme theme) {
         Theme next = Objects.requireNonNull(theme, "theme must not be null");
+        // Persist first so a successful setTheme always means the preference was written.
+        preferenceStore.save(next);
         this.currentTheme = next;
         List<String> urls = currentStylesheetUrls();
         for (Consumer<List<String>> target : List.copyOf(managedTargets)) {
             target.accept(urls);
         }
-        preferenceStore.save(next);
     }
 
     public synchronized void toggleTheme() {
@@ -103,6 +104,19 @@ public class ThemeManager {
                 COMPONENTS,
                 currentTheme == Theme.DARK ? DARK : LIGHT
         );
+    }
+
+    /**
+     * Resolves the startup theme from preferences.
+     * Missing, invalid, or unloadable preferences degrade to {@link Theme#LIGHT}
+     * so a cosmetic preference never blocks banking application startup.
+     */
+    private static Theme loadInitialTheme(ThemePreferenceStore preferenceStore) {
+        try {
+            return resolveTheme(preferenceStore.load());
+        } catch (RuntimeException ignored) {
+            return Theme.LIGHT;
+        }
     }
 
     static Theme resolveTheme(Optional<String> stored) {

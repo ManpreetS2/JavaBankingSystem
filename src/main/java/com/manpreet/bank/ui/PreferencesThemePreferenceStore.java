@@ -2,6 +2,7 @@ package com.manpreet.bank.ui;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -33,6 +34,29 @@ public final class PreferencesThemePreferenceStore implements ThemePreferenceSto
     @Override
     public void save(Theme theme) {
         Objects.requireNonNull(theme, "theme must not be null");
-        preferences.put(KEY, theme.name());
+        String previous = null;
+        boolean hadPrevious = false;
+        try {
+            previous = preferences.get(KEY, null);
+            hadPrevious = previous != null;
+            preferences.put(KEY, theme.name());
+            preferences.flush();
+        } catch (BackingStoreException | SecurityException e) {
+            restorePrevious(hadPrevious, previous);
+            throw new IllegalStateException("Unable to save theme preference");
+        }
+    }
+
+    private void restorePrevious(boolean hadPrevious, String previous) {
+        try {
+            if (hadPrevious) {
+                preferences.put(KEY, previous);
+            } else {
+                preferences.remove(KEY);
+            }
+            preferences.flush();
+        } catch (BackingStoreException | SecurityException ignored) {
+            // Best-effort restoration after a failed persistence attempt.
+        }
     }
 }

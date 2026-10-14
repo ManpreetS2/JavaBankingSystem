@@ -24,7 +24,9 @@ class ThemeStylesheetCoverageTest {
             ".date-picker-popup {",
             ".date-picker-popup .calendar-grid {",
             ".date-picker-popup .day-cell {",
-            ".date-picker-popup .day-cell:selected {"
+            ".date-picker-popup .day-cell:selected {",
+            ".dialog-pane .label {",
+            ".button-primary:focus-visible {"
     );
 
     @Test

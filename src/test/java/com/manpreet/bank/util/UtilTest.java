@@ -17,6 +17,9 @@ class MoneyUtilTest {
         assertEquals(new BigDecimal("10.00"), MoneyUtil.requireValidAmount(new BigDecimal("10"), "amount"));
         assertEquals(new BigDecimal("10.50"), MoneyUtil.requireValidAmount(new BigDecimal("10.5"), "amount"));
         assertEquals(new BigDecimal("10.55"), MoneyUtil.requireValidAmount(new BigDecimal("10.55"), "amount"));
+        assertEquals(new BigDecimal("0.01"), MoneyUtil.requirePositiveAmount(new BigDecimal("0.01"), "amount"));
+        assertEquals(new BigDecimal("1.00"), MoneyUtil.requirePositiveAmount(new BigDecimal("1.00"), "amount"));
+        assertEquals(new BigDecimal("999.99"), MoneyUtil.requireTransactionAmount(new BigDecimal("999.99"), "amount"));
     }
 
     @Test

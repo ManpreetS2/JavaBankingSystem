@@ -45,9 +45,6 @@ public class App extends Application {
             }
         } catch (Exception e) {
             System.err.println("FATAL: " + AppStartup.safeStartupFailureMessage(e));
-            if (e.getCause() != null && e.getCause().getMessage() != null) {
-                System.err.println("Cause: " + e.getCause().getMessage());
-            }
             System.exit(1);
             return;
         }

@@ -88,6 +88,33 @@ class BankingOperationsTest {
     }
 
     @Test
+    void acceptsCentPrecisionAmountsAndExactBalanceMovements() {
+        accountService.deposit(owner.userId(), ownerChecking.getId(), new BigDecimal("0.01"), "Penny");
+        accountService.deposit(owner.userId(), ownerChecking.getId(), new BigDecimal("1.00"), "Dollar");
+        accountService.deposit(owner.userId(), ownerChecking.getId(), new BigDecimal("999.99"), "Near thousand");
+
+        Account funded = accountService.getAccount(owner.userId(), ownerChecking.getId());
+        assertEquals(0, new BigDecimal("1001.00").compareTo(funded.getBalance()));
+
+        accountService.withdraw(owner.userId(), ownerChecking.getId(), new BigDecimal("1001.00"), "Drain checking");
+        assertEquals(0, MoneyUtil.ZERO.compareTo(
+                accountService.getAccount(owner.userId(), ownerChecking.getId()).getBalance()));
+
+        accountService.deposit(owner.userId(), ownerChecking.getId(), new BigDecimal("50.00"), "Reload");
+        accountService.transfer(
+                owner.userId(),
+                ownerChecking.getId(),
+                ownerSavings.getId(),
+                new BigDecimal("50.00"),
+                "Exact transfer"
+        );
+        assertEquals(0, MoneyUtil.ZERO.compareTo(
+                accountService.getAccount(owner.userId(), ownerChecking.getId()).getBalance()));
+        assertEquals(0, new BigDecimal("50.00").compareTo(
+                accountService.getAccount(owner.userId(), ownerSavings.getId()).getBalance()));
+    }
+
+    @Test
     void transferMovesMoneyAtomicallyWithPairedLedgerEntries() {
         accountService.deposit(owner.userId(), ownerChecking.getId(), new BigDecimal("200.00"), "Seed");
 

@@ -77,10 +77,14 @@ class AuthServiceTest {
 
         assertThrows(AuthenticationException.class,
                 () -> authService.authenticate("dupuser", "WrongPassword!!"));
+        assertThrows(AuthenticationException.class,
+                () -> authService.authenticate("missing-user", PASSWORD));
         assertThrows(DuplicateUserException.class,
                 () -> authService.register("Test", "Banker", "other@example.com", "dupuser", PASSWORD));
         assertThrows(DuplicateUserException.class,
                 () -> authService.register("Test", "Banker", "dup@example.com", "otheruser", PASSWORD));
+        assertThrows(DuplicateUserException.class,
+                () -> authService.register("Test", "Banker", "DUP@example.com", "anotheruser", PASSWORD));
     }
 
     @Test

@@ -49,9 +49,13 @@ class FxmlControllerBindingTest {
                     continue;
                 }
                 String java = Files.readString(javaFile);
+                java.util.Set<String> seenIds = new java.util.HashSet<>();
                 Matcher idMatcher = FX_ID.matcher(content);
                 while (idMatcher.find()) {
                     String id = idMatcher.group(1);
+                    if (!seenIds.add(id)) {
+                        violations.add(fxml.getFileName() + ": duplicate fx:id \"" + id + "\"");
+                    }
                     if (!java.contains(id)) {
                         violations.add(fxml.getFileName() + ": fx:id \"" + id + "\" not found in " + simpleName);
                     }

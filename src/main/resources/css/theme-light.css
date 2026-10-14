@@ -333,3 +333,7 @@
 .dialog-pane .header-panel {
     -fx-background-color: #FFFFFF;
 }
+
+.dialog-pane .label {
+    -fx-text-fill: #111827;
+}

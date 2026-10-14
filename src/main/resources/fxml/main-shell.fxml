@@ -19,16 +19,22 @@
             </VBox>
 
             <Label text="NAVIGATION" styleClass="sidebar-nav-label"/>
-            <Button fx:id="dashboardNavButton" text="Dashboard" onAction="#showDashboard" styleClass="sidebar-item"/>
-            <Button fx:id="accountsNavButton" text="Accounts" onAction="#showAccounts" styleClass="sidebar-item"/>
-            <Button fx:id="transactionsNavButton" text="Transactions" onAction="#showTransactions" styleClass="sidebar-item"/>
-            <Button fx:id="settingsNavButton" text="Settings" onAction="#showSettings" styleClass="sidebar-item"/>
+            <Button fx:id="dashboardNavButton" text="Dashboard" onAction="#showDashboard" styleClass="sidebar-item"
+                    accessibleText="Dashboard"/>
+            <Button fx:id="accountsNavButton" text="Accounts" onAction="#showAccounts" styleClass="sidebar-item"
+                    accessibleText="Accounts"/>
+            <Button fx:id="transactionsNavButton" text="Transactions" onAction="#showTransactions" styleClass="sidebar-item"
+                    accessibleText="Transactions"/>
+            <Button fx:id="settingsNavButton" text="Settings" onAction="#showSettings" styleClass="sidebar-item"
+                    accessibleText="Settings"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
             <VBox styleClass="sidebar-footer">
-                <Button text="Toggle theme" onAction="#toggleTheme" styleClass="sidebar-item"/>
-                <Button text="Sign out" onAction="#handleLogout" styleClass="sidebar-item"/>
+                <Button text="Toggle theme" onAction="#toggleTheme" styleClass="sidebar-item"
+                        accessibleText="Toggle light or dark theme"/>
+                <Button text="Sign out" onAction="#handleLogout" styleClass="sidebar-item"
+                        accessibleText="Sign out"/>
             </VBox>
         </VBox>
     </left>

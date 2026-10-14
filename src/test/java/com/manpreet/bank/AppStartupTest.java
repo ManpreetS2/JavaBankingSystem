@@ -109,6 +109,18 @@ class AppStartupTest {
     }
 
     @Test
+    void safeStartupFailureHidesSqlDiagnostics() {
+        String message = AppStartup.safeStartupFailureMessage(
+                new IllegalStateException("Failed to initialize: [SQLITE_ERROR] SELECT * FROM users")
+        );
+        assertTrue(message.contains(AppInfo.APPLICATION_NAME));
+        assertFalse(message.toLowerCase().contains("select "));
+        assertFalse(message.toLowerCase().contains("sqlite"));
+        assertTrue(AppStartup.containsInternalDiagnostics(
+                "Failed to initialize: jdbc:sqlite:/tmp/banking.db syntax error"));
+    }
+
+    @Test
     void resolveDatabasePathHonorsSystemProperty() {
         Path override = tempDir.resolve("override.db");
         System.setProperty(ApplicationPaths.DB_PATH_PROPERTY, override.toString());

@@ -2,6 +2,7 @@ package com.manpreet.bank;
 
 import com.manpreet.bank.database.DatabaseInitializer;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -48,15 +49,39 @@ public final class AppStartup {
         return summary.toString();
     }
 
+    /**
+     * Returns a console-safe startup failure message.
+     * Actionable {@link IllegalStateException} text is preserved; SQL/JDBC internals are not.
+     */
     public static String safeStartupFailureMessage(Throwable error) {
         if (error == null) {
             return "Unable to start " + AppInfo.APPLICATION_NAME + ".";
         }
         String message = error.getMessage();
         if (message == null || message.isBlank()) {
-            return "Unable to start " + AppInfo.APPLICATION_NAME
-                    + ". Check that the application data directory is writable.";
+            return genericStartupFailureMessage();
+        }
+        if (containsInternalDiagnostics(message)) {
+            return genericStartupFailureMessage();
         }
         return message;
+    }
+
+    private static String genericStartupFailureMessage() {
+        return "Unable to start " + AppInfo.APPLICATION_NAME
+                + ". Check that the application data directory is writable.";
+    }
+
+    static boolean containsInternalDiagnostics(String message) {
+        String lower = message.toLowerCase(Locale.ROOT);
+        return lower.contains("select ")
+                || lower.contains("insert ")
+                || lower.contains("update ")
+                || lower.contains("delete ")
+                || lower.contains("sqlite_")
+                || lower.contains("[sqlite")
+                || lower.contains("jdbc:")
+                || lower.contains("sql exception")
+                || lower.contains("syntax error");
     }
 }
