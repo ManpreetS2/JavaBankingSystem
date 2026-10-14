@@ -33,7 +33,7 @@
             <VBox styleClass="sidebar-footer">
                 <Button text="Toggle theme" onAction="#toggleTheme" styleClass="sidebar-item"
                         accessibleText="Toggle light or dark theme"/>
-                <Button text="Sign out" onAction="#handleLogout" styleClass="sidebar-item"
+                <Button text="Sign out" onAction="#handleLogout" styleClass="sidebar-item, sidebar-sign-out"
                         accessibleText="Sign out"/>
             </VBox>
         </VBox>

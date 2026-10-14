@@ -17,7 +17,8 @@
     <VBox spacing="16" styleClass="content-root">
         <VBox spacing="4" styleClass="page-header">
             <Label text="Accounts" styleClass="page-title"/>
-            <Label text="Manage your checking and savings accounts" styleClass="page-subtitle, body-secondary"/>
+            <Label text="Checking and savings balances with recent activity"
+                   styleClass="page-subtitle, body-secondary"/>
             <Label fx:id="statusLabel" styleClass="success-text" managed="false" visible="false"/>
         </VBox>
 

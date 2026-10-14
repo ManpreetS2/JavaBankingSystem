@@ -24,32 +24,32 @@
     <VBox spacing="16" styleClass="content-root">
         <VBox spacing="4" styleClass="page-header">
             <Label text="Transactions" styleClass="page-title"/>
-            <Label text="Review and search account activity" styleClass="page-subtitle, body-secondary"/>
+            <Label text="Search and review account activity" styleClass="page-subtitle, body-secondary"/>
             <Label fx:id="statusLabel" styleClass="success-text" managed="false" visible="false"/>
         </VBox>
 
         <FlowPane hgap="12" vgap="12" styleClass="summary-row">
-            <VBox spacing="4" styleClass="metric-card" prefWidth="160">
+            <VBox spacing="4" styleClass="metric-card" prefWidth="160" minWidth="140">
                 <Label text="Matching results" styleClass="metric-label"/>
                 <Label fx:id="matchingCountLabel" text="0" styleClass="metric-value"/>
                 <Label text="Current filters" styleClass="caption"/>
             </VBox>
-            <VBox spacing="4" styleClass="metric-card" prefWidth="160">
+            <VBox spacing="4" styleClass="metric-card" prefWidth="160" minWidth="140">
                 <Label text="Deposits" styleClass="metric-label"/>
                 <Label fx:id="depositsTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
-            <VBox spacing="4" styleClass="metric-card" prefWidth="160">
+            <VBox spacing="4" styleClass="metric-card" prefWidth="160" minWidth="140">
                 <Label text="Withdrawals" styleClass="metric-label"/>
                 <Label fx:id="withdrawalsTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
-            <VBox spacing="4" styleClass="metric-card" prefWidth="160">
+            <VBox spacing="4" styleClass="metric-card" prefWidth="160" minWidth="140">
                 <Label text="Transfers in" styleClass="metric-label"/>
                 <Label fx:id="transfersInTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
             </VBox>
-            <VBox spacing="4" styleClass="metric-card" prefWidth="160">
+            <VBox spacing="4" styleClass="metric-card" prefWidth="160" minWidth="140">
                 <Label text="Transfers out" styleClass="metric-label"/>
                 <Label fx:id="transfersOutTotalLabel" text="\$0.00" styleClass="metric-value"/>
                 <Label text="All activity" styleClass="caption"/>
@@ -58,40 +58,42 @@
 
         <VBox spacing="12" styleClass="filter-panel">
             <Label text="Filters" styleClass="section-title"/>
-            <FlowPane hgap="12" vgap="12">
+            <FlowPane hgap="12" vgap="12" styleClass="filter-row">
                 <VBox spacing="4" styleClass="field-group">
                     <Label text="Search" styleClass="field-label"/>
-                    <TextField fx:id="searchField" promptText="Description contains…" styleClass="input"
-                               accessibleText="Search transactions by description"
-                               onAction="#handleSearch" prefWidth="220"/>
+                    <TextField fx:id="searchField" promptText="Search transactions" styleClass="input"
+                               accessibleText="Search transactions"
+                               accessibleHelp="Search transaction descriptions and activity"
+                               onAction="#handleSearch" prefWidth="240" minWidth="180"/>
                 </VBox>
                 <VBox spacing="4" styleClass="field-group">
                     <Label text="Account" styleClass="field-label"/>
-                    <ComboBox fx:id="accountFilter" styleClass="input" prefWidth="200"/>
+                    <ComboBox fx:id="accountFilter" styleClass="input" prefWidth="200" minWidth="160"/>
                 </VBox>
                 <VBox spacing="4" styleClass="field-group">
                     <Label text="Type" styleClass="field-label"/>
-                    <ComboBox fx:id="typeFilter" styleClass="input" prefWidth="160"/>
+                    <ComboBox fx:id="typeFilter" styleClass="input" prefWidth="160" minWidth="140"/>
                 </VBox>
                 <VBox spacing="4" styleClass="field-group">
                     <Label text="Start date" styleClass="field-label"/>
-                    <DatePicker fx:id="startDatePicker" styleClass="input" prefWidth="150"/>
+                    <DatePicker fx:id="startDatePicker" styleClass="input" prefWidth="150" minWidth="140"/>
                 </VBox>
                 <VBox spacing="4" styleClass="field-group">
                     <Label text="End date" styleClass="field-label"/>
-                    <DatePicker fx:id="endDatePicker" styleClass="input" prefWidth="150"/>
+                    <DatePicker fx:id="endDatePicker" styleClass="input" prefWidth="150" minWidth="140"/>
                 </VBox>
             </FlowPane>
-            <HBox spacing="8" styleClass="quick-actions">
+            <FlowPane hgap="8" vgap="8" styleClass="quick-actions">
                 <Button text="Search" onAction="#handleSearch" styleClass="button-primary" defaultButton="true"/>
                 <Button text="Reset filters" onAction="#handleResetFilters" styleClass="button-secondary"/>
                 <Button text="Export CSV" onAction="#handleExportCsv" styleClass="button-ghost"/>
-            </HBox>
+            </FlowPane>
         </VBox>
 
         <VBox fx:id="emptyStateBox" spacing="8" styleClass="empty-state-card" managed="false" visible="false">
-            <Label text="No matching transactions" styleClass="card-title"/>
-            <Label text="Try adjusting your search, account, type, or date filters." styleClass="body-secondary"/>
+            <Label text="No transactions match these filters" styleClass="card-title"/>
+            <Label text="Try adjusting search, account, type, or dates — or reset filters to see all activity."
+                   styleClass="body-secondary" wrapText="true"/>
         </VBox>
 
         <TableView fx:id="transactionsTable" styleClass="transactions-table" prefHeight="280" VBox.vgrow="ALWAYS" minHeight="180">
@@ -100,19 +102,22 @@
             </columnResizePolicy>
             <columns>
                 <TableColumn fx:id="dateColumn" text="Date" prefWidth="140" minWidth="130"/>
-                <TableColumn fx:id="accountColumn" text="Account" prefWidth="160"/>
-                <TableColumn fx:id="typeColumn" text="Type" prefWidth="170"/>
-                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="260"/>
+                <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="260" minWidth="140"/>
+                <TableColumn fx:id="accountColumn" text="Account" prefWidth="160" minWidth="120"/>
+                <TableColumn fx:id="typeColumn" text="Type" prefWidth="150" minWidth="110"/>
                 <TableColumn fx:id="amountColumn" text="Amount" prefWidth="120" minWidth="120"/>
             </columns>
         </TableView>
 
-        <HBox spacing="12" styleClass="pagination-bar">
-            <Button fx:id="previousPageButton" text="Previous" onAction="#handlePreviousPage" styleClass="button-secondary, button-compact"/>
+        <FlowPane hgap="12" vgap="8" styleClass="pagination-bar">
+            <Button fx:id="previousPageButton" text="Previous" onAction="#handlePreviousPage"
+                    styleClass="button-secondary, button-compact"
+                    accessibleText="Previous page"/>
             <Label fx:id="pageLabel" text="Page 1 of 1" styleClass="body-secondary"/>
-            <Button fx:id="nextPageButton" text="Next" onAction="#handleNextPage" styleClass="button-secondary, button-compact"/>
-            <Region HBox.hgrow="ALWAYS"/>
-        </HBox>
+            <Button fx:id="nextPageButton" text="Next" onAction="#handleNextPage"
+                    styleClass="button-secondary, button-compact"
+                    accessibleText="Next page"/>
+        </FlowPane>
 
         <VBox spacing="12" styleClass="detail-panel">
             <Label text="Transaction details" styleClass="section-title"/>
@@ -127,15 +132,15 @@
                 <Label fx:id="detailTypeLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                 <Label text="Amount" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                 <Label fx:id="detailAmountLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                <Label text="Account" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <Label fx:id="detailAccountLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                <Label text="Related account" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                <Label fx:id="detailRelatedLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                <Label text="Description" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <Label text="Date" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label fx:id="detailDateLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="Account" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <Label fx:id="detailAccountLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Label text="Related account" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <Label fx:id="detailRelatedLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Label text="Description" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
                 <Label fx:id="detailDescriptionLabel" styleClass="detail-value" wrapText="true"
-                       GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                <Label text="Date" styleClass="detail-key" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                <Label fx:id="detailDateLabel" styleClass="detail-value" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                       GridPane.columnIndex="1" GridPane.rowIndex="5"/>
             </GridPane>
         </VBox>
     </VBox>

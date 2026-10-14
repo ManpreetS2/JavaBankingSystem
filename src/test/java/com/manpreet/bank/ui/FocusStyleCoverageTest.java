@@ -20,7 +20,10 @@ class FocusStyleCoverageTest {
             ".button-ghost",
             ".button-danger",
             ".sidebar-item",
-            ".sidebar-item-active"
+            ".sidebar-item-active",
+            ".combo-box",
+            ".date-picker",
+            ".radio-button"
     );
 
     @Test

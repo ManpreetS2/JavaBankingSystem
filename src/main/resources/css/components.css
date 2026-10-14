@@ -147,6 +147,11 @@
 .sidebar-footer {
     -fx-spacing: 8;
     -fx-padding: 16 0 0 0;
+    -fx-border-width: 1 0 0 0;
+}
+
+.sidebar-sign-out {
+    -fx-opacity: 0.92;
 }
 
 .shell-topbar {
@@ -163,14 +168,14 @@
 /* Auth */
 .auth-root {
     -fx-alignment: CENTER;
-    -fx-padding: 40;
+    -fx-padding: 32 24 32 24;
 }
 
 .auth-card {
-    -fx-spacing: 12;
-    -fx-pref-width: 420px;
-    -fx-max-width: 420px;
-    -fx-padding: 32;
+    -fx-spacing: 14;
+    -fx-pref-width: 400px;
+    -fx-max-width: 400px;
+    -fx-padding: 28 28 24 28;
 }
 
 /* Tables */
@@ -192,6 +197,14 @@
 .amount-debit {
     -fx-font-weight: bold;
     -fx-alignment: CENTER_RIGHT;
+}
+
+.transactions-table .table-cell {
+    -fx-padding: 0 12 0 12;
+}
+
+.filter-row {
+    -fx-alignment: TOP_LEFT;
 }
 
 /* Badges & status */

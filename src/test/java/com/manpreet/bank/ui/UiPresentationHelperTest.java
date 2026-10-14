@@ -14,8 +14,8 @@ class UiPresentationHelperTest {
         assertEquals(Optional.of("Enter an amount."), DialogAmountValidator.validate(""));
         assertEquals(Optional.of("Enter an amount."), DialogAmountValidator.validate("   "));
         assertEquals(Optional.of("Enter a valid amount such as 25.00"), DialogAmountValidator.validate("abc"));
-        assertEquals(Optional.of("Amount must be greater than zero."), DialogAmountValidator.validate("0"));
-        assertEquals(Optional.of("Amount must be greater than zero."), DialogAmountValidator.validate("0.00"));
+        assertEquals(Optional.of("Enter an amount greater than $0.00."), DialogAmountValidator.validate("0"));
+        assertEquals(Optional.of("Enter an amount greater than $0.00."), DialogAmountValidator.validate("0.00"));
         assertEquals(Optional.of("Amount cannot be negative."), DialogAmountValidator.validate("-1.00"));
         assertEquals(Optional.of("Amount cannot have more than 2 decimal places."),
                 DialogAmountValidator.validate("10.001"));

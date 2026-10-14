@@ -93,28 +93,28 @@ public class AccountsController implements AppAwareController, ShellAwareControl
     private void depositChecking() {
         mutate(() -> BankingDialogs.showDeposit(
                         sceneManager.getAppContext(), requireSession(), checking, UiWindows.from(statusLabel)),
-                "Deposit successful.");
+                "Deposit complete.");
     }
 
     @FXML
     private void withdrawChecking() {
         mutate(() -> BankingDialogs.showWithdraw(
                         sceneManager.getAppContext(), requireSession(), checking, UiWindows.from(statusLabel)),
-                "Withdrawal successful.");
+                "Withdrawal complete.");
     }
 
     @FXML
     private void depositSavings() {
         mutate(() -> BankingDialogs.showDeposit(
                         sceneManager.getAppContext(), requireSession(), savings, UiWindows.from(statusLabel)),
-                "Deposit successful.");
+                "Deposit complete.");
     }
 
     @FXML
     private void transferBetweenAccounts() {
         mutate(() -> BankingDialogs.showTransfer(
                         sceneManager.getAppContext(), requireSession(), UiWindows.from(statusLabel)),
-                "Transfer successful.");
+                "Transfer complete.");
     }
 
     @FXML

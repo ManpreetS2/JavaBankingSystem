@@ -61,7 +61,7 @@ public final class BankingDialogs {
 
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Transfer");
-        dialog.setHeaderText("Move money between your accounts");
+        dialog.setHeaderText("Move money between checking and savings");
         initOwner(dialog, owner);
 
         ComboBox<Account> fromBox = accountCombo(accounts);
@@ -99,7 +99,7 @@ public final class BankingDialogs {
                 validationLabel.setText(amountError.get());
             } else if (from != null && to != null && from.getId() == to.getId()) {
                 setInputError(amountField, false);
-                validationLabel.setText("Source and destination accounts must be different.");
+                validationLabel.setText("Choose different accounts.");
             } else {
                 setInputError(amountField, false);
                 validationLabel.setText("");
@@ -182,7 +182,11 @@ public final class BankingDialogs {
         List<Account> accounts = context.getAccountService().getAccountsForUser(session.userId());
         Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle(action);
-        dialog.setHeaderText(action + " money");
+        dialog.setHeaderText(switch (action) {
+            case "Deposit" -> "Add money to the selected account";
+            case "Withdraw" -> "Take money from the selected account";
+            default -> action + " money";
+        });
         initOwner(dialog, owner);
 
         ComboBox<Account> accountBox = accountCombo(accounts);

@@ -10,12 +10,12 @@
       fx:controller="com.manpreet.bank.controller.LoginController"
       styleClass="auth-root">
 
-    <VBox spacing="12" styleClass="auth-card">
+    <VBox spacing="14" styleClass="auth-card">
         <Label text="Banking System" styleClass="page-title"/>
         <Label text="Sign in to continue" styleClass="page-subtitle, body-secondary"/>
 
-        <Label fx:id="infoLabel" styleClass="success-text" managed="false" visible="false"/>
-        <Label fx:id="errorLabel" styleClass="error-text" managed="false" visible="false"/>
+        <Label fx:id="infoLabel" styleClass="success-text" managed="false" visible="false" wrapText="true"/>
+        <Label fx:id="errorLabel" styleClass="error-text" managed="false" visible="false" wrapText="true"/>
 
         <VBox spacing="4" styleClass="field-group">
             <Label text="Username or email" styleClass="field-label"/>

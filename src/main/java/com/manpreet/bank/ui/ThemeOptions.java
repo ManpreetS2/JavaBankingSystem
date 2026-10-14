@@ -26,6 +26,7 @@ public final class ThemeOptions {
     }
 
     public static String appliedMessage(Theme theme) {
-        return accessibleName(theme) + " applied.";
+        Objects.requireNonNull(theme, "theme must not be null");
+        return "Theme updated.";
     }
 }
