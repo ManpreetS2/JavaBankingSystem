@@ -23,6 +23,7 @@ The [70-second visual walkthrough](docs/demo/JavaBankingSystem-demo.mp4) uses ac
 > **Important:** The downloadable macOS app is **unsigned and not notarized**. macOS may warn or prevent it from opening because Apple has not verified it. Verify the source and decide whether you trust the app before considering any exception; see [Apple's guidance on opening unverified apps](https://support.apple.com/en-ie/102445). No real financial accounts or external payment networks are connected.
 
 The packaged download is a macOS app image, not a Windows or Linux installer. Other platforms can build from source where their JavaFX/JDK tooling is supported.
+
 ## Highlights
 
 - Secure registration and sign-in
