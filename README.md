@@ -1,15 +1,28 @@
 # Java Banking System
 
-A polished local desktop banking simulation built with Java 21, JavaFX, SQLite, and Maven.
+[![Build and test](https://github.com/ManpreetS2/JavaBankingSystem/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ManpreetS2/JavaBankingSystem/actions/workflows/ci.yml) [![Release](https://img.shields.io/github/v/release/ManpreetS2/JavaBankingSystem?label=latest%20release)](https://github.com/ManpreetS2/JavaBankingSystem/releases/tag/v1.0.0) ![Java 21](https://img.shields.io/badge/Java-21-blue) ![Tests](https://img.shields.io/badge/tests-197%20passing-brightgreen)
 
-Sign in, move money between checking and savings, and review a filterable transaction history. Everything stays on this computer. This is not a production bank, a PCI-compliant payment system, or a cloud service.
+**A local desktop banking simulation built with Java 21, JavaFX, SQLite, and Maven.**
 
-## Demo
+Sign in, manage checking and savings accounts, make deposits and withdrawals, transfer funds between your own accounts, and review searchable transaction history. Built as a portfolio application to demonstrate correct transaction processing and desktop UI engineering—not a real bank or payment service.
 
-![Dashboard showing total balance, checking and savings, and recent activity](docs/screenshots/02-dashboard.png)
+**[📦 Download v1.0.0 for macOS](https://github.com/ManpreetS2/JavaBankingSystem/releases/download/v1.0.0/BankingSystem-v1.0.0-macOS.zip)** · **[▶ Watch the 70-second demo](https://github.com/ManpreetS2/JavaBankingSystem/releases/download/v1.0.0/JavaBankingSystem-demo.mp4)** · [Release notes](https://github.com/ManpreetS2/JavaBankingSystem/releases/tag/v1.0.0) · [Source code](https://github.com/ManpreetS2/JavaBankingSystem)
 
-[Watch the demo](docs/demo/JavaBankingSystem-demo.mp4) · Walkthrough script: [docs/DEMO.md](docs/DEMO.md)
+## See it in action
 
+![Java Banking System desktop dashboard: balances, account cards, actions, and recent activity](docs/screenshots/02-dashboard.png)
+
+The [70-second visual walkthrough](docs/demo/JavaBankingSystem-demo.mp4) uses actual JavaFX screenshots, not simulated clicks. Also available: [download the MP4](https://github.com/ManpreetS2/JavaBankingSystem/releases/download/v1.0.0/JavaBankingSystem-demo.mp4) and [read the live-demo walkthrough](docs/DEMO.md).
+
+## Download and run on macOS
+
+1. [Download the v1.0.0 macOS ZIP](https://github.com/ManpreetS2/JavaBankingSystem/releases/download/v1.0.0/BankingSystem-v1.0.0-macOS.zip).
+2. Unzip it and open **BankingSystem.app**. You can move the app to **Applications** if you prefer.
+3. Create an account to try checking, savings, and internal transfers, or [run the seeded demo from source](#demo-mode).
+
+> **Important:** The downloadable macOS app is **unsigned and not notarized**. macOS may warn or prevent it from opening because Apple has not verified it. Verify the source and decide whether you trust the app before considering any exception; see [Apple's guidance on opening unverified apps](https://support.apple.com/en-ie/102445). No real financial accounts or external payment networks are connected.
+
+The packaged download is a macOS app image, not a Windows or Linux installer. Other platforms can build from source where their JavaFX/JDK tooling is supported.
 ## Highlights
 
 - Secure registration and sign-in
@@ -17,7 +30,7 @@ Sign in, move money between checking and savings, and review a filterable transa
 - Deposits, withdrawals, and atomic internal transfers
 - Searchable, filterable transactions with pagination and CSV export
 - Light and dark themes, remembered between launches
-- Unsigned desktop packaging for local demos
+- Downloadable macOS app image and a 70-second demo video
 - 197 automated tests
 
 ## What this project demonstrates
@@ -49,14 +62,14 @@ Also captured: [sign-in](docs/screenshots/01-login.png) and the [transfer dialog
 
 ```mermaid
 flowchart TD
-  UI[JavaFX UI / FXML Controllers] --> SM[SceneManager]
-  SM --> SVC[Services]
-  SVC --> REPO[Repositories / JDBC]
-  REPO --> DB[(SQLite)]
-  SVC --> SESS[SessionManager]
-  SM --> THEME[ThemeManager]
-  APP[App / AppStartup / AppContext] --> SM
-  APP --> SVC
+    APP[App / AppStartup] --> CTX[AppContext]
+    CTX --> SVC[Banking services]
+    CTX --> SCENE[SceneManager / ThemeManager]
+    UI[JavaFX FXML and controllers] --> SVC
+    UI --> SCENE
+    SVC --> REPO[JDBC repositories]
+    REPO --> DB[(SQLite)]
+    SVC --> SESSION[SessionManager]
 ```
 
 `AppContext` is the composition root. More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
@@ -132,7 +145,7 @@ mvn clean test
 
 197 automated tests cover banking journeys, ownership, export limits, schema safeguards, path resolution, UI presentation, theme preference persistence, and demo seeding. Integration tests use JUnit `@TempDir` databases. Remaining manual checks: [docs/MANUAL_QA.md](docs/MANUAL_QA.md).
 
-## Desktop packaging
+## Build a desktop package
 
 Unsigned local app image (macOS: `.app`):
 
@@ -157,7 +170,7 @@ The packaged macOS app is unsigned and not notarized. `mvn javafx:jlink` is not 
 
 Window icon: `src/main/resources/icons/app.png`. macOS bundle icon: `src/main/resources/icons/app.icns`.
 
-Release notes: [docs/RELEASE_NOTES_v1.0.0.md](docs/RELEASE_NOTES_v1.0.0.md).
+Published release: [v1.0.0](https://github.com/ManpreetS2/JavaBankingSystem/releases/tag/v1.0.0). Source-controlled notes: [docs/RELEASE_NOTES_v1.0.0.md](docs/RELEASE_NOTES_v1.0.0.md).
 
 ## Data location
 
@@ -207,4 +220,4 @@ Not in this version:
 - Cards, loans, bill pay, investments, or crypto
 - Cloud backends, Spring, or Hibernate
 
-An explicit open-source license has not been chosen yet.
+**License:** No open-source license has been granted. The public source is available to inspect for portfolio review; do not assume reuse or redistribution permission.
