@@ -1,13 +1,18 @@
 package com.manpreet.bank.ui;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 /**
  * Applies light/dark stylesheets to application scenes and transient dialog roots.
+ * Loads and persists the selected theme through {@link ThemePreferenceStore}.
  */
 public class ThemeManager {
 
@@ -16,8 +21,19 @@ public class ThemeManager {
     private static final String LIGHT = "/css/theme-light.css";
     private static final String DARK = "/css/theme-dark.css";
 
-    private final List<Scene> managedScenes = new ArrayList<>();
-    private Theme currentTheme = Theme.LIGHT;
+    private final ThemePreferenceStore preferenceStore;
+    private final IdentityHashMap<Scene, Boolean> managedScenes = new IdentityHashMap<>();
+    private final List<Consumer<List<String>>> managedTargets = new ArrayList<>();
+    private Theme currentTheme;
+
+    public ThemeManager() {
+        this(new PreferencesThemePreferenceStore());
+    }
+
+    public ThemeManager(ThemePreferenceStore preferenceStore) {
+        this.preferenceStore = Objects.requireNonNull(preferenceStore, "preferenceStore must not be null");
+        this.currentTheme = resolveTheme(preferenceStore.load());
+    }
 
     public Theme getCurrentTheme() {
         return currentTheme;
@@ -25,17 +41,30 @@ public class ThemeManager {
 
     public synchronized void registerScene(Scene scene) {
         Objects.requireNonNull(scene, "scene must not be null");
-        if (!managedScenes.contains(scene)) {
-            managedScenes.add(scene);
+        if (managedScenes.put(scene, Boolean.TRUE) == null) {
+            managedTargets.add(urls -> scene.getStylesheets().setAll(urls));
         }
         applyTo(scene);
     }
 
+    /**
+     * Registers a stylesheet consumer that is updated whenever the theme changes.
+     * Package-private so tests can verify managed updates without creating JavaFX scenes.
+     */
+    synchronized void registerManagedTarget(Consumer<List<String>> target) {
+        Objects.requireNonNull(target, "target must not be null");
+        managedTargets.add(target);
+        target.accept(currentStylesheetUrls());
+    }
+
     public synchronized void setTheme(Theme theme) {
-        this.currentTheme = Objects.requireNonNull(theme, "theme must not be null");
-        for (Scene scene : List.copyOf(managedScenes)) {
-            applyTo(scene);
+        Theme next = Objects.requireNonNull(theme, "theme must not be null");
+        this.currentTheme = next;
+        List<String> urls = currentStylesheetUrls();
+        for (Consumer<List<String>> target : List.copyOf(managedTargets)) {
+            target.accept(urls);
         }
+        preferenceStore.save(next);
     }
 
     public synchronized void toggleTheme() {
@@ -74,6 +103,21 @@ public class ThemeManager {
                 COMPONENTS,
                 currentTheme == Theme.DARK ? DARK : LIGHT
         );
+    }
+
+    static Theme resolveTheme(Optional<String> stored) {
+        if (stored.isEmpty()) {
+            return Theme.LIGHT;
+        }
+        String raw = stored.get().trim();
+        if (raw.isEmpty()) {
+            return Theme.LIGHT;
+        }
+        try {
+            return Theme.valueOf(raw.toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ignored) {
+            return Theme.LIGHT;
+        }
     }
 
     private static String resource(String path) {
