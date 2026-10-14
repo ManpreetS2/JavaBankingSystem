@@ -5,6 +5,7 @@
 The 70-second silent video is a captioned walkthrough assembled from **real JavaFX scene captures**. It is not a recording of cursor interactions. To demonstrate real navigation and banking actions, use the steps below with a disposable demo database.
 
 This is a local banking simulation: money does not move through a real payment network.
+
 ## Launch demo mode
 
 Use a disposable database. Do not point this at a database you care about.
