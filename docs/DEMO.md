@@ -1,7 +1,10 @@
 # Demo walkthrough
 
-A 60–70 second look at the local desktop app. This is a banking simulation. Money does not move through a real payment network.
+[▶ Watch the published v1.0.0 demo video](https://github.com/ManpreetS2/JavaBankingSystem/releases/download/v1.0.0/JavaBankingSystem-demo.mp4) · [📦 Download the macOS app](https://github.com/ManpreetS2/JavaBankingSystem/releases/download/v1.0.0/BankingSystem-v1.0.0-macOS.zip) · [GitHub Release](https://github.com/ManpreetS2/JavaBankingSystem/releases/tag/v1.0.0)
 
+The 70-second silent video is a captioned walkthrough assembled from **real JavaFX scene captures**. It is not a recording of cursor interactions. To demonstrate real navigation and banking actions, use the steps below with a disposable demo database.
+
+This is a local banking simulation: money does not move through a real payment network.
 ## Launch demo mode
 
 Use a disposable database. Do not point this at a database you care about.
@@ -48,7 +51,7 @@ These credentials exist only for walkthroughs. They are not a production secret,
 - Passwords are PBKDF2-HMAC-SHA256 with a unique salt
 - Repository SQL uses prepared statements
 - Theme preference is stored and reapplied on startup
-- `mvn clean test` is the automated suite (197 tests on the current branch)
+- `mvn clean test` is the automated suite (197 tests in v1.0.0)
 - `./scripts/package-app.sh` builds an unsigned local app image
 
 ## What not to claim
